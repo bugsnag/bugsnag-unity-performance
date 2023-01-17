@@ -6,3 +6,7 @@ package-project/Library
 package-project/Temp
 BugsnagPerformance.dll
 manifest.json
+src/BugsnagPerformance/BugsnagPerformance.Tests/bin
+src/BugsnagPerformance/BugsnagPerformance.Tests/obj
+src/BugsnagPerformance/packages
+BugsnagPerformance.Tests.csproj.user
