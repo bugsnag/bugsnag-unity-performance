@@ -10,3 +10,8 @@ src/BugsnagPerformance/BugsnagPerformance.Tests/bin
 src/BugsnagPerformance/BugsnagPerformance.Tests/obj
 src/BugsnagPerformance/packages
 BugsnagPerformance.Tests.csproj.user
+BugsnagPerformance.unitypackage
+TestResult.xml
+tools
+Gemfile.lock
+EditorSettings.asset

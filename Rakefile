@@ -12,13 +12,7 @@ HOST_OS = RbConfig::CONFIG['host_os']
 def unity_directory
 
   if ENV.has_key? 'UNITY_VERSION'
-
-    if is_mac?
     "/Applications/Unity/Hub/Editor/#{ENV['UNITY_VERSION']}"
-    elsif is_windows?
-      "C:\\Program Files\\Unity\\Hub\\Editor\\#{ENV['UNITY_VERSION']}"
-    end
-
   elsif ENV.has_key? "UNITY_DIR"
     ENV["UNITY_DIR"]
   else
@@ -95,8 +89,8 @@ def assets_path
   File.join(project_path, "Assets", "BugsnagPerformance/Plugins")
 end
 
-def export_package name="BugsnagPerformance.unitypackage"
-  package_output = File.join(current_directory, name)
+def export_package
+  package_output = File.join(current_directory, "BugsnagPerformance.unitypackage")
   rm_f package_output
   unity "-projectPath", project_path, "-exportPackage", "Assets/BugsnagPerformance", package_output, force_free: false
 end
@@ -104,7 +98,7 @@ end
 namespace :plugin do
   namespace :build do
 
-    task all: [:assets, :csharp]
+    task all: [:clean, :assets, :csharp, :export]
 
     desc "Delete all build artifacts"
     task :clean do
@@ -112,34 +106,28 @@ namespace :plugin do
       sh "git", "clean", "-dfx", "package-project"      
     end
 
+    desc "Copy uncompiled unity assets to packaging project"
     task :assets do
      # cp_r File.join(current_directory, "src", "Assets"), project_path, preserve: true
     end
-
     
+    desc "Compile and copy csharp lib dlls to packaging project"
     task :csharp do
       env = { "UnityDir" => unity_dll_location }
       unless system env, "./build.sh"
         raise "Failed to build csharp plugin"
       end
-
-      cd File.join("src", "BugsnagPerformance", "BugsnagPerformance", "bin", "Release", "net35") do
+      cd File.join("src", "BugsnagPerformance", "BugsnagPerformance", "bin", "Release") do
         cp File.realpath("BugsnagPerformance.dll"), assets_path
       end
     end
 
+    desc "Export unitypackage"
+    task :export do
+      export_package
+    end
 
   end
-
-  task :export_package do
-    export_package
-  end
-
-  desc "Generate release artifacts"
-  task export: ["plugin:build:clean"] do
-    export_package("BugsnagPerformance.unitypackage")
-  end
- 
 end
 
 
