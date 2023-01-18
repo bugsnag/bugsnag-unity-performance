@@ -1,11 +1,17 @@
-﻿using System;
-namespace BugsnagPerformance
+﻿namespace BugsnagPerformance
 {
     public class BugsnagPerformance
     {
-        public static bool TestMethod()
+
+        private static PerformanceConfiguration _configuration;
+
+        private static bool _isStarted = false;
+
+
+        public static void Start(PerformanceConfiguration performanceConfiguration)
         {
-            return true;
+            _configuration = performanceConfiguration;
+            _isStarted = true;
         }
     }
 }

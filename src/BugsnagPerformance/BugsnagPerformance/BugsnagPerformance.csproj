@@ -35,6 +35,11 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BugsnagPerformance.cs" />
+    <Compile Include="PerformanceConfiguration.cs" />
+    <Compile Include="Enums\SpanKind.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
