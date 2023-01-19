@@ -37,9 +37,12 @@
     <Compile Include="BugsnagPerformance.cs" />
     <Compile Include="PerformanceConfiguration.cs" />
     <Compile Include="Enums\SpanKind.cs" />
+    <Compile Include="Span.cs" />
+    <Compile Include="Internal\SpanFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />
+    <Folder Include="Internal\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
