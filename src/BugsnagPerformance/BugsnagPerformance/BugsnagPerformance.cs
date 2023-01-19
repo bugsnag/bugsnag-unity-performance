@@ -9,6 +9,10 @@ namespace BugsnagPerformance
 
         private static bool _isStarted = false;
 
+        private static Tracer _tracer;
+
+        private static SpanFactory _spanFactory;
+
 
         public static void Start(PerformanceConfiguration performanceConfiguration)
         {
@@ -18,6 +22,8 @@ namespace BugsnagPerformance
                 throw new Exception("Already started");
             }
             _configuration = performanceConfiguration;
+            _tracer = new Tracer();
+            _spanFactory = new SpanFactory(_tracer);
             _isStarted = true;
         }
 
@@ -28,7 +34,7 @@ namespace BugsnagPerformance
 
         public static Span StartSpan(string name, DateTimeOffset startTime)
         {
-            return SpanFactory.StartCustomSpan(name, startTime);
+            return _spanFactory.StartCustomSpan(name, startTime);
         }
     }
 }
