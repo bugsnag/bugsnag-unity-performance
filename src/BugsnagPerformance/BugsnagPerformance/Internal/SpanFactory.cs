@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     internal class SpanFactory
     {
@@ -15,7 +15,7 @@ namespace BugsnagPerformance
 
         private string GetNewTraceId()
         {
-            return new Guid().ToString();
+            return Guid.NewGuid().ToString();
         }
 
         private long GetNewSpanId()

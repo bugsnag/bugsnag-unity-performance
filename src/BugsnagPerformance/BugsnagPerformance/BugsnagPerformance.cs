@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     public class BugsnagPerformance
     {
@@ -14,15 +14,15 @@ namespace BugsnagPerformance
         private static SpanFactory _spanFactory;
 
 
-        public static void Start(PerformanceConfiguration performanceConfiguration)
+        public static void Start(PerformanceConfiguration configuration)
         {
             if (_isStarted)
             {
                 // This will be replaced with a Unity warning log once the unity engine dlls are imported
                 throw new Exception("Already started");
             }
-            _configuration = performanceConfiguration;
-            _tracer = new Tracer();
+            _configuration = configuration;
+            _tracer = new Tracer(configuration);
             _spanFactory = new SpanFactory(_tracer);
             _isStarted = true;
         }

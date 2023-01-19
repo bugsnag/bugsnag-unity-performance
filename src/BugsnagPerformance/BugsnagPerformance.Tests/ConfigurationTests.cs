@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-namespace BugsnagPerformance.Tests
+namespace BugsnagUnityPerformance.Tests
 {
     [TestFixture]
     public class ConfigurationTests

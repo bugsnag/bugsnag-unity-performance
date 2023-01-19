@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     [Serializable]
     internal class SpanModel
@@ -16,7 +16,7 @@ namespace BugsnagPerformance
             name = span.Name;
             kind = span.Kind.ToString();
             spanId = span.Id.ToString();
-            traceId = span.Id.ToString();
+            traceId = span.TraceId.ToString();
             // no support for nano seconds, but there are 100 in every tick.
             // we hope to improve this in future
             startTimeUnixNano = span.StartTime.Ticks * 100;

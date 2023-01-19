@@ -5,7 +5,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     internal class Delivery
     {

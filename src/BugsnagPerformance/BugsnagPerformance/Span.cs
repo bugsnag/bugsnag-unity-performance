@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     public class Span
     {
