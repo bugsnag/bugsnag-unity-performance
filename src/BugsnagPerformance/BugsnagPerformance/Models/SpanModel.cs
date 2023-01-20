@@ -8,8 +8,8 @@ namespace BugsnagUnityPerformance
         public string kind;
         public string spanId;
         public string traceId;
-        public long startTimeUnixNano;
-        public long endTimeUnixNano;
+        public string startTimeUnixNano;
+        public string endTimeUnixNano;
         public AttributeModel[] attributes;
 
         public SpanModel(Span span)
@@ -17,15 +17,15 @@ namespace BugsnagUnityPerformance
             name = span.Name;
             kind = span.Kind.ToString();
             spanId = span.Id.ToString("x");
-            traceId = span.TraceId.ToString();
-            startTimeUnixNano = span.StartTime.Ticks * 100;
-            endTimeUnixNano = span.EndTime.Ticks * 100;
+            traceId = span.TraceId.Replace("-",string.Empty);
+            startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
+            endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
             attributes = new AttributeModel[]
             {
                 new AttributeModel()
                 {
                     key = "bugsnag.span_category",
-                    value = new AttributeStringValueModel("custom")
+                    value = new AttributeStringValueModel("app_start")
                 }
             };
         }
