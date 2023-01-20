@@ -30,20 +30,5 @@ namespace BugsnagUnityPerformance
             _tracer.OnSpanEnd(this);
         }
 
-        internal Dictionary<string, object> GetSerialisableSpan()
-        {
-            return new Dictionary<string, object>()
-            {
-                { "name", Name },
-                { "kind",Kind.ToString() },
-                { "spanId", Id },
-                { "traceId", TraceId },
-                // no support for nano seconds, but there are 100 in every tick.
-                // we hope to improve this in future
-                { "startTimeUnixNano", StartTime.Ticks * 100 },
-                { "endTimeUnixNano", EndTime.Ticks * 100 }
-            };
-        }
-
     }
 }

@@ -15,7 +15,7 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
-            var payload = new TracePayload(span, _configuration);
+            var payload = new TracePayload(span);
             _delivery.Deliver(payload);
         }
     }

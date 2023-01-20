@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace BugsnagUnityPerformance
 {
     internal class SpanFactory
@@ -20,7 +21,7 @@ namespace BugsnagUnityPerformance
 
         private long GetNewSpanId()
         {
-            return _rand.Next() + _rand.Next();
+            return _rand.NextLong(long.MaxValue);
         }
 
         internal Span StartCustomSpan(string name, DateTimeOffset startTime)

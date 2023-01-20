@@ -46,6 +46,9 @@
     <Compile Include="Models\SpanModel.cs" />
     <Compile Include="Models\ResourceSpanModel.cs" />
     <Compile Include="Models\ScopeSpanModel.cs" />
+    <Compile Include="Internal\RandomExtensionMethods.cs" />
+    <Compile Include="Models\AttributeModel.cs" />
+    <Compile Include="Models\AttributeValueModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />

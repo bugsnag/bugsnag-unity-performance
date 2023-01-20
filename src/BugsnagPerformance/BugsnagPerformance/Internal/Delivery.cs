@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -46,10 +49,9 @@ namespace BugsnagUnityPerformance
 
             using (var req = new UnityWebRequest(_configuration.Endpoint))
             {
-                foreach (var header in payload.Headers)
-                {
-                    req.SetRequestHeader(header.Key, header.Value);
-                }
+                req.SetRequestHeader("Bugsnag-Api-Key", _configuration.ApiKey);
+                req.SetRequestHeader("Content-Type", "application/json");
+                req.SetRequestHeader("Bugsnag-Integrity","sha1 " + Hash(body));
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
                 req.method = UnityWebRequest.kHttpVerbPOST;
@@ -75,6 +77,20 @@ namespace BugsnagUnityPerformance
                     // sending failed with an unacceptable status code, remove payload from cache and pending payloads
                     Debug.Log("Something wnt wrong: res code: " + code);
                 }
+            }
+        }
+
+        private string Hash(byte[] input)
+        {
+            using (SHA1Managed sha1 = new SHA1Managed())
+            {
+                var hash = sha1.ComputeHash(input);
+                var sb = new StringBuilder(hash.Length * 2);
+                foreach (byte b in hash)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+                return sb.ToString();
             }
         }
 
