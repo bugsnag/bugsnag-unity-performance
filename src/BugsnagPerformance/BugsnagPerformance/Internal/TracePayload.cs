@@ -14,6 +14,7 @@ namespace BugsnagUnityPerformance
 
         public byte[] GetBody()
         {
+            // This body construction seems strange now but will make more sense once attributes and resources are fleshed out
             var spans = new SpanModel[] { new SpanModel(_span) };
             var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(spans) };
             var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(scopeSpans) };

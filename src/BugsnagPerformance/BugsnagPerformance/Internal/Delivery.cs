@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Globalization;
-using System.Linq;
+﻿using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -65,17 +62,14 @@ namespace BugsnagUnityPerformance
                 if (code == 200 || code == 202)
                 {
                     // success!
-                    Debug.Log("Success!");
                 }
                 else if (code == 0 || code == 408 || code == 429 || code >= 500)
                 {
-                    // sending failed with no network or retryable error, cache payload to disk
-                    Debug.Log("Something wnt wrong: res code: " + code);
+                    // sending failed with no network or retryable error
                 }
                 else
                 {
-                    // sending failed with an unacceptable status code, remove payload from cache and pending payloads
-                    Debug.Log("Something wnt wrong: res code: " + code);
+                    // sending failed with an unacceptable status code or network error
                 }
             }
         }
