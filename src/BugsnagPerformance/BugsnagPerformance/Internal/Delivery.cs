@@ -38,10 +38,7 @@ namespace BugsnagUnityPerformance
                     body = payload.GetBody();
                     bodyReady = true;
                 }).Start();
-                while (!bodyReady)
-                {
-                    yield return null;
-                }
+                yield return new WaitUntil(() => bodyReady);
             }
 
             using (var req = new UnityWebRequest(_configuration.Endpoint))
@@ -52,12 +49,9 @@ namespace BugsnagUnityPerformance
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
                 req.method = UnityWebRequest.kHttpVerbPOST;
+
                 yield return req.SendWebRequest();
 
-                while (!req.isDone)
-                {
-                    yield return new WaitForEndOfFrame();
-                }
                 var code = req.responseCode;
                 if (code == 200 || code == 202)
                 {
