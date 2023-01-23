@@ -39,10 +39,21 @@
     <Compile Include="Enums\SpanKind.cs" />
     <Compile Include="Span.cs" />
     <Compile Include="Internal\SpanFactory.cs" />
+    <Compile Include="Internal\Delivery.cs" />
+    <Compile Include="Internal\TracePayload.cs" />
+    <Compile Include="Internal\MainThreadDispatchBehaviour.cs" />
+    <Compile Include="Internal\Tracer.cs" />
+    <Compile Include="Models\SpanModel.cs" />
+    <Compile Include="Models\ResourceSpanModel.cs" />
+    <Compile Include="Models\ScopeSpanModel.cs" />
+    <Compile Include="Internal\RandomExtensionMethods.cs" />
+    <Compile Include="Models\AttributeModel.cs" />
+    <Compile Include="Models\AttributeValueModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />
     <Folder Include="Internal\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

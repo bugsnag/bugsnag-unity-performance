@@ -1,4 +1,4 @@
-﻿namespace BugsnagPerformance
+﻿namespace BugsnagUnityPerformance
 {
     public enum SpanKind
     {

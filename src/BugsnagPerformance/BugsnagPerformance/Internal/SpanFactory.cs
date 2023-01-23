@@ -1,25 +1,37 @@
 ﻿using System;
-namespace BugsnagPerformance
+
+namespace BugsnagUnityPerformance
 {
-    public class SpanFactory
+    internal class SpanFactory
     {
 
-        private static Random _rand = new Random();
+        private Random _rand = new Random();
 
+        private Tracer _tracer;
 
-        private static string GetNewTraceId()
+        internal SpanFactory(Tracer tracer)
         {
-            return new Guid().ToString();
+            _tracer = tracer;
         }
 
-        private static long GetNewSpanId()
+        private string GetNewTraceId()
         {
-            return _rand.Next() + _rand.Next();
+            return Guid.NewGuid().ToString();
         }
 
-        internal static Span StartCustomSpan(string name, DateTimeOffset startTime)
+        private long GetNewSpanId()
         {
-            return new Span(name,SpanKind.SPAN_KIND_INTERNAL,GetNewSpanId(),GetNewTraceId(), startTime);
+            return _rand.NextLong(long.MaxValue);
+        }
+
+        internal Span StartCustomSpan(string name, DateTimeOffset startTime)
+        {
+            return CreateSpan(name,SpanKind.SPAN_KIND_INTERNAL, startTime);
+        }
+
+        private Span CreateSpan(string name, SpanKind kind, DateTimeOffset startTime)
+        {
+            return new Span(name, kind, GetNewSpanId(), GetNewTraceId(), startTime, _tracer);
         }
     }
 }

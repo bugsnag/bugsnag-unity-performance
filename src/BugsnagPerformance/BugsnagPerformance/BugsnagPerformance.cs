@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BugsnagPerformance
+namespace BugsnagUnityPerformance
 {
     public class BugsnagPerformance
     {
@@ -9,15 +9,21 @@ namespace BugsnagPerformance
 
         private static bool _isStarted = false;
 
+        private static Tracer _tracer;
 
-        public static void Start(PerformanceConfiguration performanceConfiguration)
+        private static SpanFactory _spanFactory;
+
+
+        public static void Start(PerformanceConfiguration configuration)
         {
             if (_isStarted)
             {
                 // This will be replaced with a Unity warning log once the unity engine dlls are imported
                 throw new Exception("Already started");
             }
-            _configuration = performanceConfiguration;
+            _configuration = configuration;
+            _tracer = new Tracer(configuration);
+            _spanFactory = new SpanFactory(_tracer);
             _isStarted = true;
         }
 
@@ -28,7 +34,7 @@ namespace BugsnagPerformance
 
         public static Span StartSpan(string name, DateTimeOffset startTime)
         {
-            return SpanFactory.StartCustomSpan(name, startTime);
+            return _spanFactory.StartCustomSpan(name, startTime);
         }
     }
 }
