@@ -45,7 +45,7 @@ namespace BugsnagUnityPerformance
             {
                 req.SetRequestHeader("Bugsnag-Api-Key", _configuration.ApiKey);
                 req.SetRequestHeader("Content-Type", "application/json");
-                req.SetRequestHeader("Bugsnag-Integrity","sha1 " + Hash(body));
+                req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
                 req.method = UnityWebRequest.kHttpVerbPOST;
