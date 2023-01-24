@@ -1,0 +1,24 @@
+agents:
+  queue: macos-12-arm-unity
+
+steps:
+
+  #
+  # Build notifier.  We run tests for all Unity versions with the 2018 artifacts, as that is what we ship.
+  #
+  - label: Build released notifier artifact
+    timeout_in_minutes: 30
+    key: 'build-artifacts'
+    env:
+      UNITY_VERSION: "2018.4.36f1"
+    commands:
+      - bundle install
+      - bundle exec rake plugin:build:all
+    artifact_paths:
+      - BugsnagPerformance.unitypackage
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 1
+
+
