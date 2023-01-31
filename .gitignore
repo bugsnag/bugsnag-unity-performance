@@ -21,3 +21,5 @@ BugsnagPerformance.meta
 features/fixtures/mazerunner/.vs
 features/fixtures/mazerunner/obj
 features/fixtures/mazerunner/Temp
+GraphicsSettings.asset
+*.apk

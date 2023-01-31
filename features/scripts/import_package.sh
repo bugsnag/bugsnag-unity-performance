@@ -16,14 +16,14 @@ pushd "$script_path/../fixtures"
 
 # Run unity and immediately exit afterwards, log all output, disable the
 # package manager (we just don't need it and it slows things down)
-DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile unity.log"
-project_path=`pwd`/maze_runner
+DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile import_package.log"
+project_path=`pwd`/mazerunner
 
 # Installing the Bugsnag package
 echo "Importing BugsnagPerformance.unitypackage into $project_path"
 $UNITY_PATH/Unity $DEFAULT_CLI_ARGS \
                   -projectPath $project_path \
                   -ignoreCompilerErrors \
-                  -importPackage $script_path/../../Bugsnag.unitypackage
+                  -importPackage $script_path/../../BugsnagPerformance.unitypackage
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi

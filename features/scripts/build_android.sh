@@ -15,9 +15,9 @@ popd
 pushd "$script_path/../fixtures"
 
 # Run unity and immediately exit afterwards, log all output
-DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile unity.log"
+DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_android.log"
 
-project_path=`pwd`/maze_runner
+project_path=`pwd`/mazerunner
 
 # Build for Android
 
