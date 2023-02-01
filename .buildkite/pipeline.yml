@@ -22,7 +22,7 @@ steps:
           limit: 1
 
 
-- label: ':android: Build Android test fixture for Unity 2021'
+  - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: 'build-android-fixture-2021'
     depends_on: 'build-artifacts'
