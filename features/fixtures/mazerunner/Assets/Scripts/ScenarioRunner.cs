@@ -8,14 +8,8 @@ public class ScenarioRunner : MonoBehaviour
 
     public void RunScenario(string scenarioName, string apiKey, string host)
     {
-
         var scenario = GetScenario(scenarioName);
         scenario.PrepareConfig(apiKey, host);
-#if UNITY_SWITCH
-
-        GetSwitchArguments();
-        scenario.AddSwitchConfigValues(_switchCacheType, _switchCacheIndex, _switchCacheMountName);
-#endif
         scenario.StartBugsnag();
         scenario.Run();
     }
@@ -32,7 +26,7 @@ public class ScenarioRunner : MonoBehaviour
                 return scenario;
             }
         }
-
+        Main.Log("Scenario not found: " + scenarioName);
         throw new System.Exception("Scenario not found: " + scenarioName);
     }
 

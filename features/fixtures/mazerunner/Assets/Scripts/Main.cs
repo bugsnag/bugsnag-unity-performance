@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
+using TMPro;
 
 [Serializable]
 public class Command
@@ -15,21 +16,28 @@ public class Command
 public class Main : MonoBehaviour
 {
 
+    private static Main _instance;
+
 #if UNITY_IOS || UNITY_TVOS
     [DllImport("__Internal")]
     private static extern void ClearPersistentData();
 #endif
+
+    public TextMeshProUGUI DebugText;
 
     private const string API_KEY = "a35a2a72bd230ac0aa0f52715bbdc6aa";
     private string _mazeHost;
 
     public ScenarioRunner ScenarioRunner;
 
+    private void Awake()
+    {
+        _instance = this;
+    }
+
     public void Start()
     {
-        Debug.Log("Maze Runner app started");
-
-
+        Log("Maze Runner app started");
         _mazeHost = "http://localhost:9339";
 
         if (Application.platform == RuntimePlatform.IPhonePlayer ||
@@ -37,7 +45,6 @@ public class Main : MonoBehaviour
         {
             _mazeHost = "http://bs-local.com:9339";
         }
-
         InvokeRepeating("DoRunNextMazeCommand", 0, 1);
     }
 
@@ -49,7 +56,6 @@ public class Main : MonoBehaviour
     IEnumerator RunNextMazeCommand()
     {
         var url = _mazeHost + "/command";
-        Console.WriteLine("RunNextMazeCommand called, requesting command from: {0}", url);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
@@ -61,24 +67,19 @@ public class Main : MonoBehaviour
                 !request.isNetworkError;
 #endif
 
-            Console.WriteLine("result is " + result);
             if (result)
             {
                 var response = request.downloadHandler?.text;
-                Console.WriteLine("Raw response: " + response);
-                if (response == null || response == "null" || response == "No commands to provide")
+                if (response == null || response == "null" || response == "No commands to provide" || response.Contains("noop"))
                 {
-                    Console.WriteLine("No Maze Runner command to process at present");
+                    
                 }
                 else
                 {
                     var command = JsonUtility.FromJson<Command>(response);
                     if (command != null)
                     {
-                        Console.WriteLine("Received Maze Runner command:");
-                        Console.WriteLine("Action: " + command.action);
-                        Console.WriteLine("Scenario: " + command.scenarioName);
-
+                        Log("Got Action: " + command.action + " and scenario: " + command.scenarioName);
                         if ("clear_cache".Equals(command.action))
                         {
                             ClearUnityCache();
@@ -125,6 +126,13 @@ public class Main : MonoBehaviour
 #if UNITY_IOS
         ClearPersistentData();
 #endif
+    }
+
+    public static void Log(string msg)
+    {
+        _instance.DebugText.text += Environment.NewLine + msg;
+        Console.WriteLine(msg);
+        Debug.Log(msg);
     }
 
 }

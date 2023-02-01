@@ -13,7 +13,7 @@ public class Scenario : MonoBehaviour
     {
         Configuration = new PerformanceConfiguration(apiKey)
         {
-            Endpoint = host
+            Endpoint = host + "/traces"
         };
     }   
 
