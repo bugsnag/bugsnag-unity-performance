@@ -23,3 +23,7 @@ features/fixtures/mazerunner/obj
 features/fixtures/mazerunner/Temp
 GraphicsSettings.asset
 *.apk
+*.ipa
+features/fixtures/mazerunner/mazerunner_xcode
+features/fixtures/mazerunner/archive
+features/fixtures/mazerunner/output
