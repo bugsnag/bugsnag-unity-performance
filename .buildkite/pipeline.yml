@@ -98,7 +98,7 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - Bugsnag.unitypackage
+          - BugsnagPerformance.unitypackage
           - project_2021.tgz
         upload:
           - features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa
