@@ -82,7 +82,7 @@ steps:
           - project_2021.tgz
     commands:
       - rake test:ios:generate_xcode
-      - tar -zvcf project_2021.tgz features/fixtures/maze_runner/mazerunner_xcode
+      - tar -zvcf project_2021.tgz features/fixtures/mazerunner/mazerunner_xcode
     retry:
       automatic:
         - exit_status: "*"
@@ -101,10 +101,10 @@ steps:
           - Bugsnag.unitypackage
           - project_2021.tgz
         upload:
-          - features/fixtures/maze_runner/mazerunner_2021.3.13f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa
           - features/fixtures/unity.log
     commands:
-      - tar -zxf project_2021.tgz features/fixtures/maze_runner
+      - tar -zxf project_2021.tgz features/fixtures/mazerunner
       - rake test:ios:build_xcode
     retry:
       automatic:
