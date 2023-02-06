@@ -4,9 +4,9 @@ agents:
 steps:
 
   #
-  # Build notifier.  We run tests for all Unity versions with the 2018 artifacts, as that is what we ship.
+  # Build library.  We run tests for all Unity versions with the 2018 artifacts, as that is what we ship.
   #
-  - label: Build released notifier artifact
+  - label: Build released library artifact
     timeout_in_minutes: 30
     key: 'build-artifacts'
     env:
