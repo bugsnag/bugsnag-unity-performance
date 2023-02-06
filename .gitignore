@@ -15,3 +15,15 @@ TestResult.xml
 tools
 Gemfile.lock
 EditorSettings.asset
+features/fixtures/mazerunner/Library
+features/fixtures/mazerunner/Assets/BugsnagPerformance
+BugsnagPerformance.meta
+features/fixtures/mazerunner/.vs
+features/fixtures/mazerunner/obj
+features/fixtures/mazerunner/Temp
+GraphicsSettings.asset
+*.apk
+*.ipa
+features/fixtures/mazerunner/mazerunner_xcode
+features/fixtures/mazerunner/archive
+features/fixtures/mazerunner/output

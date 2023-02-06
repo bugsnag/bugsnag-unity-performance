@@ -1,0 +1,136 @@
+agents:
+  queue: macos-12-arm-unity
+
+steps:
+
+  #
+  # Build library.  We run tests for all Unity versions with the 2018 artifacts, as that is what we ship.
+  #
+  - label: Build released library artifact
+    timeout_in_minutes: 30
+    key: 'build-artifacts'
+    env:
+      UNITY_VERSION: "2018.4.36f1"
+    commands:
+      - bundle install
+      - bundle exec rake plugin:build:all
+    artifact_paths:
+      - BugsnagPerformance.unitypackage
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 1
+
+
+  - label: ':android: Build Android test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: 'build-android-fixture-2021'
+    depends_on: 'build-artifacts'
+    env:
+      UNITY_VERSION: "2021.3.13f1"
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - BugsnagPerformance.unitypackage
+        upload:
+          - features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk
+          - features/fixtures/import_package.log
+          - features/fixtures/build_android.log
+
+    commands:
+      - rake test:android:build
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 1
+
+  - label: ':android: Run Android e2e tests for Unity 2021'
+    timeout_in_minutes: 60
+    depends_on: 'build-android-fixture-2021'
+    agents:
+      queue: opensource
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
+        upload:
+          - "maze_output/**/*"
+      docker-compose#v3.7.0:
+        pull: maze-runner
+        run: maze-runner
+        command:
+          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
+          - "--farm=bs"
+          - "--device=ANDROID_11_0"
+          - "features"
+    concurrency: 24
+    concurrency_group: browserstack-app
+    concurrency_method: eager
+
+  - label: ':ios: Generate Xcode project - Unity 2021'
+    timeout_in_minutes: 30
+    key: 'generate-fixture-project-2021'
+    depends_on: 'build-artifacts'
+    env:
+      UNITY_VERSION: "2021.3.13f1"
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - BugsnagPerformance.unitypackage
+        upload:
+          - features/fixtures/generateXcodeProject.log
+          - project_2021.tgz
+    commands:
+      - rake test:ios:generate_xcode
+      - tar -zvcf project_2021.tgz features/fixtures/mazerunner/mazerunner_xcode
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 1
+
+  - label: ':ios: Build iOS test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: 'build-ios-fixture-2021'
+    depends_on: 'generate-fixture-project-2021'
+    env:
+      DEVELOPER_DIR: "/Applications/Xcode13.4.app"
+      UNITY_VERSION: "2021.3.13f1"
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - BugsnagPerformance.unitypackage
+          - project_2021.tgz
+        upload:
+          - features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa
+          - features/fixtures/unity.log
+    commands:
+      - tar -zxf project_2021.tgz features/fixtures/mazerunner
+      - rake test:ios:build_xcode
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 1
+
+  - label: ':ios: Run iOS e2e tests for Unity 2021'
+    timeout_in_minutes: 60
+    depends_on: 'build-ios-fixture-2021'
+    agents:
+      queue: opensource
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
+        upload:
+          - "maze_output/**/*"
+      docker-compose#v3.7.0:
+        pull: maze-runner
+        run: maze-runner
+        command:
+          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
+          - "--farm=bs"
+          - "--device=IOS_15"
+          - "--fail-fast"
+          - "features"
+    concurrency: 24
+    concurrency_group: browserstack-app
+    concurrency_method: eager

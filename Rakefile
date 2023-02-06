@@ -130,4 +130,61 @@ namespace :plugin do
   end
 end
 
+namespace :test do
+  
+  namespace :android do
+    task :build do
+      # Check that a Unity version has been selected and the path exists before calling the build script
+      unity_path, unity = get_required_unity_paths
 
+      # Prepare the test fixture project by importing the plugins
+      env = { "UNITY_PATH" => File.dirname(unity) }
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system env, script
+        raise 'import package failed'
+      end
+
+      # Build the Android APK
+      script = File.join("features", "scripts", "build_android.sh")
+      unless system env, script
+        raise 'Android APK build failed'
+      end
+    end
+  end
+
+  namespace :ios do
+    task :generate_xcode do
+      # Check that a Unity version has been selected and the path exists before calling the build script
+      unity_path, unity = get_required_unity_paths
+
+      # Prepare the test fixture project by importing the plugins
+      env = { "UNITY_PATH" => File.dirname(unity) }
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system env, script
+        raise 'import_package failed'
+      end
+
+      # Generate the Xcode project
+      cd "features" do
+        script = File.join("scripts", "generate_xcode_project.sh")
+        unless system env, script
+          raise 'generate_xcode_project failed'
+        end
+      end
+    end
+
+    task :build_xcode do
+      # Build and archive from the Xcode project
+      cd "features" do
+        script = File.join("scripts", "build_ios.sh")
+        unless system script
+          raise 'IPA build failed'
+        end
+      end
+    end
+
+    task build: %w[test:ios:generate_xcode test:ios:build_xcode] do
+    end
+  end
+
+end
