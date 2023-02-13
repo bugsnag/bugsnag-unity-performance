@@ -24,7 +24,7 @@ namespace BugsnagUnityPerformance
             {
                 new AttributeModel()
                 {
-                    key = "bugsnag.span_category",
+                    key = "bugsnag.span.category",
                     value = new AttributeStringValueModel("app_start")
                 }
             };
