@@ -18,17 +18,24 @@ namespace BugsnagUnityPerformance
 
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
 
+        private static object _startLock = new object();
+
+        private static object _startSpanLock = new object();
+
 
         public static void Start(PerformanceConfiguration configuration)
         {
-            if (IsStarted)
+            lock (_startLock)
             {
-                LogAlreadyStartedWarning();
-                return;
+                if (IsStarted)
+                {
+                    LogAlreadyStartedWarning();
+                    return;
+                }
+                Configuration = configuration;
+                Delivery = new Delivery();
+                IsStarted = true;
             }
-            Configuration = configuration;
-            Delivery = new Delivery();
-            IsStarted = true;
         }
 
         private static void LogAlreadyStartedWarning()
@@ -49,11 +56,14 @@ namespace BugsnagUnityPerformance
 
         public static Span StartSpan(string name, DateTimeOffset startTime)
         {
-            if (Tracer == null)
+            lock (_startSpanLock)
             {
-                InitialiseComponents();
+                if (Tracer == null)
+                {
+                    InitialiseComponents();
+                }
+                return SpanFactory.StartCustomSpan(name, startTime);
             }
-            return SpanFactory.StartCustomSpan(name, startTime);
         }
     }
 }
