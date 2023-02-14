@@ -23,7 +23,7 @@ Task("Build")
 Task("Test")
   .IsDependentOn("Build")
   .Does(() => {
-    var assemblies = GetFiles("src/BugsnagPerformance/BugsnagPerformance.Tests/bin/Release/BugsnagPerformance.Tests.dll");
+    var assemblies = GetFiles("unitTests/BugsnagPerformance.Tests/bin/Release/BugsnagPerformance.Tests.dll");
     NUnit3(assemblies);
   });
 

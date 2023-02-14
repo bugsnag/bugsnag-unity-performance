@@ -10,19 +10,13 @@ namespace BugsnagUnityPerformance
     internal class Delivery
     {
 
-        private PerformanceConfiguration _configuration;
-
-        internal Delivery(PerformanceConfiguration performanceConfiguration)
-        {
-            _configuration = performanceConfiguration;
-        }
+        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
 
         public void Deliver(TracePayload payload)
         {
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
-        // Push to the server and handle the result
         IEnumerator PushToServer(TracePayload payload)
         {
             byte[] body = null;           

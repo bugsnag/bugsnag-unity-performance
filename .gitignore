@@ -27,3 +27,7 @@ GraphicsSettings.asset
 features/fixtures/mazerunner/mazerunner_xcode
 features/fixtures/mazerunner/archive
 features/fixtures/mazerunner/output
+unitTests/BugsnagPerformance.Tests/bin
+unitTests/BugsnagPerformance.Tests/obj
+unitTests/UnityEngine/bin
+unitTests/UnityEngine/obj
