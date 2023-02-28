@@ -1,4 +1,6 @@
-﻿namespace BugsnagUnityPerformance
+﻿using UnityEngine;
+
+namespace BugsnagUnityPerformance
 {
     public class PerformanceConfiguration
     {
@@ -25,6 +27,8 @@
         }
 
         public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
+
+        public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
 
         public PerformanceConfiguration(string apiKey)
         {
