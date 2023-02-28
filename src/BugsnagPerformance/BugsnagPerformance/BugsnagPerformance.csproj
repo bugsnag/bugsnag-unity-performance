@@ -49,6 +49,7 @@
     <Compile Include="Internal\RandomExtensionMethods.cs" />
     <Compile Include="Models\AttributeModel.cs" />
     <Compile Include="Models\AttributeValueModel.cs" />
+    <Compile Include="Models\ResourceModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />

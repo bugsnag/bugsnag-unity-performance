@@ -31,3 +31,5 @@ unitTests/BugsnagPerformance.Tests/bin
 unitTests/BugsnagPerformance.Tests/obj
 unitTests/UnityEngine/bin
 unitTests/UnityEngine/obj
+example/Assets/BugsnagPerformance
+packages-lock.json

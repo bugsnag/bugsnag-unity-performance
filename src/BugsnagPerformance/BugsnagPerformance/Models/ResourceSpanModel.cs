@@ -6,6 +6,8 @@ namespace BugsnagUnityPerformance
     {
         public ScopeSpanModel[] scopeSpans;
 
+        public ResourceModel resource;
+
         public ResourceSpanModel(ScopeSpanModel[] scopeSpans)
         {
             this.scopeSpans = scopeSpans;
