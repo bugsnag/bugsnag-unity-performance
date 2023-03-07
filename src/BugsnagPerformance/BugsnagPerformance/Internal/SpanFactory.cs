@@ -5,8 +5,6 @@ namespace BugsnagUnityPerformance
     internal class SpanFactory
     {
 
-        private Random _rand = new Random();
-
         private Tracer _tracer;
 
         internal SpanFactory(Tracer tracer)
@@ -19,9 +17,10 @@ namespace BugsnagUnityPerformance
             return Guid.NewGuid().ToString();
         }
 
-        private long GetNewSpanId()
+        private string GetNewSpanId()
         {
-            return _rand.NextLong(long.MaxValue);
+            var newId = Guid.NewGuid().ToString().Replace("-",string.Empty);
+            return newId.Substring(0,16);
         }
 
         internal Span StartCustomSpan(string name, DateTimeOffset startTime)

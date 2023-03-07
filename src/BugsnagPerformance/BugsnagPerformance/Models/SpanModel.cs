@@ -16,7 +16,7 @@ namespace BugsnagUnityPerformance
         {
             name = span.Name;
             kind = (int)span.Kind;
-            spanId = span.Id.ToString("x");
+            spanId = span.Id;
             traceId = span.TraceId.Replace("-",string.Empty);
             startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
             endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
