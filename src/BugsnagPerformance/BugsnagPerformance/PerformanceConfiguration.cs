@@ -5,6 +5,14 @@ namespace BugsnagUnityPerformance
     public class PerformanceConfiguration
     {
 
+        //Internal config
+
+        internal static int MaxBatchSize = 100;
+        internal static float MaxBatchAgeSeconds = 30f;
+
+
+        //Public config
+
         private string _apiKey;
 
         public string ApiKey

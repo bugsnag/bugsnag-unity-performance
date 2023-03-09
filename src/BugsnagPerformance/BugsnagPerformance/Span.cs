@@ -12,6 +12,7 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset StartTime { get; }
         public DateTimeOffset EndTime { get; private set; }
         private Tracer _tracer;
+        private bool _ended;
 
         internal Span(string name, SpanKind kind, string id, string traceId, DateTimeOffset startTime, Tracer tracer)
         {
@@ -25,6 +26,11 @@ namespace BugsnagUnityPerformance
 
         public void End()
         {
+            if (_ended)
+            {
+                return;
+            }
+            _ended = true;
             EndTime = DateTimeOffset.Now;
             _tracer.OnSpanEnd(this);
         }

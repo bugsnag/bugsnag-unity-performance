@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using BugsnagUnityPerformance;
 using UnityEngine;
 
@@ -7,8 +9,6 @@ public class ExampleManager : MonoBehaviour
     public string ApiKey;
     public string Endpoint;
     public string ReleaseStage;
-
-    private Span _span;
 
     void Start()
     {
@@ -22,13 +22,26 @@ public class ExampleManager : MonoBehaviour
             config.ReleaseStage = ReleaseStage;
         }
         BugsnagPerformance.Start(config);
-        _span = BugsnagPerformance.StartSpan("test");
-        Invoke("EndSpan",1);
     }
 
-    private void EndSpan()
+    public void DoSpan()
     {
-        _span.End();
+        StartCoroutine(SpanRoutine());
     }
-  
+
+    public void DoManySpans()
+    {
+        for (int i = 0; i < 110; i++)
+        {
+            StartCoroutine(SpanRoutine());
+        }
+    }
+
+    private IEnumerator SpanRoutine()
+    {
+        var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
+        yield return new WaitForSeconds(0.1f);
+        span.End();
+    }
+
 }

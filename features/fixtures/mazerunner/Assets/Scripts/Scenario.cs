@@ -3,6 +3,7 @@ using UnityEngine;
 
 using System;
 using BugsnagUnityPerformance;
+using System.Reflection;
 
 public class Scenario : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Scenario : MonoBehaviour
         {
             Endpoint = host + "/traces"
         };
-    }   
+    }
 
     public virtual void StartBugsnag()
     {
@@ -25,6 +26,18 @@ public class Scenario : MonoBehaviour
     public virtual void Run()
     {
 
+    }
+
+    public void SetMaxBatchSize(int size)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchSize", BindingFlags.Static | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, size);
+    }
+
+    public void SetMaxBatchAgeSeconds(float seconds)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, seconds);
     }
 
 }

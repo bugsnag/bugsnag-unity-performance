@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -12,8 +13,9 @@ namespace BugsnagUnityPerformance
 
         private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
 
-        public void Deliver(TracePayload payload)
+        public void Deliver(List<Span> batch)
         {
+            var payload = new TracePayload(batch);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 

@@ -9,6 +9,7 @@ public class CustomReleaseStage : Scenario
     {
         base.PrepareConfig(apiKey, host);
         Configuration.ReleaseStage = "CustomReleaseStage";
+        SetMaxBatchAgeSeconds(1);
     }
 
     public override void Run()
