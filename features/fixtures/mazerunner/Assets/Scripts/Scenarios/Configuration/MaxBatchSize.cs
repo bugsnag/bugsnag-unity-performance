@@ -15,8 +15,14 @@ public class MaxBatchSize : Scenario
     {
         for (int i = 0; i < 3; i++)
         {
-            var span = BugsnagPerformance.StartSpan(i.ToString());
-            span.End();
+            StartCoroutine(DoSpan(i));
         }
+    }
+
+    private IEnumerator DoSpan(int index)
+    {
+        var span = BugsnagPerformance.StartSpan("Span " + index);
+        yield return new WaitForSeconds(0.25f);
+        span.End();
     }
 }
