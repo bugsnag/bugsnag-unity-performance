@@ -11,7 +11,7 @@ namespace BugsnagUnityPerformance
 
         private List<Span> _spanQueue = new List<Span>();
 
-        private object _addToQueueLock = new object();
+        private object _queueLock = new object();
 
         private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
@@ -48,7 +48,7 @@ namespace BugsnagUnityPerformance
 
         private void AddSpanToQueue(Span span)
         {
-            lock (_addToQueueLock)
+            lock (_queueLock)
             {
                 _spanQueue.Add(span);
             }
@@ -94,7 +94,10 @@ namespace BugsnagUnityPerformance
             }
             foreach (var span in batch)
             {
-                _spanQueue.Remove(span);
+                lock (_queueLock)
+                {
+                    _spanQueue.Remove(span);
+                }
             }
             return batch;
         }
