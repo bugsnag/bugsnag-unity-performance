@@ -16,10 +16,6 @@ public class MaxBatchSize : Scenario
         for (int i = 0; i < 3; i++)
         {
             var span = BugsnagPerformance.StartSpan(i.ToString());
-            for (int x = 0; x < 1000; x++)
-            {
-                var f = Random.Range(0f, 1000f) / Random.Range(0f, 1000f);
-            }
             span.End();
         }
     }
