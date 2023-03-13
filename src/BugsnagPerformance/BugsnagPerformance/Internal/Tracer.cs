@@ -17,7 +17,6 @@ namespace BugsnagUnityPerformance
 
         private DateTimeOffset _lastBatchSendTime = DateTimeOffset.Now;        
 
- 
 
         public Tracer()
         {
@@ -35,7 +34,10 @@ namespace BugsnagUnityPerformance
         {
             while (true)
             {
-                ProcessQueue();
+                if (BatchDue())
+                {
+                    DeliverBatch();
+                }
                 yield return _workerPollFrequency;
             }
         }
@@ -52,15 +54,19 @@ namespace BugsnagUnityPerformance
             {
                 _spanQueue.Add(span);
             }
+            if (BatchSizeLimitReached())
+            {
+                DeliverBatch();
+            }
         }   
        
-        private void ProcessQueue()
+        private void DeliverBatch()
         {
             new Thread(()=>
             {
-                if (ShouldCreateBatch())
+                lock (_queueLock)
                 {
-                    var batch = GetBatch();
+                    var batch = _spanQueue;
                     if (BugsnagPerformance.IsStarted)
                     {
                         _lastBatchSendTime = DateTimeOffset.Now;
@@ -68,38 +74,24 @@ namespace BugsnagUnityPerformance
                     }
                     else
                     {
-                        //TODO persist for later delivery
+                        //TODO persist batch for later delivery
                     }
+                    _spanQueue = new List<Span>();
                 }
             }).Start();
         }
 
-        private bool ShouldCreateBatch()
+        private bool BatchSizeLimitReached()
         {
-            if (_spanQueue.Count == 0)
+            lock (_queueLock)
             {
-                return false;
+                return _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
             }
-            var batchDue = (DateTimeOffset.Now - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
-            var queueFull = _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
-            return batchDue || queueFull;
         }
 
-        private List<Span> GetBatch()
+        private bool BatchDue()
         {
-            var batch = new List<Span>();
-            foreach (var span in _spanQueue)
-            {
-                batch.Add(span);
-            }
-            foreach (var span in batch)
-            {
-                lock (_queueLock)
-                {
-                    _spanQueue.Remove(span);
-                }
-            }
-            return batch;
+            return (DateTimeOffset.Now - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
         }
 
     }
