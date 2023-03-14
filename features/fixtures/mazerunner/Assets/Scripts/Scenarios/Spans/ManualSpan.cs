@@ -8,6 +8,12 @@ public class ManualSpan : Scenario
 
     private Span _span;
 
+    public override void PrepareConfig(string apiKey, string host)
+    {
+        base.PrepareConfig(apiKey, host);
+        SetMaxBatchAgeSeconds(1);
+    }
+
     public override void Run()
     {
         base.Run();

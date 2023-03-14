@@ -1,22 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 namespace BugsnagUnityPerformance
 {
     internal class TracePayload
     {
-        private Span _span;
+        private List<SpanModel> _spans = new List<SpanModel>();
 
-        public TracePayload(Span span)
+        public TracePayload(List<Span> spans)
         {
-            _span = span;
+            foreach (var span in spans)
+            {
+                _spans.Add(new SpanModel(span));
+            }
         }
 
         public byte[] GetBody()
         {
-            // This body construction seems strange now but will make more sense once attributes and resources are fleshed out
-            var spans = new SpanModel[] { new SpanModel(_span) };
-            var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(spans) };
+            var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
             var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(scopeSpans) };
             var serialiseablePayload = new TracePayloadBody()
             {
