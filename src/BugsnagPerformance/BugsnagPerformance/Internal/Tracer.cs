@@ -26,7 +26,7 @@ namespace BugsnagUnityPerformance
             }
             catch
             {
-                //Not possible in unit tests
+                //Ignore this exception in unit tests, will not be an issue in a build
             }
         }
 
@@ -50,11 +50,13 @@ namespace BugsnagUnityPerformance
 
         private void AddSpanToQueue(Span span)
         {
+            var deliverBatch = false;
             lock (_queueLock)
             {
                 _spanQueue.Add(span);
+                deliverBatch = BatchSizeLimitReached();
             }
-            if (BatchSizeLimitReached())
+            if (deliverBatch)
             {
                 DeliverBatch();
             }
@@ -64,29 +66,27 @@ namespace BugsnagUnityPerformance
         {
             new Thread(()=>
             {
+                List<Span> batch = null;
                 lock (_queueLock)
                 {
-                    var batch = _spanQueue;
-                    if (BugsnagPerformance.IsStarted)
-                    {
-                        _lastBatchSendTime = DateTimeOffset.Now;
-                        BugsnagPerformance.Delivery.Deliver(batch);
-                    }
-                    else
-                    {
-                        //TODO persist batch for later delivery
-                    }
+                    batch = _spanQueue;
                     _spanQueue = new List<Span>();
                 }
+                if (BugsnagPerformance.IsStarted)
+                {
+                    _lastBatchSendTime = DateTimeOffset.Now;
+                    BugsnagPerformance.Delivery.Deliver(batch);
+                }
+                else
+                {
+                    //TODO persist batch for later delivery
+                }                
             }).Start();
         }
 
         private bool BatchSizeLimitReached()
         {
-            lock (_queueLock)
-            {
-                return _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
-            }
+            return _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
         }
 
         private bool BatchDue()

@@ -35,9 +35,9 @@ namespace BugsnagUnityPerformance
                     return;
                 }
                 _ended = true;
-                EndTime = DateTimeOffset.Now;
-                _tracer.OnSpanEnd(this);
             }
+            EndTime = DateTimeOffset.Now;
+            _tracer.OnSpanEnd(this);
         }
 
     }
