@@ -9,7 +9,7 @@ namespace BugsnagUnityPerformance
 
         internal static int MaxBatchSize = 100;
         internal static float MaxBatchAgeSeconds = 30f;
-
+        internal static int MaxPersistedBatchAgeHours = 24;
 
         //Public config
 

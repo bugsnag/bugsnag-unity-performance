@@ -11,7 +11,7 @@ namespace BugsnagUnityPerformance
     internal class Delivery
     {
 
-        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
+        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;        
 
         public void Deliver(List<Span> batch)
         {
@@ -25,13 +25,13 @@ namespace BugsnagUnityPerformance
             // There is no threading on webgl, so we treat the payload differently
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
-                body = payload.GetBody();
+                body = Encoding.ASCII.GetBytes(payload.GetJsonBody());
             }
             else
             {
                 var bodyReady = false;
                 new Thread(() => {
-                    body = payload.GetBody();
+                    body = Encoding.ASCII.GetBytes(payload.GetJsonBody());
                     bodyReady = true;
                 }).Start();
                 yield return new WaitUntil(() => bodyReady);
@@ -52,16 +52,33 @@ namespace BugsnagUnityPerformance
                 if (code == 200 || code == 202)
                 {
                     // success!
+                    PayloadSendSuccess(payload.PayloadId);
+                    FlushCache();
                 }
                 else if (code == 0 || code == 408 || code == 429 || code >= 500)
                 {
-                    // sending failed with no network or retryable error
+                    // sending failed with retryable error, cache for later retry
+                    CacheManager.CacheBatch(payload);
                 }
                 else
                 {
                     // sending failed with an unacceptable status code or network error
+                    // do nothing
                 }
             }
+        }
+
+        public void FlushCache()
+        {
+            foreach (var payload in CacheManager.GetCachedBatchesForDelivery())
+            {
+                MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
+            }
+        }
+
+        private void PayloadSendSuccess(string id)
+        {
+            CacheManager.RemoveCachedBatch(id);
         }
 
         private string Hash(byte[] input)
