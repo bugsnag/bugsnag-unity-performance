@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -10,15 +11,10 @@ namespace BugsnagUnityPerformance
 
         private static string _cacheDirectory
         {
-            get { return Application.persistentDataPath + "/Bugsnag"; }
+            get { return Application.persistentDataPath + "/bugsnag-performance/v1"; }
         }
 
-        private static string _spanBatchesDirectory
-        {
-            get { return _cacheDirectory + "/SpanBatches"; }
-        }
-
-        private const string BATCH_FILE_SUFFIX = ".batch";
+        private const string BATCH_FILE_SUFFIX = ".json";
 
 
         public static void CacheBatch(TracePayload payload)
@@ -31,7 +27,7 @@ namespace BugsnagUnityPerformance
                     return;
                 }
             }
-            var newPath = _spanBatchesDirectory + "/" + payload.PayloadId + BATCH_FILE_SUFFIX;
+            var newPath = _cacheDirectory + "/" + payload.PayloadId + BATCH_FILE_SUFFIX;
             WriteFile(newPath, payload.GetJsonBody());
         }
 
@@ -65,7 +61,6 @@ namespace BugsnagUnityPerformance
         private static void DoFileSystemChecks()
         {
             CheckForDirectoryCreation();
-            RemoveExpiredPayloads();
         }
 
         private static void RemoveExpiredPayloads()
@@ -118,9 +113,10 @@ namespace BugsnagUnityPerformance
 
         private static string[] GetCachedBatchPaths()
         {
-            if (Directory.Exists(_spanBatchesDirectory))
+            if (Directory.Exists(_cacheDirectory))
             {
-                return Directory.GetFiles(_spanBatchesDirectory, "*" + BATCH_FILE_SUFFIX);
+                var filePaths = Directory.GetFiles(_cacheDirectory, "*" + BATCH_FILE_SUFFIX);
+                return filePaths.OrderBy(file => File.GetCreationTimeUtc(file)).ToArray();
             }
             return new string[] { };
         }
@@ -132,10 +128,6 @@ namespace BugsnagUnityPerformance
                 if (!Directory.Exists(_cacheDirectory))
                 {
                     Directory.CreateDirectory(_cacheDirectory);
-                }
-                if (!Directory.Exists(_spanBatchesDirectory))
-                {
-                    Directory.CreateDirectory(_spanBatchesDirectory);
                 }
             }
             catch

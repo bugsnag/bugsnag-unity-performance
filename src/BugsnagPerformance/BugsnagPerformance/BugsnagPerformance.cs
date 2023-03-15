@@ -34,7 +34,9 @@ namespace BugsnagUnityPerformance
                 }
                 Configuration = configuration;
                 Delivery = new Delivery();
+                Delivery.FlushCache();
                 IsStarted = true;
+                
             }
         }
 

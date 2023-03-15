@@ -11,7 +11,9 @@ namespace BugsnagUnityPerformance
     internal class Delivery
     {
 
-        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;        
+        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
+
+        private bool _flushingCache;
 
         public void Deliver(List<Span> batch)
         {
@@ -70,10 +72,23 @@ namespace BugsnagUnityPerformance
 
         public void FlushCache()
         {
-            foreach (var payload in CacheManager.GetCachedBatchesForDelivery())
+            if (_flushingCache)
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
+                return;
             }
+            _flushingCache = true;
+            MainThreadDispatchBehaviour.Instance().Enqueue(DoFlushCache());
+        }
+
+        private IEnumerator DoFlushCache()
+        {
+            var payloads = CacheManager.GetCachedBatchesForDelivery();
+            foreach (var payload in payloads)
+            {
+                //Process one batch at a time to save on performance costs of web requests
+                yield return PushToServer(payload);
+            }
+            _flushingCache = false;
         }
 
         private void PayloadSendSuccess(string id)
