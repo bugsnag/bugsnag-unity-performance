@@ -76,10 +76,7 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
+                File.Delete(path);
             }
             catch
             {
@@ -91,10 +88,7 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                if (!Directory.Exists(_cacheDirectory))
-                {
-                    Directory.CreateDirectory(_cacheDirectory);
-                }
+                Directory.CreateDirectory(_cacheDirectory);
                 File.WriteAllText(path, data);
             }
             catch { }
