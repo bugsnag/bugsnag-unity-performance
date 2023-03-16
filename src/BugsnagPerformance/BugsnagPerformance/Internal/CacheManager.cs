@@ -58,11 +58,6 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static void DoFileSystemChecks()
-        {
-            CheckForDirectoryCreation();
-        }
-
         private static void RemoveExpiredPayloads()
         {
             var paths = GetCachedBatchPaths();
@@ -79,19 +74,27 @@ namespace BugsnagUnityPerformance
 
         private static void DeleteFile(string path)
         {
-            DoFileSystemChecks();
             try
             {
-                File.Delete(path);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
             }
-            catch { }
+            catch
+            {
+                // Filesystem integrity never 100% reliable, ignore any errors that may occur
+            }
         }
 
         private static void WriteFile(string path, string data)
         {
-            DoFileSystemChecks();
             try
             {
+                if (!Directory.Exists(_cacheDirectory))
+                {
+                    Directory.CreateDirectory(_cacheDirectory);
+                }
                 File.WriteAllText(path, data);
             }
             catch { }
@@ -99,7 +102,6 @@ namespace BugsnagUnityPerformance
 
         private static string GetJsonFromCachePath(string path)
         {
-            DoFileSystemChecks();
             try
             {
                 if (File.Exists(path))
@@ -121,21 +123,7 @@ namespace BugsnagUnityPerformance
             return new string[] { };
         }
 
-        private static void CheckForDirectoryCreation()
-        {
-            try
-            {
-                if (!Directory.Exists(_cacheDirectory))
-                {
-                    Directory.CreateDirectory(_cacheDirectory);
-                }
-            }
-            catch
-            {
-                //not possible in unit tests
-            }
-
-        }
+       
 
     }
 }
