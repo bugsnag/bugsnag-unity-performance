@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\ScenarioRunner.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Configuration\CustomReleaseStage.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Configuration\MaxBatchSize.cs" />
+    <Compile Include="Assets\Scripts\Scenarios\Persistence\MaxBatchAge.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Persistence\PersistTrace.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Spans\ManualSpan.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Util\StartSDK.cs" />

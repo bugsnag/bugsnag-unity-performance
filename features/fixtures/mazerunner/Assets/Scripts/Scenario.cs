@@ -43,6 +43,12 @@ public class Scenario : MonoBehaviour
         fieldInfo.SetValue(Configuration, size);
     }
 
+    public void SetMaxPersistedBatchAgeSeconds(int seconds)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxPersistedBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, seconds);
+    }
+
     public void SetMaxBatchAgeSeconds(float seconds)
     {
         var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);

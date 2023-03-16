@@ -70,7 +70,7 @@ namespace BugsnagUnityPerformance
             {
                 var creationTime = File.GetCreationTimeUtc(path);
                 var timeSinceCreation = DateTimeOffset.UtcNow - creationTime;
-                if (timeSinceCreation.TotalHours > PerformanceConfiguration.MaxPersistedBatchAgeHours)
+                if (timeSinceCreation.TotalSeconds > PerformanceConfiguration.MaxPersistedBatchAgeSeconds)
                 {
                     DeleteFile(path);
                 }
