@@ -86,6 +86,15 @@ When('I run the game in the {string} state') do |state|
   end
 end
 
+When('I wait for requests to persist') do
+  sleep 2
+end
+
+When('I relaunch the app') do
+  Maze.driver.launch_app
+  sleep 3
+end
+
 When('I close the Unity app') do
   execute_command('close_application')
 end

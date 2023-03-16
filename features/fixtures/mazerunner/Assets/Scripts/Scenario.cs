@@ -28,10 +28,25 @@ public class Scenario : MonoBehaviour
 
     }
 
+    public void DoMultipleSpans(int num)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            var span = BugsnagPerformance.StartSpan("Span: " + i + 1);
+            span.End();
+        }
+    }
+
     public void SetMaxBatchSize(int size)
     {
         var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchSize", BindingFlags.Static | BindingFlags.NonPublic);
         fieldInfo.SetValue(Configuration, size);
+    }
+
+    public void SetMaxPersistedBatchAgeSeconds(int seconds)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxPersistedBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, seconds);
     }
 
     public void SetMaxBatchAgeSeconds(float seconds)

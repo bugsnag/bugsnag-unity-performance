@@ -69,6 +69,10 @@ namespace BugsnagUnityPerformance
                 List<Span> batch = null;
                 lock (_queueLock)
                 {
+                    if (_spanQueue.Count == 0)
+                    {
+                        return;
+                    }
                     batch = _spanQueue;
                     _spanQueue = new List<Span>();
                 }

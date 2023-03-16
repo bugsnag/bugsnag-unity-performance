@@ -69,7 +69,10 @@
     <Compile Include="Assets\Scripts\ScenarioRunner.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Configuration\CustomReleaseStage.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Configuration\MaxBatchSize.cs" />
+    <Compile Include="Assets\Scripts\Scenarios\Persistence\MaxBatchAge.cs" />
+    <Compile Include="Assets\Scripts\Scenarios\Persistence\PersistTrace.cs" />
     <Compile Include="Assets\Scripts\Scenarios\Spans\ManualSpan.cs" />
+    <Compile Include="Assets\Scripts\Scenarios\Util\StartSDK.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />

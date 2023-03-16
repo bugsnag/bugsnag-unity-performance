@@ -6,27 +6,42 @@ namespace BugsnagUnityPerformance
 {
     internal class TracePayload
     {
+
+
+        public string PayloadId;
+
         private List<SpanModel> _spans = new List<SpanModel>();
+
+        private string _jsonbody;
 
         public TracePayload(List<Span> spans)
         {
+            PayloadId = Guid.NewGuid().ToString();
             foreach (var span in spans)
             {
                 _spans.Add(new SpanModel(span));
             }
         }
 
-        public byte[] GetBody()
+        public TracePayload(string cachedJson, string payloadId)
         {
-            var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
-            var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(scopeSpans) };
-            var serialiseablePayload = new TracePayloadBody()
+            PayloadId = payloadId;
+            _jsonbody = cachedJson;
+        }
+
+        public string GetJsonBody()
+        {
+            if (string.IsNullOrEmpty(_jsonbody))
             {
-                resourceSpans = resourceSpans
-            };
-            var json = JsonUtility.ToJson(serialiseablePayload);
-            var bytes = Encoding.ASCII.GetBytes(json);
-            return bytes;
+                var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
+                var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(scopeSpans) };
+                var serialiseablePayload = new TracePayloadBody()
+                {
+                    resourceSpans = resourceSpans
+                };
+                _jsonbody = JsonUtility.ToJson(serialiseablePayload);
+            }            
+            return _jsonbody;
         }
 
     }
