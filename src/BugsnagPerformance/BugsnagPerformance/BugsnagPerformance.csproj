@@ -51,6 +51,7 @@
     <Compile Include="Models\AttributeValueModel.cs" />
     <Compile Include="Models\ResourceModel.cs" />
     <Compile Include="Internal\CacheManager.cs" />
+    <Compile Include="Internal\Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Enums\" />

@@ -8,8 +8,6 @@ namespace BugsnagUnityPerformance
     internal class ResourceModel
     {
 
-        private const string VERSION = "SET_VERSION";
-
         private static AttributeModel[] _resourceData;
 
         public AttributeModel[] attributes;
@@ -29,7 +27,7 @@ namespace BugsnagUnityPerformance
 
                     CreateStringAttribute("telemetry.sdk.name", "bugsnag.performance.unity"),
 
-                    CreateStringAttribute("telemetry.sdk.version", VERSION), //TODO
+                    CreateStringAttribute("telemetry.sdk.version", Version.VersionString),
 
                     CreateStringAttribute("os.version", Environment.OSVersion.VersionString),
 
@@ -38,8 +36,6 @@ namespace BugsnagUnityPerformance
                     CreateStringAttribute("device.model.identifier", SystemInfo.deviceModel),
 
                     CreateStringAttribute("service.version", Application.version),
-
-                    CreateStringAttribute("device.model.identifier", SystemInfo.deviceModel),
 
                     CreateStringAttribute("bugsnag.app.platform", GetPlatform()),
 

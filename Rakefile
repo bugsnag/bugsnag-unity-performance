@@ -105,11 +105,6 @@ namespace :plugin do
       # remove any leftover artifacts from the package generation directory
       sh "git", "clean", "-dfx", "package-project"      
     end
-
-    desc "Copy uncompiled unity assets to packaging project"
-    task :assets do
-     # cp_r File.join(current_directory, "src", "Assets"), project_path, preserve: true
-    end
     
     desc "Compile and copy csharp lib dlls to packaging project"
     task :csharp do
