@@ -14,8 +14,37 @@ namespace BugsnagUnityPerformance
             get { return Application.persistentDataPath + "/bugsnag-performance/v1"; }
         }
 
+        private static string _deviceidFilePath
+        {
+            get { return Application.persistentDataPath + "/Bugsnag/deviceId.txt"; }
+        }
+
         private const string BATCH_FILE_SUFFIX = ".json";
 
+
+        public static string GetDeviceId()
+        {
+            try
+            {
+                if (File.Exists(_deviceidFilePath))
+                {
+                    // return existing cached device id
+                    return File.ReadAllText(_deviceidFilePath);
+                }
+
+                // create and cache new random device id
+                var newDeviceId = Guid.NewGuid().ToString();
+                WriteFile(_deviceidFilePath, _deviceidFilePath);
+                return newDeviceId;
+            }
+            catch
+            {
+                // not possible in unit tests
+                return string.Empty;
+            }
+        }
+
+        
 
         public static void CacheBatch(TracePayload payload)
         {
