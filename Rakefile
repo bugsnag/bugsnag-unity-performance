@@ -98,7 +98,7 @@ end
 namespace :plugin do
   namespace :build do
 
-    task all: [:clean, :assets, :csharp, :export]
+    task all: [:clean, :csharp, :export]
 
     desc "Delete all build artifacts"
     task :clean do
