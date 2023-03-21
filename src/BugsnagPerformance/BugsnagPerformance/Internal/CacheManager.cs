@@ -14,6 +14,7 @@ namespace BugsnagUnityPerformance
             get { return Application.persistentDataPath + "/bugsnag-performance/v1"; }
         }
 
+        // Must be set to this path to share with the bugsnag unity notifier
         private static string _deviceidFilePath
         {
             get { return Application.persistentDataPath + "/Bugsnag/deviceId.txt"; }
