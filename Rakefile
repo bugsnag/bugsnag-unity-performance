@@ -12,11 +12,11 @@ HOST_OS = RbConfig::CONFIG['host_os']
 def unity_directory
 
   if ENV.has_key? 'UNITY_PERFORMANCE_VERSION'
-    "/Applications/Unity/Hub/Editor/#{ENV['UNITY_VERSION']}"
+    "/Applications/Unity/Hub/Editor/#{ENV['UNITY_PERFORMANCE_VERSION']}"
   elsif ENV.has_key? "UNITY_DIR"
     ENV["UNITY_DIR"]
   else
-    raise 'No unity directory set - use $UNITY_DIR or $UNITY_VERSION'
+    raise 'No unity directory set - use $UNITY_DIR or $UNITY_PERFORMANCE_VERSION'
   end
 end
 
@@ -32,11 +32,6 @@ def unity_executable dir=unity_directory
   end
 end
 
-def unity_dll_location
-  [File.join(unity_directory, "Unity.app", "Contents", "Managed"), File.join(unity_directory, "Editor", "Data", "Managed")].find do |unity|
-    File.exists? unity
-  end
-end
 
 ##
 # Get existing unity executable path or exit with error
@@ -47,7 +42,7 @@ def get_required_unity_paths
   exe = unity_executable(dir)
   raise "No unity executable found in '#{dir}'" if exe.nil?
   unless File.exists? exe
-    raise "Unity not found at path '#{exe}' - set $UNITY_DIR (full path) or $UNITY_VERSION (loaded via hub) to customize"
+    raise "Unity not found at path '#{exe}' - set $UNITY_DIR (full path) or $UNITY_PERFORMANCE_VERSION (loaded via hub) to customize"
   end
   [dir, exe]
 end
