@@ -33,3 +33,5 @@ unitTests/UnityEngine/bin
 unitTests/UnityEngine/obj
 example/Assets/BugsnagPerformance
 packages-lock.json
+testResults.xml
+EditorBuildSettings.asset
