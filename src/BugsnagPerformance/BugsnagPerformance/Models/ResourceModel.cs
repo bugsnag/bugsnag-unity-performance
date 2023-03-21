@@ -17,7 +17,7 @@ namespace BugsnagUnityPerformance
             attributes = GetResourceData();
         }
 
-        private static AttributeModel[] GetResourceData()
+        public static void InitResourceDataOnMainThread()
         {
             if (_resourceData == null)
             {
@@ -45,9 +45,12 @@ namespace BugsnagUnityPerformance
 
                     GetMobileArch()
 
-
                };
             }
+        }
+
+        private static AttributeModel[] GetResourceData()
+        {
             return _resourceData;
         }
 
