@@ -23,6 +23,8 @@ namespace BugsnagUnityPerformance
 
         IEnumerator PushToServer(TracePayload payload)
         {
+            // This data must be initialised on the main thread due to unity api usage
+            ResourceModel.InitResourceDataOnMainThread();
             byte[] body = null;           
             // There is no threading on webgl, so we treat the payload differently
             if (Application.platform == RuntimePlatform.WebGLPlayer)
