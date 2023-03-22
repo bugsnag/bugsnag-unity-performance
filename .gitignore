@@ -11,5 +11,5 @@ features/fixtures/mazerunner/Packages
 BugsnagPerformance.meta
 EditorSettings.asset
 GraphicsSettings.asset
-Unity-Performance/Assets/Resources
+BugsnagPerformance/Assets/Resources
 packages-lock.json
