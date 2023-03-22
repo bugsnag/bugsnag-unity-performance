@@ -11,12 +11,12 @@ HOST_OS = RbConfig::CONFIG['host_os']
 #
 def unity_directory
 
-  if ENV.has_key? 'UNITY_VERSION'
-    "/Applications/Unity/Hub/Editor/#{ENV['UNITY_VERSION']}"
+  if ENV.has_key? 'UNITY_PERFORMANCE_VERSION'
+    "/Applications/Unity/Hub/Editor/#{ENV['UNITY_PERFORMANCE_VERSION']}"
   elsif ENV.has_key? "UNITY_DIR"
     ENV["UNITY_DIR"]
   else
-    raise 'No unity directory set - use $UNITY_DIR or $UNITY_VERSION'
+    raise 'No unity directory set - use $UNITY_DIR or $UNITY_PERFORMANCE_VERSION'
   end
 end
 
@@ -32,11 +32,6 @@ def unity_executable dir=unity_directory
   end
 end
 
-def unity_dll_location
-  [File.join(unity_directory, "Unity.app", "Contents", "Managed"), File.join(unity_directory, "Editor", "Data", "Managed")].find do |unity|
-    File.exists? unity
-  end
-end
 
 ##
 # Get existing unity executable path or exit with error
@@ -47,7 +42,7 @@ def get_required_unity_paths
   exe = unity_executable(dir)
   raise "No unity executable found in '#{dir}'" if exe.nil?
   unless File.exists? exe
-    raise "Unity not found at path '#{exe}' - set $UNITY_DIR (full path) or $UNITY_VERSION (loaded via hub) to customize"
+    raise "Unity not found at path '#{exe}' - set $UNITY_DIR (full path) or $UNITY_PERFORMANCE_VERSION (loaded via hub) to customize"
   end
   [dir, exe]
 end
@@ -60,7 +55,7 @@ end
 def unity(*cmd, force_free: true, no_graphics: true)
   raise "Unable to locate Unity executable in #{unity_directory}" unless unity_executable
 
-  cmd_prepend = [unity_executable, "-force-free", "-batchmode", "-nographics", "-logFile", "unity.log", "-quit"]
+  cmd_prepend = [unity_executable, "-force-free"]
   unless force_free
     cmd_prepend = cmd_prepend - ["-force-free"]
   end
@@ -81,44 +76,27 @@ def current_directory
   File.dirname(__FILE__)
 end
 
-def project_path
-  File.join(current_directory, "package-project")
-end
-
-def assets_path
-  File.join(project_path, "Assets", "BugsnagPerformance/Plugins")
+def dev_project_path
+  File.join(current_directory, "BugsnagPerformance")
 end
 
 def export_package
   package_output = File.join(current_directory, "BugsnagPerformance.unitypackage")
   rm_f package_output
-  unity "-projectPath", project_path, "-exportPackage", "Assets/BugsnagPerformance", package_output, force_free: false
+  unity "-projectPath", dev_project_path, "-batchmode", "-nographics", "-logFile", "unity.log", "-quit", "-exportPackage", "Assets/BugsnagPerformance", package_output, force_free: false
+end
+
+def run_unit_tests
+
+  unity "-runTests", "-batchmode", "-projectPath", dev_project_path, "-testPlatform", "EditMode", "-testResults", File.join(current_directory, "testResults.xml") , force_free: false
 end
 
 namespace :plugin do
   namespace :build do
 
-    task all: [:clean, :csharp, :export]
-
-    desc "Delete all build artifacts"
-    task :clean do
-      # remove any leftover artifacts from the package generation directory
-      sh "git", "clean", "-dfx", "package-project"      
-    end
-    
-    desc "Compile and copy csharp lib dlls to packaging project"
-    task :csharp do
-      env = { "UnityDir" => unity_dll_location }
-      unless system env, "./build.sh"
-        raise "Failed to build csharp plugin"
-      end
-      cd File.join("src", "BugsnagPerformance", "BugsnagPerformance", "bin", "Release") do
-        cp File.realpath("BugsnagPerformance.dll"), assets_path
-      end
-    end
-
     desc "Export unitypackage"
     task :export do
+      run_unit_tests
       export_package
     end
 

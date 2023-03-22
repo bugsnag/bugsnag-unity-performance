@@ -10,10 +10,10 @@ steps:
     timeout_in_minutes: 30
     key: 'build-artifacts'
     env:
-      UNITY_VERSION: "2018.4.36f1"
+      UNITY_PERFORMANCE_VERSION: "2019.4.35f1"
     commands:
       - bundle install
-      - bundle exec rake plugin:build:all
+      - bundle exec rake plugin:build:export
     artifact_paths:
       - BugsnagPerformance.unitypackage
     retry:
@@ -27,7 +27,7 @@ steps:
     key: 'build-android-fixture-2021'
     depends_on: 'build-artifacts'
     env:
-      UNITY_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
     plugins:
       artifacts#v1.5.0:
         download:
@@ -72,7 +72,7 @@ steps:
     key: 'generate-fixture-project-2021'
     depends_on: 'build-artifacts'
     env:
-      UNITY_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
     plugins:
       artifacts#v1.5.0:
         download:
@@ -94,7 +94,7 @@ steps:
     depends_on: 'generate-fixture-project-2021'
     env:
       DEVELOPER_DIR: "/Applications/Xcode13.4.app"
-      UNITY_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
     plugins:
       artifacts#v1.5.0:
         download:
