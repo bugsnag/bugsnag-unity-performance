@@ -77,7 +77,7 @@ def current_directory
 end
 
 def dev_project_path
-  File.join(current_directory, "dev-project")
+  File.join(current_directory, "Unity-Performance")
 end
 
 def export_package
