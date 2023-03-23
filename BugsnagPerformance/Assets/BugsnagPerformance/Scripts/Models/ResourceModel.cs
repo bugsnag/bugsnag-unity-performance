@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -77,41 +76,48 @@ namespace BugsnagUnityPerformance
 
         private static AttributeModel GetMobileBuildNumber()
         {
-            //TODO  Native layer to get platform specific build metadata
+            var mobileKey = string.Empty;
+            var mobileValue = string.Empty;
+#if UNITY_IOS
+            mobileKey = "device.bundle_version";
+            mobileValue = iOSNative.GetBundleVersion();
+#elif UNITY_ANDROID
+            mobileKey = "device.version_code";
+            mobileValue = AndroidNative.GetVersionCode();
+#endif
             return new AttributeModel()
             {
-                key = "device.version_code",
-                value = new AttributeStringValueModel("NA")
+                key = mobileKey,
+                value = new AttributeStringValueModel(mobileValue)
             };
         }
 
         private static AttributeModel GetMobileArch()
         {
-            //TODO Use Native layer to get device arch
+            var arch = string.Empty;
+#if UNITY_IOS
+            arch = iOSNative.GetArch();
+#elif UNITY_ANDROID
+            arch = AndroidNative.GetArch();
+#endif
             return new AttributeModel()
             {
                 key = "host.arch",
-                value = new AttributeStringValueModel("NA")
+                value = new AttributeStringValueModel(arch)
             };
         }
 
         private static AttributeModel GetMobileManufacturer()
         {
-            var model = new AttributeModel()
+            var key = "Apple";
+#if UNITY_ANDROID
+            key = AndroidNative.GetManufacture();
+#endif
+            return new AttributeModel()
             {
                 key = "device.manufacturer",
-                value = new AttributeStringValueModel("NA")
+                value = new AttributeStringValueModel(key)
             };
-            switch (Application.platform)
-            {
-                case RuntimePlatform.IPhonePlayer:
-                    model.value = new AttributeStringValueModel("Apple");
-                    break;
-                case RuntimePlatform.Android:
-                    //TODO Use Android native layer to get android specific manufacturer
-                    break;
-            }
-            return model;
         }
 
 
