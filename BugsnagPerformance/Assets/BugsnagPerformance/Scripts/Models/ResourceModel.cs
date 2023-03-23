@@ -38,6 +38,8 @@ namespace BugsnagUnityPerformance
 
                     CreateStringAttribute("bugsnag.app.platform", GetPlatform()),
 
+                    CreateStringAttribute("bugsnag.runtime_versions.unity", Application.unityVersion),
+
                     GetMobileBuildNumber(),
 
                     GetMobileManufacturer(),
