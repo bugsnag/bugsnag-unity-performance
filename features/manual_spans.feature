@@ -29,6 +29,7 @@ Feature: Manual creation of spans
       | iOS |
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.runtime_versions.unity" exists
 
   @android_only
   Scenario: Android Specific Resource Attributes

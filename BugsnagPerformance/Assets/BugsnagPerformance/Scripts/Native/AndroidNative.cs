@@ -20,8 +20,16 @@ namespace BugsnagUnityPerformance
 
         public static string GetArch()
         {
-            var system = new AndroidJavaClass("java.lang.System");
-            return system.CallStatic<string>("getProperty", "os.arch");
+            var system = new AndroidJavaClass("android.os.Build");
+            var abis = system.GetStatic<string[]>("SUPPORTED_ABIS");
+            if (abis == null || abis.Length == 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return AbiToArchitecture(abis[0]);
+            }
         }
 
         public static string GetManufacture()
@@ -29,6 +37,24 @@ namespace BugsnagUnityPerformance
             var build = new AndroidJavaClass("android.os.Build");
             return build.GetStatic<string>("MANUFACTURER");
         }
+
+
+        private static string AbiToArchitecture(string input)
+        {
+            switch (input.ToLower())
+            {
+                case "arm64-v8a":
+                    return "arm64";
+                case "x86_64":
+                    return "amd64";
+                case "armeabi-v7a":
+                    return "arm32";
+                case "x86":
+                    return "x86";
+            }
+            return string.Empty;
+        }
+
 #endif
     }
 }
