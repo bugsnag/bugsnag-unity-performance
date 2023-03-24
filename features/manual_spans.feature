@@ -27,8 +27,24 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" is one of:
       | Android   |
       | iOS |
-    * the trace payload field "resourceSpans.0.resource" string attribute "device.version_code" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.runtime_versions.unity" exists
 
+  @android_only
+  Scenario: Android Specific Resource Attributes
+    When I run the game in the "ManualSpan" state
+    And I wait for 1 span
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"  
 
+    * the trace payload field "resourceSpans.0.resource" string attribute "device.version_code" exists
+
+ @ios_only
+  Scenario: iOS Specific Resource Attributes
+    When I run the game in the "ManualSpan" state
+    And I wait for 1 span
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"  
+
+    * the trace payload field "resourceSpans.0.resource" string attribute "device.bundle_version" exists
