@@ -9,7 +9,7 @@
         return 0;                                                              \
     }
 
-NSString *CPUArchForCPUType(int32_t cpuType, int32_t subType) {
+static NSString *CPUArchForCPUType(int32_t cpuType, int32_t subType) {
     switch (cpuType) {
     case CPU_TYPE_ARM: {
         switch (subType) {
@@ -50,24 +50,24 @@ NSString *CPUArchForCPUType(int32_t cpuType, int32_t subType) {
     return nil;
 }
 
-int32_t bsgsysctl_int32ForName(const char *const name) {
+static int32_t bsgsysctl_int32ForName(const char *const name) {
     int32_t value = 0;
     size_t size = sizeof(value);
     CHECK_SYSCTL_NAME(int32, sysctlbyname(name, &value, &size, NULL, 0));
     return value;
 }
 
-char* convertNSStringToCString(const NSString* nsString)
+static char* convertNSStringToCString(const NSString* nsString)
 {
     if (nsString == NULL)
         return NULL;
+    // create a copy because otherwise we are tied to nsString's lifetime
+    return strdup([nsString UTF8String]);
+}
 
-    const char* nsStringUtf8 = [nsString UTF8String];
-    //create a null terminated C string on the heap so that our string's memory isn't wiped out right after method's return
-    char* cString = (char*)malloc(strlen(nsStringUtf8) + 1);
-    strcpy(cString, nsStringUtf8);
-
-    return cString;
+static NSString* getCpuArch(void) {
+    return CPUArchForCPUType(bsgsysctl_int32ForName("hw.cputype"),
+                             bsgsysctl_int32ForName("hw.cpusubtype"));
 }
 
 char* bugsnag_performance_getBundleVersion()
@@ -75,11 +75,6 @@ char* bugsnag_performance_getBundleVersion()
     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
     NSString *version = [info objectForKey:@"CFBundleVersion"];
     return convertNSStringToCString(version);
-}
-
-NSString* getCpuArch(void) {
-    return CPUArchForCPUType(bsgsysctl_int32ForName("hw.cputype"),
-                             bsgsysctl_int32ForName("hw.cpusubtype"));
 }
 
 char* bugsnag_performance_get_arch () 
