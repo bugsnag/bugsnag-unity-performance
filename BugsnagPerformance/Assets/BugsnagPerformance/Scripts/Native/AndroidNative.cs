@@ -18,18 +18,36 @@ namespace BugsnagUnityPerformance
             return packageInfo.Get<int>("versionCode").ToString();
         }
 
+        private static int GetAndroidSDKInt()
+        {
+            using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
+            {
+                return version.GetStatic<int>("SDK_INT");
+            }
+        }
+
         public static string GetArch()
         {
-            var system = new AndroidJavaClass("android.os.Build");
-            var abis = system.GetStatic<string[]>("SUPPORTED_ABIS");
-            if (abis == null || abis.Length == 0)
+            var build = new AndroidJavaClass("android.os.Build");
+
+            if (GetAndroidSDKInt() >= 21)
             {
-                return string.Empty;
+                var abis = build.GetStatic<string[]>("SUPPORTED_ABIS");
+                if (abis != null && abis.Length > 0)
+                {
+                    return AbiToArchitecture(abis[0]);
+                }
             }
             else
             {
-                return AbiToArchitecture(abis[0]);
+                var abi = build.GetStatic<string>("CPU_ABI");
+                if (!string.IsNullOrEmpty(abi))
+                {
+                    return AbiToArchitecture(abi);
+                }
             }
+
+            return string.Empty;
         }
 
         public static string GetManufacture()
