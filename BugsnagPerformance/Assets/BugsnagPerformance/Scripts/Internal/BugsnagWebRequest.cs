@@ -204,7 +204,8 @@ namespace BugsnagNetworking
 
 
 
-        // Listener related wrappers
+        // Public methods
+
         public UnityWebRequestAsyncOperation SendWebRequest()
         {
             foreach (var listener in _listeners)
@@ -233,66 +234,120 @@ namespace BugsnagNetworking
             UnityWebRequest.Abort();
         }
 
+        public string GetRequestHeader(string name) => UnityWebRequest.GetRequestHeader(name);
 
-        // Expose Instance Methods
+        public string GetResponseHeader(string name) => UnityWebRequest.GetResponseHeader(name);
 
-        public void Dispose()
+        public Dictionary<string, string> GetResponseHeaders() => UnityWebRequest.GetResponseHeaders();
+
+        public void SetRequestHeader(string name, string value) => UnityWebRequest.SetRequestHeader(name, value);
+
+        public void Dispose() => UnityWebRequest.Dispose();
+
+        // Static Properties
+
+        public static string kHttpVerbCREATE => UnityWebRequest.kHttpVerbCREATE;
+
+        public static string kHttpVerbDELETE => UnityWebRequest.kHttpVerbDELETE;
+
+        public static string kHttpVerbGET => UnityWebRequest.kHttpVerbGET;
+
+        public static string kHttpVerbHEAD => UnityWebRequest.kHttpVerbHEAD;
+
+        public static string kHttpVerbPOST => UnityWebRequest.kHttpVerbPOST;
+
+        public static string kHttpVerbPUT => UnityWebRequest.kHttpVerbPUT;
+
+        // Properties
+
+        public UnityEngine.Networking.CertificateHandler certificateHandler
         {
-            if (UnityWebRequest != null)
-            {
-                UnityWebRequest.Dispose();
-            }
+            get { return UnityWebRequest.certificateHandler; }
+            set { UnityWebRequest.certificateHandler = value; }
         }
 
-        public bool IsDone
+        public bool disposeCertificateHandlerOnDispose
         {
-            get { return UnityWebRequest.isDone; }
+            get { return UnityWebRequest.disposeCertificateHandlerOnDispose; }
+            set { UnityWebRequest.disposeCertificateHandlerOnDispose = value; }
         }
 
-        public bool IsNetworkError
+        public bool disposeDownloadHandlerOnDispose
         {
-            get { return UnityWebRequest.isNetworkError; }
+            get { return UnityWebRequest.disposeDownloadHandlerOnDispose; }
+            set { UnityWebRequest.disposeDownloadHandlerOnDispose = value; }
         }
 
-        public bool IsHttpError
+        public bool disposeUploadHandlerOnDispose
         {
-            get { return UnityWebRequest.isHttpError; }
+            get { return UnityWebRequest.disposeUploadHandlerOnDispose; }
+            set { UnityWebRequest.disposeUploadHandlerOnDispose = value; }
         }
 
-        public string Error
+        public ulong downloadedBytes => UnityWebRequest.downloadedBytes;
+
+
+        public UnityEngine.Networking.DownloadHandler downloadHandler
         {
-            get { return UnityWebRequest.error; }
+            get { return UnityWebRequest.downloadHandler; }
+            set { UnityWebRequest.downloadHandler = value; }
         }
 
-        public bool IsSuccess
+        public float downloadProgress => UnityWebRequest.downloadProgress;
+
+        public string error => UnityWebRequest.error;
+
+        public bool isModifiable => UnityWebRequest.isModifiable;
+
+        public string method
         {
-            get { return !IsNetworkError && !IsHttpError && IsDone; }
+            get { return UnityWebRequest.method; }
+            set { UnityWebRequest.method = value; }
         }
 
-        public long ResponseCode
+        public int redirectLimit
         {
-            get { return UnityWebRequest.responseCode; }
+            get { return UnityWebRequest.redirectLimit; }
+            set { UnityWebRequest.redirectLimit = value; }
         }
 
-        public string DownloadHandlerText
+        public int timeout
         {
-            get { return UnityWebRequest.downloadHandler.text; }
+            get { return UnityWebRequest.timeout; }
+            set { UnityWebRequest.timeout = value; }
         }
 
-        public byte[] DownloadHandlerData
+        public ulong uploadedBytes => UnityWebRequest.uploadedBytes;
+
+        public Uri uri
         {
-            get { return UnityWebRequest.downloadHandler.data; }
+            get { return UnityWebRequest.uri; }
+            set { UnityWebRequest.uri = value; }
         }
 
-        public float DownloadProgress
+        public string url
         {
-            get { return UnityWebRequest.downloadProgress; }
+            get { return UnityWebRequest.url; }
+            set { UnityWebRequest.url = value; }
         }
 
-        public float UploadProgress
+        public bool useHttpContinue
         {
-            get { return UnityWebRequest.uploadProgress; }
+            get { return UnityWebRequest.useHttpContinue; }
+            set { UnityWebRequest.useHttpContinue = value; }
         }
+
+
+        public bool isDone => UnityWebRequest.isDone;
+
+        public bool isNetworkError => UnityWebRequest.isNetworkError;
+
+        public bool isHttpError => UnityWebRequest.isHttpError;
+
+        public long responseCode => UnityWebRequest.responseCode;
+
+        public float uploadProgress => UnityWebRequest.uploadProgress;
+        
 
     }
 
