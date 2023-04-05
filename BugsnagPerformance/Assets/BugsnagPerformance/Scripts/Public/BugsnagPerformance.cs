@@ -1,5 +1,7 @@
 ﻿using System;
+using BugsnagNetworking;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace BugsnagUnityPerformance
 {
@@ -22,7 +24,6 @@ namespace BugsnagUnityPerformance
 
         private static object _startSpanLock = new object();
 
-
         public static void Start(PerformanceConfiguration configuration)
         {
             lock (_startLock)
@@ -35,9 +36,31 @@ namespace BugsnagUnityPerformance
                 Configuration = configuration;
                 Delivery = new Delivery();
                 Delivery.FlushCache();
+                SetupNetworkListener();
                 IsStarted = true;
-                
             }
+        }
+
+        private static void SetupNetworkListener()
+        {
+            BugsnagUnityWebRequest.OnSend.AddListener(OnRequestSend);
+            BugsnagUnityWebRequest.OnComplete.AddListener(OnRequestComplete);
+            BugsnagUnityWebRequest.OnAbort.AddListener(OnRequestAbort);
+        }
+
+        private static void OnRequestAbort(BugsnagUnityWebRequest request)
+        {
+            Debug.Log("OnRequestAbort with method type: " + request.method);
+        }
+
+        private static void OnRequestComplete(BugsnagUnityWebRequest request)
+        {
+            Debug.Log("OnRequestComplete with method type: " + request.method);
+        }
+
+        private static void OnRequestSend(BugsnagUnityWebRequest request)
+        {
+            Debug.Log("OnRequestSend with method type: " + request.method);
         }
 
         private static void LogAlreadyStartedWarning()

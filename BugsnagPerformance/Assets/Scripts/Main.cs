@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BugsnagUnityPerformance;
 using System;
+using UnityEngine.Networking;
 
 public class Main : MonoBehaviour
 {
@@ -35,6 +36,12 @@ public class Main : MonoBehaviour
         {
             StartCoroutine(SpanRoutine());
         }
+    }
+
+    public void DoWebRequest()
+    {
+        var request = BugsnagNetworking.BugsnagUnityWebRequest.Post("www.fff.com", "hello");
+        request.SendWebRequest();
     }
 
     private IEnumerator SpanRoutine()
