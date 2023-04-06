@@ -22,23 +22,23 @@ namespace BugsnagUnityPerformance
             {
                 _resourceData = new AttributeModel[]
                {
-                    CreateStringAttribute("deployment.environment", BugsnagPerformance.Configuration.ReleaseStage),
+                    new AttributeModel("deployment.environment", BugsnagPerformance.Configuration.ReleaseStage),
 
-                    CreateStringAttribute("telemetry.sdk.name", "bugsnag.performance.unity"),
+                    new AttributeModel("telemetry.sdk.name", "bugsnag.performance.unity"),
 
-                    CreateStringAttribute("telemetry.sdk.version", Version.VersionString),
+                    new AttributeModel("telemetry.sdk.version", Version.VersionString),
 
-                    CreateStringAttribute("os.version", Environment.OSVersion.VersionString),
+                    new AttributeModel("os.version", Environment.OSVersion.VersionString),
 
-                    CreateStringAttribute("device.id", CacheManager.GetDeviceId()),
+                    new AttributeModel("device.id", CacheManager.GetDeviceId()),
 
-                    CreateStringAttribute("device.model.identifier", SystemInfo.deviceModel),
+                    new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
 
-                    CreateStringAttribute("service.version", Application.version),
+                    new AttributeModel("service.version", Application.version),
 
-                    CreateStringAttribute("bugsnag.app.platform", GetPlatform()),
+                    new AttributeModel("bugsnag.app.platform", GetPlatform()),
 
-                    CreateStringAttribute("bugsnag.runtime_versions.unity", Application.unityVersion),
+                    new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
 
                     GetMobileBuildNumber(),
 
@@ -55,15 +55,6 @@ namespace BugsnagUnityPerformance
             return _resourceData;
         }
 
-        private static AttributeModel CreateStringAttribute(string key, string stringValue)
-        {
-            return new AttributeModel()
-            {
-                key = key,
-                value = new AttributeStringValueModel(stringValue)
-            };
-        }
-
         private static string GetPlatform()
         {
             switch (Application.platform)
@@ -78,48 +69,37 @@ namespace BugsnagUnityPerformance
 
         private static AttributeModel GetMobileBuildNumber()
         {
-            var mobileKey = string.Empty;
-            var mobileValue = string.Empty;
-#if UNITY_IOS
-            mobileKey = "device.bundle_version";
-            mobileValue = iOSNative.GetBundleVersion();
+#if UNITY_EDITOR
+            return null;
+#elif UNITY_IOS
+            return new AttributeModel("device.bundle_version", iOSNative.GetBundleVersion());
 #elif UNITY_ANDROID
-            mobileKey = "device.version_code";
-            mobileValue = AndroidNative.GetVersionCode();
+            return new AttributeModel("device.version_code", AndroidNative.GetVersionCode());
 #endif
-            return new AttributeModel()
-            {
-                key = mobileKey,
-                value = new AttributeStringValueModel(mobileValue)
-            };
         }
 
         private static AttributeModel GetMobileArch()
         {
-            var arch = string.Empty;
-#if UNITY_IOS
-            arch = iOSNative.GetArch();
+#if UNITY_EDITOR
+            return null;
+#elif UNITY_IOS
+            return new AttributeModel("host.arch", iOSNative.GetArch());
 #elif UNITY_ANDROID
-            arch = AndroidNative.GetArch();
+            return new AttributeModel("host.arch", AndroidNative.GetArch());
 #endif
-            return new AttributeModel()
-            {
-                key = "host.arch",
-                value = new AttributeStringValueModel(arch)
-            };
         }
+
+
 
         private static AttributeModel GetMobileManufacturer()
         {
-            var key = "Apple";
-#if UNITY_ANDROID
-            key = AndroidNative.GetManufacture();
+#if UNITY_EDITOR
+            return null;
+#elif UNITY_IOS
+            return new AttributeModel("device.manufacturer", "Apple");
+#elif UNITY_ANDROID
+            return new AttributeModel("device.manufacturer", AndroidNative.GetManufacture());
 #endif
-            return new AttributeModel()
-            {
-                key = "device.manufacturer",
-                value = new AttributeStringValueModel(key)
-            };
         }
 
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace BugsnagUnityPerformance
 {
     [Serializable]
@@ -10,7 +12,7 @@ namespace BugsnagUnityPerformance
         public string traceId;
         public string startTimeUnixNano;
         public string endTimeUnixNano;
-        public AttributeModel[] attributes;
+        public List<AttributeModel> attributes;
 
         public SpanModel(Span span)
         {
@@ -20,14 +22,7 @@ namespace BugsnagUnityPerformance
             traceId = span.TraceId.Replace("-",string.Empty);
             startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
             endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
-            attributes = new AttributeModel[]
-            {
-                new AttributeModel()
-                {
-                    key = "bugsnag.span.category",
-                    value = new AttributeStringValueModel("app_start")
-                }
-            };
+            attributes = span.Attributes;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
 
 using System.Runtime.InteropServices;
 
@@ -12,7 +12,7 @@ namespace BugsnagUnityPerformance
 {
     internal class iOSNative
     {
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
         const string Import = "__Internal";
 
         [DllImport(Import)]

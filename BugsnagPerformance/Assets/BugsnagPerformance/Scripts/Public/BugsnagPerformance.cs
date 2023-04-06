@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -24,6 +25,10 @@ namespace BugsnagUnityPerformance
 
         private static object _startSpanLock = new object();
 
+        private static object _networkSpansLock = new object();
+
+        private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
+
         public static void Start(PerformanceConfiguration configuration)
         {
             lock (_startLock)
@@ -35,6 +40,10 @@ namespace BugsnagUnityPerformance
                 }
                 Configuration = configuration;
                 Delivery = new Delivery();
+                if (Tracer == null)
+                {
+                    InitialiseComponents();
+                }
                 Delivery.FlushCache();
                 SetupNetworkListener();
                 IsStarted = true;
@@ -48,6 +57,16 @@ namespace BugsnagUnityPerformance
             BugsnagUnityWebRequest.OnAbort.AddListener(OnRequestAbort);
         }
 
+        private static void OnRequestSend(BugsnagUnityWebRequest request)
+        {
+            Debug.Log("OnRequestSend with method type: " + request.method);
+            var span = SpanFactory.CreateNetworkSpan(request);
+            lock (_networkSpansLock)
+            {
+                _networkSpans[request] = span;
+            }
+        }
+
         private static void OnRequestAbort(BugsnagUnityWebRequest request)
         {
             Debug.Log("OnRequestAbort with method type: " + request.method);
@@ -56,11 +75,16 @@ namespace BugsnagUnityPerformance
         private static void OnRequestComplete(BugsnagUnityWebRequest request)
         {
             Debug.Log("OnRequestComplete with method type: " + request.method);
+            EndNetworkSpan(request);
         }
 
-        private static void OnRequestSend(BugsnagUnityWebRequest request)
+        private static void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
-            Debug.Log("OnRequestSend with method type: " + request.method);
+            if (_networkSpans.ContainsKey(request))
+            {
+                var span = _networkSpans[request];
+                span.EndNetworkSpan(request);
+            }
         }
 
         private static void LogAlreadyStartedWarning()
