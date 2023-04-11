@@ -12,7 +12,7 @@ namespace BugsnagUnityPerformance
         public string traceId;
         public string startTimeUnixNano;
         public string endTimeUnixNano;
-        public List<AttributeModel> attributes;
+        public List<AttributeModel> attributes = new List<AttributeModel>();
 
         public SpanModel(Span span)
         {
@@ -22,7 +22,13 @@ namespace BugsnagUnityPerformance
             traceId = span.TraceId.Replace("-",string.Empty);
             startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
             endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
-            attributes = span.Attributes;
+            foreach (var attr in span.Attributes)
+            {
+                if (!string.IsNullOrEmpty(attr.key))
+                {
+                    attributes.Add(attr);
+                }
+            }
         }
     }
 }
