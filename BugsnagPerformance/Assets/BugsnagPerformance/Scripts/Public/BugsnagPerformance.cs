@@ -59,7 +59,6 @@ namespace BugsnagUnityPerformance
 
         private static void OnRequestSend(BugsnagUnityWebRequest request)
         {
-            Debug.Log("OnRequestSend with method type: " + request.method);
             var span = SpanFactory.CreateNetworkSpan(request);
             lock (_networkSpansLock)
             {
@@ -69,12 +68,11 @@ namespace BugsnagUnityPerformance
 
         private static void OnRequestAbort(BugsnagUnityWebRequest request)
         {
-            Debug.Log("OnRequestAbort with method type: " + request.method);
+            EndNetworkSpan(request);
         }
 
         private static void OnRequestComplete(BugsnagUnityWebRequest request)
         {
-            Debug.Log("OnRequestComplete with method type: " + request.method);
             EndNetworkSpan(request);
         }
 
