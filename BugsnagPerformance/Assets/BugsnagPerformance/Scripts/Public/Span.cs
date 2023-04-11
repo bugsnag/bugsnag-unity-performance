@@ -72,6 +72,7 @@ namespace BugsnagUnityPerformance
             if (request.downloadHandler != null)
             {
                 Debug.Log("WTFFF:" + 5);
+                Debug.Log("WTFFF request.downloadHandler.data is null?:" + (request.downloadHandler.data == null).ToString());
 
                 SetAttribute("http.response_content_length", request.downloadHandler.data.Length.ToString());
             }
