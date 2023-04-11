@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using BugsnagNetworking;
 using UnityEngine;
 
-public class NetworkGetSuccess : Scenario
+public class NetworkGetFail : Scenario
 {
 
     public override void PrepareConfig(string apiKey, string host)
@@ -14,7 +14,7 @@ public class NetworkGetSuccess : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Get("https://httpbin.org/get").SendWebRequest();
+        BugsnagUnityWebRequest.Get("www.gfgfjvhsgjlfjweoc.com").SendWebRequest();
     }
 
 }
