@@ -56,27 +56,20 @@ namespace BugsnagUnityPerformance
                 }
                 _ended = true;
             }
-            Debug.Log("WTFFF:" + 1);
+
             EndTime = DateTimeOffset.Now;
-            Debug.Log("WTFFF:" + 2);
 
             SetAttribute("http.status_code", request.responseCode.ToString());
-            Debug.Log("WTFFF:" + 3);
 
-            if (request.uploadHandler != null)
+            if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
-                Debug.Log("WTFFF:" + 4);
-
                 SetAttribute("http.request_content_length", request.uploadHandler.data.Length.ToString());
             }
-            if (request.downloadHandler != null)
-            {
-                Debug.Log("WTFFF:" + 5);
-                Debug.Log("WTFFF request.downloadHandler.data is null?:" + (request.downloadHandler.data == null).ToString());
 
+            if (request.downloadHandler != null && request.downloadHandler.data != null)
+            {
                 SetAttribute("http.response_content_length", request.downloadHandler.data.Length.ToString());
             }
-            Debug.Log("WTFFF:" + 6);
 
             _tracer.OnSpanEnd(this);
         }
