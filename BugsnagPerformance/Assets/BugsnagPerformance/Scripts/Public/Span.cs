@@ -18,7 +18,6 @@ namespace BugsnagUnityPerformance
         private Tracer _tracer;
         private bool _ended;
         private object _endLock = new object();
-        private BugsnagUnityWebRequest _request;
 
         internal Span(string name, SpanKind kind, string id, string traceId, DateTimeOffset startTime, Tracer tracer)
         {
@@ -29,8 +28,6 @@ namespace BugsnagUnityPerformance
             StartTime = startTime;
             _tracer = tracer;
         }
-
-
 
         public void End()
         {
