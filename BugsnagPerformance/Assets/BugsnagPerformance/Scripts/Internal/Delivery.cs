@@ -11,17 +11,17 @@ namespace BugsnagUnityPerformance
     internal class Delivery
     {
 
-        private PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
+        private static PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
 
-        private bool _flushingCache;
+        private static bool _flushingCache;
 
-        public void Deliver(List<Span> batch)
+        public static void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(batch);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
-        IEnumerator PushToServer(TracePayload payload)
+        static IEnumerator PushToServer(TracePayload payload)
         {
             // This data must be initialised on the main thread due to unity api usage
             ResourceModel.InitResourceDataOnMainThread();
@@ -72,7 +72,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public void FlushCache()
+        public static void FlushCache()
         {
             if (_flushingCache)
             {
@@ -82,7 +82,7 @@ namespace BugsnagUnityPerformance
             MainThreadDispatchBehaviour.Instance().Enqueue(DoFlushCache());
         }
 
-        private IEnumerator DoFlushCache()
+        private static IEnumerator DoFlushCache()
         {
             var payloads = CacheManager.GetCachedBatchesForDelivery();
             foreach (var payload in payloads)
@@ -93,12 +93,12 @@ namespace BugsnagUnityPerformance
             _flushingCache = false;
         }
 
-        private void PayloadSendSuccess(string id)
+        private static void PayloadSendSuccess(string id)
         {
             CacheManager.RemoveCachedBatch(id);
         }
 
-        private string Hash(byte[] input)
+        private static string Hash(byte[] input)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
             {

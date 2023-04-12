@@ -14,7 +14,7 @@ public class NetworkPostFail : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Post("https://fdffhfghhiuooi.org/", "1234567890").SendWebRequest();
+        BugsnagUnityWebRequest.Post(FAIL_URL, "1234567890").SendWebRequest();
     }
 
 }

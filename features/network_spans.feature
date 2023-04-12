@@ -33,9 +33,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "http://www.gfgfjvhsgjlfjweoc.com/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "502"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.response_content_length" exists
 
@@ -71,7 +71,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://fdffhfghhiuooi.org/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
 

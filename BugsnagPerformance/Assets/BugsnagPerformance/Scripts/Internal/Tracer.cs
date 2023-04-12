@@ -9,16 +9,16 @@ namespace BugsnagUnityPerformance
     internal class Tracer
     {
 
-        private List<Span> _spanQueue = new List<Span>();
+        private static List<Span> _spanQueue = new List<Span>();
 
-        private object _queueLock = new object();
+        private static object _queueLock = new object();
 
-        private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
+        private static WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
-        private DateTimeOffset _lastBatchSendTime = DateTimeOffset.Now;        
+        private static DateTimeOffset _lastBatchSendTime = DateTimeOffset.Now;        
 
 
-        public Tracer()
+        public static void  StartTracerWorker()
         {
             try
             {
@@ -30,7 +30,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private IEnumerator Worker()
+        private static IEnumerator Worker()
         {
             while (true)
             {
@@ -42,13 +42,13 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public void OnSpanEnd(Span span)
+        public static void OnSpanEnd(Span span)
         {
             //TODO check sampling logic to see if span should be ignored
             AddSpanToQueue(span);
         }
 
-        private void AddSpanToQueue(Span span)
+        private static void AddSpanToQueue(Span span)
         {
             var deliverBatch = false;
             lock (_queueLock)
@@ -62,7 +62,7 @@ namespace BugsnagUnityPerformance
             }
         }   
        
-        private void DeliverBatch()
+        private static void DeliverBatch()
         {
             new Thread(()=>
             {
@@ -79,7 +79,7 @@ namespace BugsnagUnityPerformance
                 if (BugsnagPerformance.IsStarted)
                 {
                     _lastBatchSendTime = DateTimeOffset.Now;
-                    BugsnagPerformance.Delivery.Deliver(batch);
+                    Delivery.Deliver(batch);
                 }
                 else
                 {
@@ -88,12 +88,12 @@ namespace BugsnagUnityPerformance
             }).Start();
         }
 
-        private bool BatchSizeLimitReached()
+        private static bool BatchSizeLimitReached()
         {
             return _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
         }
 
-        private bool BatchDue()
+        private static bool BatchDue()
         {
             return (DateTimeOffset.Now - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
         }

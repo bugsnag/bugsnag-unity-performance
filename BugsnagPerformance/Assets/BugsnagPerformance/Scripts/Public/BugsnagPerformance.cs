@@ -13,12 +13,6 @@ namespace BugsnagUnityPerformance
 
         internal static bool IsStarted = false;
 
-        internal static Tracer Tracer;
-
-        internal static SpanFactory SpanFactory;
-
-        internal static Delivery Delivery;
-
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
 
         private static object _startLock = new object();
@@ -28,6 +22,7 @@ namespace BugsnagUnityPerformance
         private static object _networkSpansLock = new object();
 
         private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
+
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -39,13 +34,9 @@ namespace BugsnagUnityPerformance
                     return;
                 }
                 Configuration = configuration;
-                Delivery = new Delivery();
-                if (Tracer == null)
-                {
-                    InitialiseComponents();
-                }
                 Delivery.FlushCache();
                 SetupNetworkListener();
+                Tracer.StartTracerWorker();
                 IsStarted = true;
             }
         }
@@ -90,12 +81,6 @@ namespace BugsnagUnityPerformance
             Debug.LogWarning(ALREADY_STARTED_WARNING);
         }
 
-        private static void InitialiseComponents()
-        {
-            Tracer = new Tracer();
-            SpanFactory = new SpanFactory(Tracer);
-        }
-
         public static Span StartSpan(string name)
         {
             return StartSpan(name, DateTimeOffset.Now);
@@ -105,10 +90,6 @@ namespace BugsnagUnityPerformance
         {
             lock (_startSpanLock)
             {
-                if (Tracer == null)
-                {
-                    InitialiseComponents();
-                }
                 return SpanFactory.StartCustomSpan(name, startTime);
             }
         }

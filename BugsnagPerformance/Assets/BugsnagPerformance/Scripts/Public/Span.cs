@@ -15,18 +15,16 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset StartTime { get; }
         public DateTimeOffset EndTime { get; private set; }
         internal List<AttributeModel> Attributes = new List<AttributeModel>();
-        private Tracer _tracer;
         private bool _ended;
         private object _endLock = new object();
 
-        internal Span(string name, SpanKind kind, string id, string traceId, DateTimeOffset startTime, Tracer tracer)
+        internal Span(string name, SpanKind kind, string id, string traceId, DateTimeOffset startTime)
         {
             Name = name;
             Kind = kind;
             Id = id;
             TraceId = traceId;
             StartTime = startTime;
-            _tracer = tracer;
         }
 
         public void End()
@@ -40,7 +38,7 @@ namespace BugsnagUnityPerformance
                 _ended = true;
             }
             EndTime = DateTimeOffset.Now;
-            _tracer.OnSpanEnd(this);
+            Tracer.OnSpanEnd(this);
         }
 
         internal void EndNetworkSpan(BugsnagUnityWebRequest request)
@@ -68,7 +66,7 @@ namespace BugsnagUnityPerformance
                 SetAttribute("http.response_content_length", request.downloadHandler.data.Length.ToString());
             }
 
-            _tracer.OnSpanEnd(this);
+            Tracer.OnSpanEnd(this);
         }
 
         internal void SetAttribute(string key, string value)

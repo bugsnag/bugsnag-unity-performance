@@ -14,7 +14,7 @@ public class NetworkGetFail : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Get("www.gfgfjvhsgjlfjweoc.com").SendWebRequest();
+        BugsnagUnityWebRequest.Get(FAIL_URL).SendWebRequest();
     }
 
 }
