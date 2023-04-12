@@ -43,7 +43,7 @@ namespace BugsnagUnityPerformance
             _tracer.OnSpanEnd(this);
         }
 
-        public void EndNetworkSpan(BugsnagUnityWebRequest request)
+        internal void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
             lock (_endLock)
             {
