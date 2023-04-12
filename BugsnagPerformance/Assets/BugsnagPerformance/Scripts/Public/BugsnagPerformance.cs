@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using BugsnagNetworking;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace BugsnagUnityPerformance
 {
@@ -10,17 +13,15 @@ namespace BugsnagUnityPerformance
 
         internal static bool IsStarted = false;
 
-        internal static Tracer Tracer;
-
-        internal static SpanFactory SpanFactory;
-
-        internal static Delivery Delivery;
-
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
 
         private static object _startLock = new object();
 
         private static object _startSpanLock = new object();
+
+        private static object _networkSpansLock = new object();
+
+        private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
 
         public static void Start(PerformanceConfiguration configuration)
@@ -33,22 +34,55 @@ namespace BugsnagUnityPerformance
                     return;
                 }
                 Configuration = configuration;
-                Delivery = new Delivery();
                 Delivery.FlushCache();
+                SetupNetworkListener();
+                Tracer.StartTracerWorker();
                 IsStarted = true;
-                
+            }
+        }
+
+        private static void SetupNetworkListener()
+        {
+            BugsnagUnityWebRequest.OnSend.AddListener(OnRequestSend);
+            BugsnagUnityWebRequest.OnComplete.AddListener(OnRequestComplete);
+            BugsnagUnityWebRequest.OnAbort.AddListener(OnRequestAbort);
+        }
+
+        private static void OnRequestSend(BugsnagUnityWebRequest request)
+        {
+            var span = SpanFactory.CreateNetworkSpan(request);
+            lock (_networkSpansLock)
+            {
+                _networkSpans[request] = span;
+            }
+        }
+
+        private static void OnRequestAbort(BugsnagUnityWebRequest request)
+        {
+            EndNetworkSpan(request);
+        }
+
+        private static void OnRequestComplete(BugsnagUnityWebRequest request)
+        {
+            EndNetworkSpan(request);
+        }
+
+        private static void EndNetworkSpan(BugsnagUnityWebRequest request)
+        {
+            lock (_networkSpansLock)
+            {
+                if (_networkSpans.ContainsKey(request))
+                {
+                    var span = _networkSpans[request];
+                    span.EndNetworkSpan(request);
+                }
+                _networkSpans.Remove(request);
             }
         }
 
         private static void LogAlreadyStartedWarning()
         {
             Debug.LogWarning(ALREADY_STARTED_WARNING);
-        }
-
-        private static void InitialiseComponents()
-        {
-            Tracer = new Tracer();
-            SpanFactory = new SpanFactory(Tracer);
         }
 
         public static Span StartSpan(string name)
@@ -60,10 +94,6 @@ namespace BugsnagUnityPerformance
         {
             lock (_startSpanLock)
             {
-                if (Tracer == null)
-                {
-                    InitialiseComponents();
-                }
                 return SpanFactory.StartCustomSpan(name, startTime);
             }
         }

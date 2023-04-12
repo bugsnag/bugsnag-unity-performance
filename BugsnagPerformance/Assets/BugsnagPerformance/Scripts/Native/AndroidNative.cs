@@ -6,7 +6,7 @@ namespace BugsnagUnityPerformance
 {
     internal class AndroidNative
     {
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
         public static string GetVersionCode()
         {
             var playerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");

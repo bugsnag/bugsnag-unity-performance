@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using BugsnagUnityPerformance;
 using System.Reflection;
+using static System.Net.WebRequestMethods;
 
 public class Scenario : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Scenario : MonoBehaviour
             Endpoint = host + "/traces"
         };
     }
+
+    public const string FAIL_URL = "https://localhost:994";
 
     public virtual void StartBugsnag()
     {
