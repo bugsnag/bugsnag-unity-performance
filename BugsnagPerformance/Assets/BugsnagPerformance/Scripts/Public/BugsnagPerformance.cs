@@ -69,10 +69,14 @@ namespace BugsnagUnityPerformance
 
         private static void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
-            if (_networkSpans.ContainsKey(request))
+            lock (_networkSpansLock)
             {
-                var span = _networkSpans[request];
-                span.EndNetworkSpan(request);
+                if (_networkSpans.ContainsKey(request))
+                {
+                    var span = _networkSpans[request];
+                    span.EndNetworkSpan(request);
+                }
+                _networkSpans.Remove(request);
             }
         }
 
