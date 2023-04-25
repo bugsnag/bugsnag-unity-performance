@@ -9,6 +9,7 @@ services:
       BUILDKITE_PIPELINE_NAME:
       BROWSER_STACK_USERNAME:
       BROWSER_STACK_ACCESS_KEY:
+      MAZE_REPEATER_API_KEY:
       UNITY_VERSION:
     volumes:
       - ./test:/app/test
