@@ -14,7 +14,7 @@ public class NetworkGetSuccess : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Get("https://httpbin.org/get").SendWebRequest();
+        BugsnagUnityWebRequest.Get("https://www.bugsnag.com/").SendWebRequest();
     }
 
 }
