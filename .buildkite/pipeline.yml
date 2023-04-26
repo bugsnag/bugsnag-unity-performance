@@ -44,7 +44,7 @@ steps:
         - exit_status: "*"
           limit: 1
 
-  - label: ':android: Run Android e2e tests for Unity 2021'
+  - label: ':bitbar: Run Android e2e tests for Unity 2021'
     timeout_in_minutes: 60
     depends_on: 'build-android-fixture-2021'
     agents:
@@ -55,16 +55,18 @@ steps:
           - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
         upload:
           - "maze_output/**/*"
-      docker-compose#v3.7.0:
+      docker-compose#v4.8.0:
         pull: maze-runner
         run: maze-runner
+        service-ports: true
         command:
           - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
-          - "--farm=bs"
-          - "--device=ANDROID_11_0"
-          - "features"
-    concurrency: 24
-    concurrency_group: browserstack-app
+          - "--farm=bb"
+          - "--device=ANDROID_11"
+          - "--no-tunnel"
+          - "--aws-public-ip"
+    concurrency: 25
+    concurrency_group: 'bitbar-app'
     concurrency_method: eager
 
   - label: ':ios: Generate Xcode project - Unity 2021'
@@ -111,9 +113,9 @@ steps:
         - exit_status: "*"
           limit: 1
 
-  - label: ':ios: Run iOS e2e tests for Unity 2021'
+  - label: ':bitbar: Run iOS e2e tests for Unity 2021'
     timeout_in_minutes: 60
-    depends_on: 'build-ios-fixture-2021'
+    depends_on: 'build-android-fixture-2021'
     agents:
       queue: opensource
     plugins:
@@ -122,15 +124,16 @@ steps:
           - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
         upload:
           - "maze_output/**/*"
-      docker-compose#v3.7.0:
+      docker-compose#v4.8.0:
         pull: maze-runner
         run: maze-runner
+        service-ports: true
         command:
           - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
-          - "--farm=bs"
+          - "--farm=bb"
           - "--device=IOS_15"
-          - "--fail-fast"
-          - "features"
-    concurrency: 24
-    concurrency_group: browserstack-app
+          - "--no-tunnel"
+          - "--aws-public-ip"
+    concurrency: 25
+    concurrency_group: 'bitbar-app'
     concurrency_method: eager
