@@ -12,6 +12,9 @@ namespace BugsnagUnityPerformance
 
         private List<SpanModel> _spans = new List<SpanModel>();
 
+        // Temporary method to allow hard coding the Bugsnag-Span-Sampling header until sampling is properly implemented
+        public int BatchSize;
+
         private string _jsonbody;
 
         public TracePayload(List<Span> spans)
@@ -21,6 +24,7 @@ namespace BugsnagUnityPerformance
             {
                 _spans.Add(new SpanModel(span));
             }
+            BatchSize = spans.Count;
         }
 
         public TracePayload(string cachedJson, string payloadId)
