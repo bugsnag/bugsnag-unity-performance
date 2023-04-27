@@ -51,4 +51,23 @@ public class Main : MonoBehaviour
         span.End();
     }
 
+    public void LoadOtherScene()
+    {
+
+        BugsnagSceneManager.OnSeceneLoad.AddListener((sceneIdentifier) =>
+        {
+            if (sceneIdentifier is int)
+            {
+                Debug.Log("Scene Loaded by index: " + sceneIdentifier);
+            }
+            else
+            {
+                Debug.Log("Scene Loaded by name: " + sceneIdentifier);
+            }
+        });
+
+        BugsnagSceneManager.LoadScene("OtherScene");
+
+    }
+
 }
