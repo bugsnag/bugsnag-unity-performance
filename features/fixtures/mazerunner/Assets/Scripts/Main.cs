@@ -33,7 +33,7 @@ public class Main : MonoBehaviour
 
     private const string API_KEY = "a35a2a72bd230ac0aa0f52715bbdc6aa";
     private string _fixtureConfigFileName = "/fixture_config.json";
-    private string _mazeHost;
+    public static string MazeHost;
 
     public ScenarioRunner ScenarioRunner;
 
@@ -65,7 +65,7 @@ public class Main : MonoBehaviour
                     var configJson = File.ReadAllText(configPath);
                     Debug.Log("Mazerunner got fixture config json: " + configJson);
                     var config = JsonUtility.FromJson<FixtureConfig>(configJson);
-                    _mazeHost = "http://" + config.maze_address;
+                    MazeHost = "http://" + config.maze_address;
                     break;
                 }
                 else
@@ -77,17 +77,17 @@ public class Main : MonoBehaviour
             }
         }
 
-        if (string.IsNullOrEmpty(_mazeHost))
+        if (string.IsNullOrEmpty(MazeHost))
         {
-            _mazeHost = "http://localhost:9339";
+            MazeHost = "http://localhost:9339";
 
             if (Application.platform == RuntimePlatform.IPhonePlayer ||
                 Application.platform == RuntimePlatform.Android)
             {
-                _mazeHost = "http://bs-local.com:9339";
+                MazeHost = "http://bs-local.com:9339";
             }
         }
-        Debug.Log("Mazerunner host set to: " + _mazeHost);
+        Debug.Log("Mazerunner host set to: " + MazeHost);
     }
 
     private void DoRunNextMazeCommand()
@@ -97,7 +97,7 @@ public class Main : MonoBehaviour
 
     IEnumerator RunNextMazeCommand()
     {
-        var url = _mazeHost + "/command";
+        var url = MazeHost + "/command";
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
@@ -128,7 +128,7 @@ public class Main : MonoBehaviour
                         }
                         else if ("run_scenario".Equals(command.action))
                         {
-                            ScenarioRunner.RunScenario(command.scenarioName, API_KEY, _mazeHost);
+                            ScenarioRunner.RunScenario(command.scenarioName, API_KEY, MazeHost);
                         }
                         else if ("close_application".Equals(command.action))
                         {

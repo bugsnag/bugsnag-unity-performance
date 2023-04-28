@@ -14,7 +14,7 @@ public class NetworkPostSuccess : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Post("https://httpbin.org/post", "1234567890").SendWebRequest();
+        BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
     }
 
 }

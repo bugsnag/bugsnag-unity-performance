@@ -17,7 +17,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://www.bugsnag.com/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
@@ -56,7 +56,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://httpbin.org/post"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
