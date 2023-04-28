@@ -115,7 +115,7 @@ steps:
 
   - label: ':bitbar: Run iOS e2e tests for Unity 2021'
     timeout_in_minutes: 60
-    depends_on: 'build-android-fixture-2021'
+    depends_on: 'build-ios-fixture-2021'
     agents:
       queue: opensource
     plugins:
