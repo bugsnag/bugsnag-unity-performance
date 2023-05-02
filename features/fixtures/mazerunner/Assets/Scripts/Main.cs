@@ -98,6 +98,7 @@ public class Main : MonoBehaviour
     IEnumerator RunNextMazeCommand()
     {
         var url = MazeHost + "/command";
+        Debug.Log("Trying to get next mazerunner command with url: " + url);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
@@ -114,7 +115,7 @@ public class Main : MonoBehaviour
                 var response = request.downloadHandler?.text;
                 if (response == null || response == "null" || response == "No commands to provide" || response.Contains("noop"))
                 {
-                    
+
                 }
                 else
                 {
@@ -136,6 +137,11 @@ public class Main : MonoBehaviour
                         }
                     }
                 }
+            }
+            else
+            {
+                Debug.Log("Getting next mazerunner command Failed: " + request.error);
+
             }
         }
     }
