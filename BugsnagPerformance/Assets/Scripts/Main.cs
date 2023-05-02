@@ -4,6 +4,7 @@ using UnityEngine;
 using BugsnagUnityPerformance;
 using System;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
@@ -51,4 +52,29 @@ public class Main : MonoBehaviour
         span.End();
     }
 
+    public void LoadOtherScene()
+    {
+
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+
+        BugsnagSceneManager.OnSeceneLoad.AddListener((sceneIdentifier) =>
+        {
+            if (sceneIdentifier is int)
+            {
+                Debug.Log("Scene Loaded by index: " + sceneIdentifier);
+            }
+            else
+            {
+                Debug.Log("Scene Loaded by name: " + sceneIdentifier);
+            }
+        });
+
+        BugsnagSceneManager.LoadScene("OtherScene");
+
+    }
+
+    private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        Debug.Log("Scene load finished with index: " + arg0.buildIndex + " and name: " + arg0.name);
+    }
 }
