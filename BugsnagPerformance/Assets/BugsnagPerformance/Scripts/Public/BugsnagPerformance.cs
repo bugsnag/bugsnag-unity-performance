@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace BugsnagUnityPerformance
 {
@@ -19,10 +20,11 @@ namespace BugsnagUnityPerformance
 
         private static object _startSpanLock = new object();
 
-        private static object _networkSpansLock = new object();
+        private static object _networkLock = new object();
 
-        private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
+        private static Dictionary<BugsnagUnityWebRequest, DateTimeOffset> _networkRequestTimes = new Dictionary<BugsnagUnityWebRequest, DateTimeOffset>();
 
+        private static Dictionary<object,DateTimeOffset> _sceneLoadTimes = new Dictionary<object, DateTimeOffset>();
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -41,6 +43,44 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        private static void SetupSceneLoadListeners()
+        {
+            BugsnagSceneManager.OnSeceneLoad.AddListener(OnSceneLoadStart);
+            SceneManager.sceneLoaded += OnSceneLoadEnd;
+        }
+
+        private static void OnSceneLoadStart(object sceneId)
+        {
+            _sceneLoadTimes.Add(sceneId, DateTimeOffset.UtcNow);
+        }
+
+        private static void OnSceneLoadEnd(Scene scene, LoadSceneMode mode)
+        { 
+            var endTime = DateTimeOffset.UtcNow;
+            var found = false;
+            var startTime = GetSceneLoadStartTime(scene, out found);
+            if (found)
+            {
+                SpanFactory.ReportSceneLoadSpan(scene.name, startTime,endTime);
+            }
+        }
+
+        private static DateTimeOffset GetSceneLoadStartTime(Scene scene, out bool found)
+        {
+            found = false;
+            if (_sceneLoadTimes.ContainsKey(scene.name))
+            {
+                found = true;
+                return _sceneLoadTimes[scene.name];
+            }
+            if (_sceneLoadTimes.ContainsKey(scene.buildIndex))
+            {
+                found = true;
+                return _sceneLoadTimes[scene.buildIndex];
+            }
+            return DateTimeOffset.MinValue;
+        }
+
         private static void SetupNetworkListener()
         {
             BugsnagUnityWebRequest.OnSend.AddListener(OnRequestSend);
@@ -50,10 +90,10 @@ namespace BugsnagUnityPerformance
 
         private static void OnRequestSend(BugsnagUnityWebRequest request)
         {
-            var span = SpanFactory.CreateNetworkSpan(request);
-            lock (_networkSpansLock)
+            var startTime = DateTimeOffset.UtcNow;
+            lock (_networkLock)
             {
-                _networkSpans[request] = span;
+                _networkRequestTimes[request] = startTime;
             }
         }
 
@@ -69,14 +109,15 @@ namespace BugsnagUnityPerformance
 
         private static void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
-            lock (_networkSpansLock)
+            lock (_networkLock)
             {
-                if (_networkSpans.ContainsKey(request))
+                var endTime = DateTimeOffset.UtcNow;
+                if (_networkRequestTimes.ContainsKey(request))
                 {
-                    var span = _networkSpans[request];
-                    span.EndNetworkSpan(request);
+                    var startTime = _networkRequestTimes[request];
+                    SpanFactory.ReportNetworkSpan(request, startTime, endTime);
                 }
-                _networkSpans.Remove(request);
+                _networkRequestTimes.Remove(request);
             }
         }
 

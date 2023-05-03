@@ -13,7 +13,7 @@ namespace BugsnagUnityPerformance
         public string Id { get; }
         public string TraceId { get; }
         public DateTimeOffset StartTime { get; }
-        public DateTimeOffset EndTime { get; private set; }
+        public DateTimeOffset EndTime { get; internal set; }
         internal List<AttributeModel> Attributes = new List<AttributeModel>();
         private bool _ended;
         private object _endLock = new object();
@@ -26,6 +26,8 @@ namespace BugsnagUnityPerformance
             TraceId = traceId;
             StartTime = startTime;
         }
+
+
 
         public void End()
         {
@@ -41,7 +43,7 @@ namespace BugsnagUnityPerformance
             Tracer.OnSpanEnd(this);
         }
 
-        internal void EndNetworkSpan(BugsnagUnityWebRequest request)
+        internal void EndNetworkSpan(BugsnagUnityWebRequest request, DateTimeOffset endTime)
         {
             lock (_endLock)
             {
@@ -52,7 +54,7 @@ namespace BugsnagUnityPerformance
                 _ended = true;
             }
 
-            EndTime = DateTimeOffset.Now;
+            EndTime = endTime;
 
             SetAttribute("http.status_code", request.responseCode.ToString());
 
@@ -74,7 +76,11 @@ namespace BugsnagUnityPerformance
             Attributes.Add(new AttributeModel(key, value));
         }
 
-
+        internal void EndSceneLoadSpan(DateTimeOffset endtime)
+        {
+            EndTime = endtime;
+            Tracer.OnSpanEnd(this);
+        }
 
     }
 }
