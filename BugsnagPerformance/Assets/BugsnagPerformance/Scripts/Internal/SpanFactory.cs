@@ -28,16 +28,17 @@ namespace BugsnagUnityPerformance
             return new Span(name, kind, GetNewSpanId(), GetNewTraceId(), startTime);
         }
 
-        internal static void ReportNetworkSpan(BugsnagUnityWebRequest request, DateTimeOffset startTime, DateTimeOffset endTime)
+        internal static Span CreateNetworkSpan(BugsnagUnityWebRequest request)
         {
             var verb = request.method.ToUpper();
-            var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, startTime);
+            var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, DateTimeOffset.Now);
             span.SetAttribute("bugsnag.span_category", "network");
             span.SetAttribute("http.url", request.url);
             span.SetAttribute("http.method", verb);
             span.SetAttribute("net.host.connection.type", GetConnectionType());
-            span.EndNetworkSpan(request, endTime);
+            return span;
         }
+
 
         private static string GetConnectionType()
         {
@@ -54,13 +55,10 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        internal static void ReportSceneLoadSpan(string sceneName, DateTimeOffset startTime, DateTimeOffset endTime)
+        internal static Span CreateSceneLoadSpan()
         {
-            var span = CreateSpan("[ViwLoad/Scene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, startTime);
-            span.SetAttribute("bugsnag.span_category", "view_load");
-            span.SetAttribute("bugsnag.view.type", "scene");
-            span.SetAttribute("bugsnag.view.name", "scene");
-            span.EndSceneLoadSpan(endTime);
+            var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, DateTimeOffset.Now);
+            return span;
         }
     }
 }

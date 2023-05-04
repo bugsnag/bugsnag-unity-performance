@@ -8,7 +8,7 @@ namespace BugsnagUnityPerformance
     public class Span
     {
         
-        public string Name { get; }
+        public string Name { get; internal set; }
         public SpanKind Kind { get; }
         public string Id { get; }
         public string TraceId { get; }
@@ -27,8 +27,6 @@ namespace BugsnagUnityPerformance
             StartTime = startTime;
         }
 
-
-
         public void End()
         {
             lock (_endLock)
@@ -43,7 +41,7 @@ namespace BugsnagUnityPerformance
             Tracer.OnSpanEnd(this);
         }
 
-        internal void EndNetworkSpan(BugsnagUnityWebRequest request, DateTimeOffset endTime)
+        internal void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
             lock (_endLock)
             {
@@ -54,7 +52,7 @@ namespace BugsnagUnityPerformance
                 _ended = true;
             }
 
-            EndTime = endTime;
+            EndTime = DateTimeOffset.Now;
 
             SetAttribute("http.status_code", request.responseCode.ToString());
 
@@ -76,9 +74,15 @@ namespace BugsnagUnityPerformance
             Attributes.Add(new AttributeModel(key, value));
         }
 
-        internal void EndSceneLoadSpan(DateTimeOffset endtime)
+        internal void EndSceneLoadSpan(string sceneName)
         {
-            EndTime = endtime;
+            // no need for thread safe checks as all scene load events happen on the main thread.
+            _ended = true;
+            EndTime = DateTimeOffset.Now;
+            Name = "[ViewLoad/Scene]" + sceneName;
+            SetAttribute("bugsnag.span_category", "view_load");
+            SetAttribute("bugsnag.view.type", "scene");
+            SetAttribute("bugsnag.view.name", sceneName);
             Tracer.OnSpanEnd(this);
         }
 
