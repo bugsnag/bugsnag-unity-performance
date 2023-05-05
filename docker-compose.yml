@@ -19,6 +19,7 @@ services:
       BUILDKITE_STEP_KEY:
       BITBAR_USERNAME:
       BITBAR_ACCESS_KEY:
+      MAZE_REPEATER_API_KEY:
       UNITY_VERSION:
     ports:
       - "9000-9499:9339"
