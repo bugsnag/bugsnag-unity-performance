@@ -13,7 +13,6 @@ public class SceneLoadByIndex : Scenario
 
     public override void Run()
     {
-        Debug.Log("Should load other scene");
         BugsnagSceneManager.LoadScene(1);
     }
 }
