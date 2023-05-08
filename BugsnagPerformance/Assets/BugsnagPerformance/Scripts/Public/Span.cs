@@ -8,12 +8,12 @@ namespace BugsnagUnityPerformance
     public class Span
     {
         
-        public string Name { get; }
+        public string Name { get; internal set; }
         public SpanKind Kind { get; }
         public string Id { get; }
         public string TraceId { get; }
         public DateTimeOffset StartTime { get; }
-        public DateTimeOffset EndTime { get; private set; }
+        public DateTimeOffset EndTime { get; internal set; }
         internal List<AttributeModel> Attributes = new List<AttributeModel>();
         private bool _ended;
         private object _endLock = new object();
@@ -74,7 +74,17 @@ namespace BugsnagUnityPerformance
             Attributes.Add(new AttributeModel(key, value));
         }
 
-
+        internal void EndSceneLoadSpan(string sceneName)
+        {
+            // no need for thread safe checks as all scene load events happen on the main thread.
+            _ended = true;
+            EndTime = DateTimeOffset.Now;
+            Name = "[ViewLoad/Scene]" + sceneName;
+            SetAttribute("bugsnag.span_category", "view_load");
+            SetAttribute("bugsnag.view.type", "scene");
+            SetAttribute("bugsnag.view.name", sceneName);
+            Tracer.OnSpanEnd(this);
+        }
 
     }
 }

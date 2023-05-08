@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ApiKey: 298c990a3eb0b4d6ba1aad01ff1886a5
-  Endpoint: 
+  Endpoint: https://webhook.site/26280f73-cc6f-42b2-a487-227f5918a056
   ReleaseStage: 
 --- !u!4 &25483176
 Transform:
