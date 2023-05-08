@@ -39,6 +39,7 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
+
         private static string GetConnectionType()
         {
             switch (Application.internetReachability)
@@ -52,6 +53,12 @@ namespace BugsnagUnityPerformance
                 default:
                     return string.Empty;
             }
+        }
+
+        internal static Span CreateSceneLoadSpan()
+        {
+            var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, DateTimeOffset.Now);
+            return span;
         }
     }
 }

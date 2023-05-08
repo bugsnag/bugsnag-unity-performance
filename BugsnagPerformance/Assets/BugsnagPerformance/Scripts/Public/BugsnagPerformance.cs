@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace BugsnagUnityPerformance
 {
@@ -23,6 +25,14 @@ namespace BugsnagUnityPerformance
 
         private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
+        // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
+        private static Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
+
+        internal class SceneLoadSpanContainer
+        {
+            public string SceneName;
+            public List<Span> Spans = new List<Span>();
+        }
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -36,9 +46,72 @@ namespace BugsnagUnityPerformance
                 Configuration = configuration;
                 Delivery.FlushCache();
                 SetupNetworkListener();
+                SetupSceneLoadListeners();
                 Tracer.StartTracerWorker();
                 IsStarted = true;
             }
+        }
+
+        private static void SetupSceneLoadListeners()
+        {
+            BugsnagSceneManager.OnSeceneLoad.AddListener(OnSceneLoadStart);
+            SceneManager.sceneLoaded += OnSceneLoadEnd;
+        }
+
+        private static void OnSceneLoadStart(object sceneId)
+        {
+            var sceneName = GetSceneNameFromSceneId(sceneId);
+            AddSceneLoadInstance(sceneName);
+        }
+
+        private static string GetSceneNameFromSceneId(object sceneId)
+        {
+            string sceneName;
+            if (sceneId is int)
+            {
+                var path = SceneUtility.GetScenePathByBuildIndex((int)sceneId);
+                sceneName = Path.GetFileNameWithoutExtension(path);
+                Debug.Log("Got scene name from index: " + sceneName);
+            }
+            else
+            {
+                sceneName = sceneId as string;
+            }
+            return sceneName;
+        }
+
+        private static void AddSceneLoadInstance(string sceneName)
+        {
+            if (!_sceneLoadSpans.ContainsKey(sceneName))
+            {
+                var spanLoadInstance = new SceneLoadSpanContainer();
+                _sceneLoadSpans.Add(sceneName, spanLoadInstance);
+            }
+            _sceneLoadSpans[sceneName].Spans.Add(SpanFactory.CreateSceneLoadSpan());
+        }
+
+        private static void OnSceneLoadEnd(Scene scene, LoadSceneMode mode)
+        {
+            var span = GetSceneLoadSpan(scene);
+            if (span != null)
+            {
+                span.EndSceneLoadSpan(scene.name);
+            }
+        }
+
+        private static Span GetSceneLoadSpan(Scene scene)
+        {
+            if (_sceneLoadSpans.ContainsKey(scene.name))
+            {
+                var container = _sceneLoadSpans[scene.name];
+                if (container.Spans.Count > 0)
+                {
+                    var span = container.Spans[0];
+                    container.Spans.RemoveAt(0);
+                    return span;
+                }
+            }
+            return null;
         }
 
         private static void SetupNetworkListener()
