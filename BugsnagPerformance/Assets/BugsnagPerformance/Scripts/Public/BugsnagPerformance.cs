@@ -25,6 +25,7 @@ namespace BugsnagUnityPerformance
 
         private static Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
+        // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
         private static Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
 
         internal class SceneLoadSpanContainer
