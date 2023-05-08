@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    [Serializable]
     internal class ResourceModel
     {
 
-        private static AttributeModel[] _resourceData;
+        private static List<AttributeModel> _resourceData;
 
-        public AttributeModel[] attributes;
+        public List<AttributeModel> attributes;
 
         public ResourceModel()
         {
@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
         {
             if (_resourceData == null)
             {
-                _resourceData = new AttributeModel[]
+                _resourceData = new List<AttributeModel>
                {
                     new AttributeModel("deployment.environment", BugsnagPerformance.Configuration.ReleaseStage),
 
@@ -39,18 +39,28 @@ namespace BugsnagUnityPerformance
                     new AttributeModel("bugsnag.app.platform", GetPlatform()),
 
                     new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
-
-                    GetMobileBuildNumber(),
-
-                    GetMobileManufacturer(),
-
-                    GetMobileArch()
-
                };
+                var mobileBuildNumber = GetMobileBuildNumber();
+                if (mobileBuildNumber != null)
+                {
+                    _resourceData.Add(mobileBuildNumber);
+                }
+
+                var mobileManufacturer = GetMobileManufacturer();
+                if (mobileManufacturer != null)
+                {
+                    _resourceData.Add(mobileManufacturer);
+                }
+
+                var mobileArch = GetMobileArch();
+                if (mobileArch != null)
+                {
+                    _resourceData.Add(mobileArch);
+                }
             }
         }
 
-        private static AttributeModel[] GetResourceData()
+        private static List<AttributeModel> GetResourceData()
         {
             return _resourceData;
         }
@@ -88,8 +98,6 @@ namespace BugsnagUnityPerformance
             return new AttributeModel("host.arch", AndroidNative.GetArch());
 #endif
         }
-
-
 
         private static AttributeModel GetMobileManufacturer()
         {
