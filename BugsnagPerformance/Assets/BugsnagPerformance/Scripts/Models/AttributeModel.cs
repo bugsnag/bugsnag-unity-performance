@@ -1,17 +1,38 @@
-﻿using System;
-namespace BugsnagUnityPerformance
+﻿namespace BugsnagUnityPerformance
 {
-    [Serializable]
+
     internal class AttributeModel
     {
         public string key;
-        // need to work out a way to support serialising attributes with different value types
-        public AttributeStringValueModel value;
+
+        public AttributeValueModel value;
+
+        public AttributeModel() { }
 
         public AttributeModel(string key, string value)
         {
             this.key = key;
-            this.value = new AttributeStringValueModel( value );
+            this.value = new AttributeStringValueModel(value);
+        }
+
+        public AttributeModel(string key, int value)
+        {
+            this.key = key;
+            this.value = new AttributeIntValueModel(value);
+        }
+
+        public AttributeModel(string key, bool value)
+        {
+            this.key = key;
+            this.value = new AttributeBoolValueModel(value);
+        }
+
+        public AttributeModel(string key, double value)
+        {
+            this.key = key;
+            this.value = new AttributeDoubleValueModel(value);
         }
     }
+
 }
+

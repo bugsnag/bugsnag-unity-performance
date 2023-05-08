@@ -1,7 +1,5 @@
-﻿using System;
-namespace BugsnagUnityPerformance
+﻿namespace BugsnagUnityPerformance
 {
-    [Serializable]
     internal class ScopeSpanModel
     {
         public SpanModel[] spans;

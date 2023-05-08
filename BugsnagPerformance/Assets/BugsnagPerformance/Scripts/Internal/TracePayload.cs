@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
+
 namespace BugsnagUnityPerformance
 {
     internal class TracePayload
     {
-
 
         public string PayloadId;
 
@@ -43,7 +44,7 @@ namespace BugsnagUnityPerformance
                 {
                     resourceSpans = resourceSpans
                 };
-                _jsonbody = JsonUtility.ToJson(serialiseablePayload);
+                _jsonbody = JsonConvert.SerializeObject(serialiseablePayload);
             }            
             return _jsonbody;
         }
