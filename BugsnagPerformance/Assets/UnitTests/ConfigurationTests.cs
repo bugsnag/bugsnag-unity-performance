@@ -45,7 +45,7 @@ namespace Tests
             var span = BugsnagPerformance.StartSpan("test");
             Assert.AreEqual("test", span.Name);
             Assert.AreEqual(SpanKind.SPAN_KIND_INTERNAL, span.Kind);
-            Assert.AreEqual(36, span.TraceId.Length);
+            Assert.AreEqual(32, span.TraceId.Length);
         }
     }
 }
