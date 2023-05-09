@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
 using BugsnagNetworking;
 using UnityEngine;
 
@@ -7,15 +9,20 @@ namespace BugsnagUnityPerformance
     internal class SpanFactory
     {
 
+        private static RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
+
         private static string GetNewTraceId()
         {
-            return Guid.NewGuid().ToString();
+            byte[] byteArray = new byte[16];
+            _rNGCryptoServiceProvider.GetBytes(byteArray);
+            return byteArray.Aggregate("", (s, b) => s + $"{b:x2}");
         }
 
         private static string GetNewSpanId()
         {
-            var newId = Guid.NewGuid().ToString().Replace("-",string.Empty);
-            return newId.Substring(0,16);
+            byte[] byteArray = new byte[8];
+            _rNGCryptoServiceProvider.GetBytes(byteArray);
+            return byteArray.Aggregate("", (s, b) => s + $"{b:x2}").Substring(0, 16);
         }
 
         internal static Span StartCustomSpan(string name, DateTimeOffset startTime)
