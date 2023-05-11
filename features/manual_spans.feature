@@ -31,6 +31,9 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.runtime_versions.unity" exists
 
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
+
+
   @android_only
   Scenario: Android Specific Resource Attributes
     When I run the game in the "ManualSpan" state

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using BugsnagNetworking;
-using Codice.Client.BaseCommands;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance

@@ -13,7 +13,6 @@ namespace BugsnagUnityPerformance
         public string SpanId { get; }
         public string TraceId { get; }
         internal string ParentSpanId { get; }
-        internal bool? IsFirstClass { get; }
         public DateTimeOffset StartTime { get; }
         public DateTimeOffset EndTime { get; internal set; }
         internal List<AttributeModel> Attributes = new List<AttributeModel>();
@@ -28,7 +27,10 @@ namespace BugsnagUnityPerformance
             TraceId = traceId;
             StartTime = startTime;
             ParentSpanId = parentSpanId;
-            IsFirstClass = isFirstClass;
+            if (isFirstClass != null)
+            {
+                SetAttribute("bugsnag.span.first_class",isFirstClass.Value);
+            }
         }
 
         public void End()
@@ -74,6 +76,11 @@ namespace BugsnagUnityPerformance
         }
 
         internal void SetAttribute(string key, string value)
+        {
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, bool value)
         {
             Attributes.Add(new AttributeModel(key, value));
         }
