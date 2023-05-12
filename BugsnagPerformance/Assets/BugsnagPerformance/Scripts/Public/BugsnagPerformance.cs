@@ -87,7 +87,7 @@ namespace BugsnagUnityPerformance
                 var spanLoadInstance = new SceneLoadSpanContainer();
                 _sceneLoadSpans.Add(sceneName, spanLoadInstance);
             }
-            _sceneLoadSpans[sceneName].Spans.Add(SpanFactory.CreateSceneLoadSpan());
+            _sceneLoadSpans[sceneName].Spans.Add(SpanFactory.CreateAutomaticSceneLoadSpan());
         }
 
         private static void OnSceneLoadEnd(Scene scene, LoadSceneMode mode)
@@ -123,7 +123,7 @@ namespace BugsnagUnityPerformance
 
         private static void OnRequestSend(BugsnagUnityWebRequest request)
         {
-            var span = SpanFactory.CreateNetworkSpan(request);
+            var span = SpanFactory.CreateAutomaticNetworkSpan(request);
             lock (_networkSpansLock)
             {
                 _networkSpans[request] = span;
@@ -160,14 +160,14 @@ namespace BugsnagUnityPerformance
 
         public static Span StartSpan(string name)
         {
-            return StartSpan(name, DateTimeOffset.Now);
+            return StartSpan(name, new SpanOptions());
         }
 
-        public static Span StartSpan(string name, DateTimeOffset startTime)
+        public static Span StartSpan(string name, SpanOptions spanOptions)
         {
             lock (_startSpanLock)
             {
-                return SpanFactory.StartCustomSpan(name, startTime);
+                return SpanFactory.StartCustomSpan(name, spanOptions);
             }
         }
     }

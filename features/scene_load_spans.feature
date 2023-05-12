@@ -17,6 +17,9 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "Scene1"
 
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
+
+
 
   Scenario: Load Scene By Index
     When I run the game in the "SceneLoadByIndex" state
@@ -32,6 +35,8 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "Scene1"
 
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
+
 
 Scenario: Load Scene Async
     When I run the game in the "SceneLoadAsync" state
@@ -43,6 +48,8 @@ Scenario: Load Scene Async
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "view_load"
 
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
+
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.type" equals "scene"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "Scene1"
@@ -50,4 +57,5 @@ Scenario: Load Scene Async
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" string attribute "bugsnag.view.name" equals "Scene2"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2" string attribute "bugsnag.view.name" equals "Scene3"
+
 
