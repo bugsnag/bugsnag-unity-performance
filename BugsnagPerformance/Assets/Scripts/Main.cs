@@ -5,6 +5,7 @@ using BugsnagUnityPerformance;
 using System;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class Main : MonoBehaviour
 {
@@ -56,5 +57,24 @@ public class Main : MonoBehaviour
     {
         BugsnagSceneManager.LoadScene(1,LoadSceneMode.Additive);
     }
-   
+
+    public void DoNestedSpanMainThread()
+    {
+        var span1 = BugsnagPerformance.StartSpan("Span1");
+        var span2 = BugsnagPerformance.StartSpan("Span2");
+        span2.End();
+        span1.End();
+    }
+
+    public void DoNestedSpanThreaded()
+    {
+        var span1 = BugsnagPerformance.StartSpan("Span1");
+        new Thread(() => {
+            var span2 = BugsnagPerformance.StartSpan("Span2");
+            span2.End();
+        }).Start();
+        
+        span1.End();
+    }
+
 }

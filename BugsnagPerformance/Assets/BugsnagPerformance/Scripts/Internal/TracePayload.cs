@@ -44,7 +44,10 @@ namespace BugsnagUnityPerformance
                 {
                     resourceSpans = resourceSpans
                 };
-                _jsonbody = JsonConvert.SerializeObject(serialiseablePayload);
+                _jsonbody = JsonConvert.SerializeObject(serialiseablePayload, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
             }            
             return _jsonbody;
         }
