@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using BugsnagNetworking;
 using UnityEngine;
@@ -7,6 +8,9 @@ namespace BugsnagUnityPerformance
 {
     internal class SpanFactory
     {
+
+        [ThreadStatic]
+        private static Stack<ISpanContext> _contextStack;
 
         private static RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 
@@ -50,25 +54,29 @@ namespace BugsnagUnityPerformance
                         
             if (spanOptions.ParentContext != null)
             {
-                //TODO if not already in stack, add provided parent span to the context stack 
+                AddToContextStack(spanOptions.ParentContext);
             }
 
-            // TODO check for existing context
-            // if context exists, use the trace id from the existing context
-            // also use the current context spanid as the ParentSpanId
-
+            string traceId = string.Empty;
+            string parentSpanId = null;
             string spanId = GetNewSpanId();
-            string parentSpanId = string.Empty;
 
-            // TODO if no context exists then create a new trace id
-            string traceId = GetNewTraceId();
-
+            var existingContext = GetCurrentContext();
+            if (existingContext != null)
+            {
+                traceId = existingContext.TraceId;
+                parentSpanId = existingContext.SpanId;
+            }
+            else
+            {
+                traceId = GetNewTraceId();
+            }
 
             var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass);
 
             if (spanOptions.MakeCurrentContext)
             {
-                //TODO add new span to the context stack
+                AddToContextStack(newSpan);
             }
 
             return newSpan;
@@ -112,6 +120,27 @@ namespace BugsnagUnityPerformance
             var spanOptions = new SpanOptions { IsFirstClass = true };
             var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
             return span;
+        }
+
+        private static ISpanContext GetCurrentContext()
+        {
+            if (_contextStack != null && _contextStack.Count > 0)
+            {
+                return _contextStack.Peek();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static void AddToContextStack(ISpanContext spanContext)
+        {
+            if (_contextStack == null)
+            {
+                _contextStack = new Stack<ISpanContext>();
+            }
+            _contextStack.Push(spanContext);
         }
     }
 }

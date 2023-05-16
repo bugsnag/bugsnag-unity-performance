@@ -10,6 +10,7 @@ namespace BugsnagUnityPerformance
         public string traceId;
         public string startTimeUnixNano;
         public string endTimeUnixNano;
+        public string parentSpanId;
         public List<AttributeModel> attributes = new List<AttributeModel>();
 
         public SpanModel(Span span)
@@ -18,6 +19,7 @@ namespace BugsnagUnityPerformance
             kind = (int)span.Kind;
             spanId = span.SpanId;
             traceId = span.TraceId.Replace("-",string.Empty);
+            parentSpanId = span.ParentSpanId;
             startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
             endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
             foreach (var attr in span.Attributes)
