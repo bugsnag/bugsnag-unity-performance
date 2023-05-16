@@ -51,7 +51,7 @@ namespace BugsnagUnityPerformance
         internal static Span CreateNetworkSpan(BugsnagUnityWebRequest request)
         {
             var verb = request.method.ToUpper();
-            var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, DateTimeOffset.Now);
+            var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, DateTimeOffset.UtcNow);
             span.SetAttribute("bugsnag.span_category", "network");
             span.SetAttribute("http.url", request.url);
             span.SetAttribute("http.method", verb);
@@ -77,7 +77,7 @@ namespace BugsnagUnityPerformance
 
         internal static Span CreateSceneLoadSpan()
         {
-            var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, DateTimeOffset.Now);
+            var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, DateTimeOffset.UtcNow);
             return span;
         }
     }

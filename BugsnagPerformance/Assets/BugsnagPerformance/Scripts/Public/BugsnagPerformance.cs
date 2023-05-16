@@ -160,7 +160,7 @@ namespace BugsnagUnityPerformance
 
         public static Span StartSpan(string name)
         {
-            return StartSpan(name, DateTimeOffset.Now);
+            return StartSpan(name, DateTimeOffset.UtcNow);
         }
 
         public static Span StartSpan(string name, DateTimeOffset startTime)
