@@ -54,7 +54,7 @@ namespace BugsnagUnityPerformance
 
         private static void SetupSceneLoadListeners()
         {
-            BugsnagSceneManager.OnSeceneLoad.AddListener(OnSceneLoadStart);
+            BugsnagSceneManager.OnSceneLoad.AddListener(OnSceneLoadStart);
             SceneManager.sceneLoaded += OnSceneLoadEnd;
         }
 

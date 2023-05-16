@@ -9,7 +9,7 @@ namespace BugsnagUnityPerformance
     public class BugsnagSceneManager
     {
 
-        public static SceneEvent OnSeceneLoad = new SceneEvent();
+        public static SceneEvent OnSceneLoad = new SceneEvent();
 
         public static int sceneCount => SceneManager.sceneCount;
 
@@ -51,37 +51,37 @@ namespace BugsnagUnityPerformance
 
         public static void LoadScene(int sceneBuildIndex, LoadSceneMode mode = LoadSceneMode.Single)
         {
-            OnSeceneLoad.Invoke(sceneBuildIndex);
+            OnSceneLoad.Invoke(sceneBuildIndex);
             SceneManager.LoadScene(sceneBuildIndex, mode);
         }
 
         public static void LoadScene(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
         {
-            OnSeceneLoad.Invoke(sceneName);
+            OnSceneLoad.Invoke(sceneName);
             SceneManager.LoadScene(sceneName, mode);
         }
 
         public static AsyncOperation LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
         {
-            OnSeceneLoad.Invoke(sceneName);
+            OnSceneLoad.Invoke(sceneName);
             return SceneManager.LoadSceneAsync(sceneName, mode);
         }
 
         public static AsyncOperation LoadSceneAsync(int sceneBuildIndex, LoadSceneMode mode = LoadSceneMode.Single)
         {
-            OnSeceneLoad.Invoke(sceneBuildIndex);
+            OnSceneLoad.Invoke(sceneBuildIndex);
             return SceneManager.LoadSceneAsync(sceneBuildIndex, mode);
         }
 
         public static AsyncOperation LoadSceneAsync(string sceneName, LoadSceneParameters parameters)
         {
-            OnSeceneLoad.Invoke(sceneName);
+            OnSceneLoad.Invoke(sceneName);
             return SceneManager.LoadSceneAsync(sceneName, parameters);
         }
 
         public static AsyncOperation LoadSceneAsync(int sceneBuildIndex, LoadSceneParameters parameters)
         {
-            OnSeceneLoad.Invoke(sceneBuildIndex);
+            OnSceneLoad.Invoke(sceneBuildIndex);
             return SceneManager.LoadSceneAsync(sceneBuildIndex, parameters);
         }
 
