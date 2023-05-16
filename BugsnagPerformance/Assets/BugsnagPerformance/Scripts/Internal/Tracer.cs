@@ -15,7 +15,7 @@ namespace BugsnagUnityPerformance
 
         private static WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
-        private static DateTimeOffset _lastBatchSendTime = DateTimeOffset.Now;        
+        private static DateTimeOffset _lastBatchSendTime = DateTimeOffset.UtcNow;        
 
 
         public static void  StartTracerWorker()
@@ -78,7 +78,7 @@ namespace BugsnagUnityPerformance
                 }
                 if (BugsnagPerformance.IsStarted)
                 {
-                    _lastBatchSendTime = DateTimeOffset.Now;
+                    _lastBatchSendTime = DateTimeOffset.UtcNow;
                     Delivery.Deliver(batch);
                 }
                 else
@@ -95,7 +95,7 @@ namespace BugsnagUnityPerformance
 
         private static bool BatchDue()
         {
-            return (DateTimeOffset.Now - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
+            return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
         }
 
     }

@@ -43,7 +43,7 @@ namespace BugsnagUnityPerformance
                 }
                 _ended = true;
             }
-            EndTime = DateTimeOffset.Now;
+            EndTime = DateTimeOffset.UtcNow;
             Tracer.OnSpanEnd(this);
         }
 
@@ -58,7 +58,7 @@ namespace BugsnagUnityPerformance
                 _ended = true;
             }
 
-            EndTime = DateTimeOffset.Now;
+            EndTime = DateTimeOffset.UtcNow;
 
             SetAttribute("http.status_code", request.responseCode.ToString());
 
@@ -89,7 +89,7 @@ namespace BugsnagUnityPerformance
         {
             // no need for thread safe checks as all scene load events happen on the main thread.
             _ended = true;
-            EndTime = DateTimeOffset.Now;
+            EndTime = DateTimeOffset.UtcNow;
             Name = "[ViewLoad/Scene]" + sceneName;
             SetAttribute("bugsnag.span_category", "view_load");
             SetAttribute("bugsnag.view.type", "scene");
