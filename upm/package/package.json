@@ -1,0 +1,15 @@
+{
+  "name": "com.bugsnag.unityperformance",
+  "version": "VERSION_STRING",
+  "displayName": "TBD",
+  "description": "TBD",
+  "unity": "2018.1",
+  "documentationUrl": "TBD",
+  "changelogUrl": "TBD",
+  "licensesUrl": "TBD",
+  "author": {
+    "name": "Bugsnag",
+    "email": "support@bugsnag.com",
+    "url": "https://www.bugsnag.com/"
+  }
+}
