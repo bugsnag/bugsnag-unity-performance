@@ -60,12 +60,13 @@ Feature: Nested Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.traceId" does not equal the stored value "parent_trace_id"
 
 
+Scenario: Make Current Context
+    When I run the game in the "MakeCurrentContext" state
+    And I wait for 2 spans
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
-
-
-
-
-
-
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.parentSpanId" is null
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.parentSpanId" is null
 
 
