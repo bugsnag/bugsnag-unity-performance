@@ -11,6 +11,7 @@ namespace BugsnagUnityPerformance
 
         public string PayloadId;
 
+        private ResourceModel _resourceModel;
         private List<SpanModel> _spans = new List<SpanModel>();
 
         // Temporary method to allow hard coding the Bugsnag-Span-Sampling header until sampling is properly implemented
@@ -18,8 +19,9 @@ namespace BugsnagUnityPerformance
 
         private string _jsonbody;
 
-        public TracePayload(List<Span> spans)
+        public TracePayload(ResourceModel resourceModel, List<Span> spans)
         {
+            _resourceModel = resourceModel;
             PayloadId = Guid.NewGuid().ToString();
             foreach (var span in spans)
             {
@@ -39,7 +41,7 @@ namespace BugsnagUnityPerformance
             if (string.IsNullOrEmpty(_jsonbody))
             {
                 var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
-                var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(scopeSpans) };
+                var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(_resourceModel, scopeSpans) };
                 var serialiseablePayload = new TracePayloadBody()
                 {
                     resourceSpans = resourceSpans

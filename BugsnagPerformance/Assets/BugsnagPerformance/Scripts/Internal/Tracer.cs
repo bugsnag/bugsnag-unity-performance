@@ -6,19 +6,39 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class Tracer
+    internal class Tracer: IPhasedStartup
     {
+        private int _maxBatchSize = 100;
 
-        private static List<Span> _spanQueue = new List<Span>();
+        private float _maxBatchAgeSeconds = 30f;
 
-        private static object _queueLock = new object();
+        private List<Span> _spanQueue = new List<Span>();
 
-        private static WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
+        private object _queueLock = new object();
 
-        private static DateTimeOffset _lastBatchSendTime = DateTimeOffset.UtcNow;        
+        private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
+        private DateTimeOffset _lastBatchSendTime = DateTimeOffset.UtcNow;
 
-        public static void  StartTracerWorker()
+        private Delivery _delivery;
+
+        public Tracer(Delivery delivery)
+        {
+            _delivery = delivery;
+        }
+
+        public void Configure(PerformanceConfiguration config)
+        {
+            _maxBatchSize = config.MaxBatchSize;
+            _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
+        }
+
+        public void Start()
+        {
+            StartTracerWorker();
+        }
+
+        private void StartTracerWorker()
         {
             try
             {
@@ -30,7 +50,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static IEnumerator Worker()
+        private IEnumerator Worker()
         {
             while (true)
             {
@@ -42,13 +62,13 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public static void OnSpanEnd(Span span)
+        public void OnSpanEnd(Span span)
         {
             //TODO check sampling logic to see if span should be ignored
             AddSpanToQueue(span);
         }
 
-        private static void AddSpanToQueue(Span span)
+        private void AddSpanToQueue(Span span)
         {
             var deliverBatch = false;
             lock (_queueLock)
@@ -62,7 +82,7 @@ namespace BugsnagUnityPerformance
             }
         }   
        
-        private static void DeliverBatch()
+        private void DeliverBatch()
         {
             new Thread(()=>
             {
@@ -79,7 +99,7 @@ namespace BugsnagUnityPerformance
                 if (BugsnagPerformance.IsStarted)
                 {
                     _lastBatchSendTime = DateTimeOffset.UtcNow;
-                    Delivery.Deliver(batch);
+                    _delivery.Deliver(batch);
                 }
                 else
                 {
@@ -88,16 +108,15 @@ namespace BugsnagUnityPerformance
             }).Start();
         }
 
-        private static bool BatchSizeLimitReached()
+        private bool BatchSizeLimitReached()
         {
-            return _spanQueue.Count >= PerformanceConfiguration.MaxBatchSize;
+            return _spanQueue.Count >= _maxBatchSize;
         }
 
-        private static bool BatchDue()
+        private bool BatchDue()
         {
-            return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > PerformanceConfiguration.MaxBatchAgeSeconds;
+            return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
         }
-
     }
 }
 

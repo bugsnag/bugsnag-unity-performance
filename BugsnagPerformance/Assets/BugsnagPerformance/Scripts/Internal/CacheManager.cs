@@ -6,24 +6,32 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class CacheManager
+    internal class CacheManager: IPhasedStartup
     {
-
-        private static string _cacheDirectory
-        {
-            get { return Application.persistentDataPath + "/bugsnag-performance/v1"; }
-        }
-
-        // Must be set to this path to share with the bugsnag unity notifier
-        private static string _deviceidFilePath
-        {
-            get { return Application.persistentDataPath + "/Bugsnag/deviceId.txt"; }
-        }
+        private int _maxPersistedBatchAgeSeconds;
+        private string _cacheDirectory;
+        private string _deviceidFilePath;
 
         private const string BATCH_FILE_SUFFIX = ".json";
 
+        public CacheManager(string basePath)
+        {
+            _cacheDirectory = basePath + "/bugsnag-performance/v1";
+            // Must be set to this path to share with the bugsnag unity notifier
+            _deviceidFilePath = basePath + "/Bugsnag/deviceId.txt";
+        }
 
-        public static string GetDeviceId()
+        public void Configure(PerformanceConfiguration config)
+        {
+            _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
+        }
+
+        public void Start()
+        {
+            // Nothing to do
+        }
+
+        public string GetDeviceId()
         {
             try
             {
@@ -47,7 +55,7 @@ namespace BugsnagUnityPerformance
 
         
 
-        public static void CacheBatch(TracePayload payload)
+        public void CacheBatch(TracePayload payload)
         {
             var existingBatches = GetCachedBatchPaths();
             foreach (var path in existingBatches)
@@ -61,7 +69,7 @@ namespace BugsnagUnityPerformance
             WriteFile(newPath, payload.GetJsonBody());
         }
 
-        public static List<TracePayload> GetCachedBatchesForDelivery()
+        public List<TracePayload> GetCachedBatchesForDelivery()
         {
             RemoveExpiredPayloads();
             var existingBatches = GetCachedBatchPaths();
@@ -76,7 +84,7 @@ namespace BugsnagUnityPerformance
             return payloads;
         }
 
-        public static void RemoveCachedBatch(string id)
+        public void RemoveCachedBatch(string id)
         {
             var paths = GetCachedBatchPaths();
             foreach (var path in paths)
@@ -88,21 +96,21 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static void RemoveExpiredPayloads()
+        private void RemoveExpiredPayloads()
         {
             var paths = GetCachedBatchPaths();
             foreach (var path in paths)
             {
                 var creationTime = File.GetCreationTimeUtc(path);
                 var timeSinceCreation = DateTimeOffset.UtcNow - creationTime;
-                if (timeSinceCreation.TotalSeconds > PerformanceConfiguration.MaxPersistedBatchAgeSeconds)
+                if (timeSinceCreation.TotalSeconds > _maxPersistedBatchAgeSeconds)
                 {
                     DeleteFile(path);
                 }
             }
         }
 
-        private static void DeleteFile(string path)
+        private void DeleteFile(string path)
         {
             try
             {
@@ -114,7 +122,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static void WriteFile(string path, string data)
+        private void WriteFile(string path, string data)
         {
             try
             {
@@ -124,7 +132,7 @@ namespace BugsnagUnityPerformance
             catch { }
         }
 
-        private static string GetJsonFromCachePath(string path)
+        private string GetJsonFromCachePath(string path)
         {
             try
             {
@@ -137,7 +145,7 @@ namespace BugsnagUnityPerformance
             return null;
         }
 
-        private static string[] GetCachedBatchPaths()
+        private string[] GetCachedBatchPaths()
         {
             if (Directory.Exists(_cacheDirectory))
             {
@@ -146,8 +154,5 @@ namespace BugsnagUnityPerformance
             }
             return new string[] { };
         }
-
-       
-
     }
 }
