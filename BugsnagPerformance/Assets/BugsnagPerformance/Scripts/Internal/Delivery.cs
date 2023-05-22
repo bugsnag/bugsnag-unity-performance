@@ -10,23 +10,41 @@ using UnityEngine.Networking;
 
 namespace BugsnagUnityPerformance
 {
-    internal class Delivery
+    internal class Delivery: IPhasedStartup
     {
+        private string _endpoint;
+        private string _apiKey;
 
-        private static PerformanceConfiguration _configuration => BugsnagPerformance.Configuration;
+        private bool _flushingCache;
 
-        private static bool _flushingCache;
+        private ResourceModel _resourceModel;
+        private CacheManager _cacheManager;
 
-        public static void Deliver(List<Span> batch)
+        public Delivery(ResourceModel resourceModel, CacheManager cacheManager)
         {
-            var payload = new TracePayload(batch);
+            _resourceModel = resourceModel;
+            _cacheManager = cacheManager;
+        }
+
+        public void Configure(PerformanceConfiguration config)
+        {
+            _endpoint = config.Endpoint;
+            _apiKey = config.ApiKey;
+        }
+
+        public void Start()
+        {
+            FlushCache();
+        }
+
+        public void Deliver(List<Span> batch)
+        {
+            var payload = new TracePayload(_resourceModel, batch);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
-        static IEnumerator PushToServer(TracePayload payload)
+        private IEnumerator PushToServer(TracePayload payload)
         {
-            // This data must be initialised on the main thread due to unity api usage
-            ResourceModel.InitResourceDataOnMainThread();
             byte[] body = null;           
             // There is no threading on webgl, so we treat the payload differently
             if (Application.platform == RuntimePlatform.WebGLPlayer)
@@ -43,10 +61,10 @@ namespace BugsnagUnityPerformance
                 yield return new WaitUntil(() => bodyReady);
             }
 
-            using (var req = new UnityWebRequest(_configuration.Endpoint))
+            using (var req = new UnityWebRequest(_endpoint))
             {
 
-                req.SetRequestHeader("Bugsnag-Api-Key", _configuration.ApiKey);
+                req.SetRequestHeader("Bugsnag-Api-Key", _apiKey);
                 req.SetRequestHeader("Content-Type", "application/json");
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
@@ -70,7 +88,7 @@ namespace BugsnagUnityPerformance
                 else if (code == 0 || code == 408 || code == 429 || code >= 500)
                 {
                     // sending failed with retryable error, cache for later retry
-                    CacheManager.CacheBatch(payload);
+                    _cacheManager.CacheBatch(payload);
                 }
                 else
                 {
@@ -80,7 +98,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public static void FlushCache()
+        private void FlushCache()
         {
             if (_flushingCache)
             {
@@ -90,9 +108,9 @@ namespace BugsnagUnityPerformance
             MainThreadDispatchBehaviour.Instance().Enqueue(DoFlushCache());
         }
 
-        private static IEnumerator DoFlushCache()
+        private IEnumerator DoFlushCache()
         {
-            var payloads = CacheManager.GetCachedBatchesForDelivery();
+            var payloads = _cacheManager.GetCachedBatchesForDelivery();
             foreach (var payload in payloads)
             {
                 //Process one batch at a time to save on performance costs of web requests
@@ -101,12 +119,12 @@ namespace BugsnagUnityPerformance
             _flushingCache = false;
         }
 
-        private static void PayloadSendSuccess(string id)
+        private void PayloadSendSuccess(string id)
         {
-            CacheManager.RemoveCachedBatch(id);
+            _cacheManager.RemoveCachedBatch(id);
         }
 
-        private static string Hash(byte[] input)
+        private string Hash(byte[] input)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
             {
@@ -119,6 +137,5 @@ namespace BugsnagUnityPerformance
                 return sb.ToString();
             }
         }
-
     }
 }

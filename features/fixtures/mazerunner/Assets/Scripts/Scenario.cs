@@ -42,19 +42,19 @@ public class Scenario : MonoBehaviour
 
     public void SetMaxBatchSize(int size)
     {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchSize", BindingFlags.Static | BindingFlags.NonPublic);
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchSize", BindingFlags.Instance | BindingFlags.NonPublic);
         fieldInfo.SetValue(Configuration, size);
     }
 
     public void SetMaxPersistedBatchAgeSeconds(int seconds)
     {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxPersistedBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxPersistedBatchAgeSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
         fieldInfo.SetValue(Configuration, seconds);
     }
 
     public void SetMaxBatchAgeSeconds(float seconds)
     {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Static | BindingFlags.NonPublic);
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
         fieldInfo.SetValue(Configuration, seconds);
     }
 
