@@ -38,6 +38,8 @@ namespace BugsnagUnityPerformance
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
 
+        public double SamplingProbability = 1.0;
+
         public PerformanceConfiguration(string apiKey)
         {
             ApiKey = apiKey;

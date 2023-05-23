@@ -6,10 +6,11 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class TracePayload
+    public class TracePayload
     {
 
         public string PayloadId;
+        public SortedList<double, int> SamplingHistogram { get;  private set; }
 
         private ResourceModel _resourceModel;
         private List<SpanModel> _spans = new List<SpanModel>();
@@ -28,12 +29,31 @@ namespace BugsnagUnityPerformance
                 _spans.Add(new SpanModel(span));
             }
             BatchSize = spans.Count;
+            SamplingHistogram = CalculateSamplingHistorgram(spans);
         }
 
         public TracePayload(string cachedJson, string payloadId)
         {
             PayloadId = payloadId;
             _jsonbody = cachedJson;
+        }
+
+        private static SortedList<double, int> CalculateSamplingHistorgram(List<Span> spans)
+        {
+            var histogram = new Dictionary<double, int>();
+            foreach (Span span in spans)
+            {
+                var p = span.samplingProbability;
+                if (histogram.ContainsKey(p))
+                {
+                    histogram[p]++;
+                }
+                else
+                {
+                    histogram[p] = 1;
+                }
+            }
+            return new SortedList<double, int>(histogram);
         }
 
         public string GetJsonBody()

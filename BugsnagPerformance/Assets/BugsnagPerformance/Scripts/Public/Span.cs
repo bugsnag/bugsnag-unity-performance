@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    delegate void OnSpanEnd(Span span);
+    public delegate void OnSpanEnd(Span span);
 
     public class Span : ISpanContext
     {
@@ -23,7 +23,7 @@ namespace BugsnagUnityPerformance
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
 
-        internal Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
+        public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
             Name = name;
             Kind = kind;
@@ -103,7 +103,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void UpdateSamplingProbability(double value)
+        public void UpdateSamplingProbability(double value)
         {
             if (samplingProbability > value)
             {
