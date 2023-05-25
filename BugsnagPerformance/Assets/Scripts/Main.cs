@@ -12,6 +12,7 @@ public class Main : MonoBehaviour
     public string ApiKey;
     public string Endpoint;
     public string ReleaseStage;
+    public double P = 1;
 
     void Start()
     {
@@ -24,6 +25,7 @@ public class Main : MonoBehaviour
         {
             config.ReleaseStage = ReleaseStage;
         }
+        config.SamplingProbability = P;
         BugsnagPerformance.Start(config);
     }
 

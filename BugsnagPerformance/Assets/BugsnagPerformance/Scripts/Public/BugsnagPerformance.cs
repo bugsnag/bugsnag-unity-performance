@@ -214,5 +214,10 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        internal static Span CreateAutoAppStartSpan(string name, string category)
+        {
+            return _sharedInstance._spanFactory.CreateAutoAppStartSpan(name,category);
+        }
+
     }
 }

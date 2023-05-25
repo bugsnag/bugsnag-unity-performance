@@ -101,15 +101,10 @@ namespace BugsnagUnityPerformance
                     batch = _spanQueue;
                     _spanQueue = new List<Span>();
                 }
-                if (BugsnagPerformance.IsStarted)
-                {
-                    _lastBatchSendTime = DateTimeOffset.UtcNow;
-                    _delivery.Deliver(batch);
-                }
-                else
-                {
-                    //TODO persist batch for later delivery
-                }                
+
+                _lastBatchSendTime = DateTimeOffset.UtcNow;
+                _delivery.Deliver(batch);
+                          
             }).Start();
         }
 

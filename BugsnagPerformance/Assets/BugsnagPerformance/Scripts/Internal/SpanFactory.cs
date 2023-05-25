@@ -149,5 +149,13 @@ namespace BugsnagUnityPerformance
             }
             _contextStack.Push(spanContext);
         }
+
+        internal Span CreateAutoAppStartSpan(string name, string category)
+        {
+            var spanOptions = new SpanOptions { IsFirstClass = true };
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT, spanOptions);
+            span.SetAttribute("bugsnag.span.category", category);
+            return span;
+        }
     }
 }
