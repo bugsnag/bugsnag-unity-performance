@@ -69,8 +69,15 @@ namespace BugsnagUnityPerformance
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
 
-                //Temporary hardcoded header until sampling is completed
-                req.SetRequestHeader("Bugsnag-Span-Sampling", string.Format("1:{0}", payload.BatchSize));
+                if (payload.SamplingHistogram == null)
+                {
+                    // TODO: Temporarily hardcoded for cached payloads until sampling is completed
+                    req.SetRequestHeader("Bugsnag-Span-Sampling", string.Format("1:{0}", payload.BatchSize));
+                }
+                else
+                {
+                    req.SetRequestHeader("Bugsnag-Span-Sampling", BuildSamplingHistogram(payload));
+                }
 
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
@@ -96,6 +103,21 @@ namespace BugsnagUnityPerformance
                     // do nothing
                 }
             }
+        }
+
+        private static string BuildSamplingHistogram(TracePayload payload)
+        {
+            var builder = new StringBuilder();
+
+            foreach (KeyValuePair<double, int> pair in payload.SamplingHistogram)
+            {
+                builder.Append(pair.Key);
+                builder.Append(':');
+                builder.Append(pair.Value);
+                builder.Append(';');
+            }
+            builder.Remove(builder.Length-1, 1);
+            return builder.ToString();
         }
 
         private void FlushCache()

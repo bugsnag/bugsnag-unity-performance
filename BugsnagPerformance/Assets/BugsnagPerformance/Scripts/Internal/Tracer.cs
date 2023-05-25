@@ -20,10 +20,13 @@ namespace BugsnagUnityPerformance
 
         private DateTimeOffset _lastBatchSendTime = DateTimeOffset.UtcNow;
 
+        private Sampler _sampler;
+
         private Delivery _delivery;
 
-        public Tracer(Delivery delivery)
+        public Tracer(Sampler sampler, Delivery delivery)
         {
+            _sampler = sampler;
             _delivery = delivery;
         }
 
@@ -64,8 +67,10 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
-            //TODO check sampling logic to see if span should be ignored
-            AddSpanToQueue(span);
+            if (_sampler.Sampled(span))
+            {
+                AddSpanToQueue(span);
+            }
         }
 
         private void AddSpanToQueue(Span span)

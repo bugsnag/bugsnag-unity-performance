@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class CacheManager: IPhasedStartup
+    public class CacheManager: IPhasedStartup
     {
         private int _maxPersistedBatchAgeSeconds;
         private string _cacheDirectory;

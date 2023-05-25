@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class ResourceModel: IPhasedStartup
+    public class ResourceModel: IPhasedStartup
     {
         private CacheManager _cacheManager;
 

@@ -50,6 +50,7 @@ namespace BugsnagUnityPerformance
         private CacheManager _cacheManager;
         private Delivery _delivery;
         private ResourceModel _resourceModel;
+        private Sampler _sampler = new Sampler();
         private Tracer _tracer;
 
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
@@ -62,7 +63,7 @@ namespace BugsnagUnityPerformance
             _cacheManager = new CacheManager(Application.persistentDataPath);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager);
-            _tracer = new Tracer(_delivery);
+            _tracer = new Tracer(_sampler, _delivery);
             _spanFactory = new SpanFactory(OnSpanEnd);
         }
 
@@ -77,6 +78,7 @@ namespace BugsnagUnityPerformance
             _cacheManager.Configure(config);
             _delivery.Configure(config);
             _resourceModel.Configure(config);
+            _sampler.Configure(config);
             _tracer.Configure(config);
         }
 
@@ -85,6 +87,7 @@ namespace BugsnagUnityPerformance
             _cacheManager.Start();
             _delivery.Start();
             _resourceModel.Start();
+            _sampler.Start();
             _tracer.Start();
 
             SetupNetworkListener();

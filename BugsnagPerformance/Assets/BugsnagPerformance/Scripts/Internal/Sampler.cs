@@ -2,14 +2,24 @@
 
 namespace BugsnagUnityPerformance
 {
-    public class Sampler : MonoBehaviour
+    public class Sampler : IPhasedStartup
     {
         public double probability;
 
+        public void Configure(PerformanceConfiguration config)
+        {
+            probability = config.SamplingProbability;
+        }
+
+        public void Start()
+        {
+            // Nothing to do
+        }
+
         public bool Sampled(Span span)
         {
-            double p = probability;
-            bool isSampled = IsSampled(span, GetUpperBound(p));
+            var p = probability;
+            var isSampled = IsSampled(span, GetUpperBound(p));
             if (isSampled)
             {
                 span.UpdateSamplingProbability(p);
@@ -17,13 +27,13 @@ namespace BugsnagUnityPerformance
             return isSampled;
         }
 
-        private bool IsSampled(Span span, uint upperBound)
+        private bool IsSampled(Span span, ulong upperBound)
         {
-            uint traceId = uint.Parse(span.TraceId.Substring(0, 15), System.Globalization.NumberStyles.HexNumber);
+            var traceId = ulong.Parse(span.TraceId.Substring(0, 16), System.Globalization.NumberStyles.HexNumber);
             return traceId <= upperBound;
         }
 
-        private uint GetUpperBound(double p)
+        private ulong GetUpperBound(double p)
         {
             if (p <= 0)
             {
@@ -31,9 +41,9 @@ namespace BugsnagUnityPerformance
             }
             if (p >= 1.0)
             {
-                return uint.MaxValue;
+                return ulong.MaxValue;
             }
-            return (uint)(p * (double)uint.MaxValue);
+            return (ulong)(p * (double)ulong.MaxValue);
         }
     }
 }
