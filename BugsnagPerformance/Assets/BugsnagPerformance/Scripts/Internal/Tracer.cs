@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class Tracer: IPhasedStartup
+    internal class Tracer : IPhasedStartup
     {
         private int _maxBatchSize = 100;
 
@@ -14,7 +14,11 @@ namespace BugsnagUnityPerformance
 
         private List<Span> _spanQueue = new List<Span>();
 
+        private List<Span> _preStartSpans = new List<Span>();
+
         private object _queueLock = new object();
+
+        private object _prestartLock = new object();
 
         private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
@@ -23,6 +27,9 @@ namespace BugsnagUnityPerformance
         private Sampler _sampler;
 
         private Delivery _delivery;
+
+        private bool _started;
+
 
         public Tracer(Sampler sampler, Delivery delivery)
         {
@@ -39,6 +46,8 @@ namespace BugsnagUnityPerformance
         public void Start()
         {
             StartTracerWorker();
+            _started = true;
+            FlushPreStartSpans(); //TODO MAKE THREAD SAFE AND NOT SHIT
         }
 
         private void StartTracerWorker()
@@ -50,6 +59,14 @@ namespace BugsnagUnityPerformance
             catch
             {
                 //Ignore this exception in unit tests, will not be an issue in a build
+            }
+        }
+
+        private void FlushPreStartSpans()
+        {
+            foreach (var span in _preStartSpans)
+            {
+                Sample(span);
             }
         }
 
@@ -67,8 +84,23 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
+            if (!_started)
+            {
+                lock (_prestartLock)
+                {
+                    _preStartSpans.Add(span);
+                }
+                return;
+            }
+            Debug.Log("Span ended: " + span.Name);
+            Sample(span);
+        }
+
+        private void Sample(Span span)
+        {
             if (_sampler.Sampled(span))
             {
+                Debug.Log("Span added to queue: " + span.Name);
                 AddSpanToQueue(span);
             }
         }
@@ -85,11 +117,11 @@ namespace BugsnagUnityPerformance
             {
                 DeliverBatch();
             }
-        }   
-       
+        }
+
         private void DeliverBatch()
         {
-            new Thread(()=>
+            new Thread(() =>
             {
                 List<Span> batch = null;
                 lock (_queueLock)
@@ -104,7 +136,7 @@ namespace BugsnagUnityPerformance
 
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);
-                          
+
             }).Start();
         }
 

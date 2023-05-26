@@ -20,6 +20,7 @@ namespace BugsnagUnityPerformance
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void SubsystemRegistration()
         {
+            Debug.Log("SubsystemRegistration");
             _rootSpan = CreateAppStartSpan("[AppStart/UnityRuntime]", "app_start");
 
             _loadAssembliesSpan = CreateAppStartSpan("[AppStartPhase/LoadAssemblies]", "app_start_phase");
@@ -29,12 +30,14 @@ namespace BugsnagUnityPerformance
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         static void AfterAssembliesLoaded()
         {
+            Debug.Log("AfterAssembliesLoaded");
             EndSpan(_loadAssembliesSpan);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         static void BeforeSplashScreen()
         {
+            Debug.Log("BeforeSplashScreen");
             _splashScreenSpan = CreateAppStartSpan("[AppStartPhase/SplashScreen]", "app_start_phase");
             _splashScreenSpan.SetAttribute("bugsnag.phase", "SplashScreen");
         }
@@ -42,6 +45,7 @@ namespace BugsnagUnityPerformance
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void BeforeSceneLoad()
         {
+            Debug.Log("BeforeSceneLoad");
             _firstSceneSpan = CreateAppStartSpan("[AppStartPhase/LoadFirstScene]", "app_start_phase");
             _firstSceneSpan.SetAttribute("bugsnag.phase", "LoadFirstScene");
         }
@@ -49,6 +53,7 @@ namespace BugsnagUnityPerformance
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void AfterSceneLoad()
         {
+            Debug.Log("AfterSceneLoad");
             EndSpan(_splashScreenSpan);
             EndSpan(_firstSceneSpan);
             EndSpan(_rootSpan);
