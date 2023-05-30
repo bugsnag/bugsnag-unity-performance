@@ -19,7 +19,6 @@ namespace BugsnagUnityPerformance
         public bool Sampled(Span span)
         {
             var p = probability;
-            Debug.Log(p);
             var isSampled = IsSampled(span, GetUpperBound(p));
             if (isSampled)
             {

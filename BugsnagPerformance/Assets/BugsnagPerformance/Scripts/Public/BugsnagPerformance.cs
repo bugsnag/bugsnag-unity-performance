@@ -60,6 +60,7 @@ namespace BugsnagUnityPerformance
 
         private BugsnagPerformance()
         {
+            Debug.Log("CONSTRUC");
             _cacheManager = new CacheManager(Application.persistentDataPath);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager);

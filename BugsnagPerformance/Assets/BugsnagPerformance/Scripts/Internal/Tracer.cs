@@ -47,7 +47,8 @@ namespace BugsnagUnityPerformance
         {
             StartTracerWorker();
             _started = true;
-            FlushPreStartSpans(); //TODO MAKE THREAD SAFE AND NOT SHIT
+            // Flush after setting _started so that no new spans are added to the prestart list during or after flushing
+            FlushPreStartSpans();
         }
 
         private void StartTracerWorker()
@@ -92,7 +93,6 @@ namespace BugsnagUnityPerformance
                 }
                 return;
             }
-            Debug.Log("Span ended: " + span.Name);
             Sample(span);
         }
 
@@ -100,7 +100,6 @@ namespace BugsnagUnityPerformance
         {
             if (_sampler.Sampled(span))
             {
-                Debug.Log("Span added to queue: " + span.Name);
                 AddSpanToQueue(span);
             }
         }

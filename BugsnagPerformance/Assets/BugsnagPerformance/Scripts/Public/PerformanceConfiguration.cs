@@ -34,6 +34,15 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        public enum AutoInstrumentAppStartSetting
+        {
+            OFF,
+            START_ONLY,
+            FULL
+        }
+
+        public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
+
         public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";

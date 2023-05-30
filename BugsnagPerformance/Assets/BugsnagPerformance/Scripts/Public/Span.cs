@@ -19,7 +19,7 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset EndTime { get; internal set; }
         internal List<AttributeModel> Attributes = new List<AttributeModel>();
         internal double samplingProbability { get; private set; }
-        private bool _ended;
+        internal bool Ended;
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
 
@@ -43,11 +43,11 @@ namespace BugsnagUnityPerformance
         {
             lock (_endLock)
             {
-                if (_ended)
+                if (Ended)
                 {
                     return;
                 }
-                _ended = true;
+                Ended = true;
             }
             EndTime = DateTimeOffset.UtcNow;
             _onSpanEnd(this);
@@ -57,11 +57,11 @@ namespace BugsnagUnityPerformance
         {
             lock (_endLock)
             {
-                if (_ended)
+                if (Ended)
                 {
                     return;
                 }
-                _ended = true;
+                Ended = true;
             }
 
             EndTime = DateTimeOffset.UtcNow;
@@ -94,7 +94,7 @@ namespace BugsnagUnityPerformance
         internal void EndSceneLoadSpan(string sceneName)
         {
             // no need for thread safe checks as all scene load events happen on the main thread.
-            _ended = true;
+            Ended = true;
             EndTime = DateTimeOffset.UtcNow;
             Name = "[ViewLoad/Scene]" + sceneName;
             SetAttribute("bugsnag.span_category", "view_load");
