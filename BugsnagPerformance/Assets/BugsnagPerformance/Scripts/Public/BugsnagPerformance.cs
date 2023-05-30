@@ -52,6 +52,7 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private Sampler _sampler = new Sampler();
         private Tracer _tracer;
+        private AppStartHandler _appStartHandler = new AppStartHandler();
 
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
@@ -81,6 +82,7 @@ namespace BugsnagUnityPerformance
             _resourceModel.Configure(config);
             _sampler.Configure(config);
             _tracer.Configure(config);
+            _appStartHandler.Configure(config);
         }
 
         private void Start()
@@ -90,7 +92,7 @@ namespace BugsnagUnityPerformance
             _resourceModel.Start();
             _sampler.Start();
             _tracer.Start();
-
+            _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
             IsStarted = true;
@@ -218,6 +220,14 @@ namespace BugsnagUnityPerformance
         internal static Span CreateAutoAppStartSpan(string name, string category)
         {
             return _sharedInstance._spanFactory.CreateAutoAppStartSpan(name,category);
+        }
+
+        internal static void ProccessAppStartSpans(List<Span> spans)
+        {
+            foreach (var span in spans)
+            {
+                _sharedInstance._tracer.OnSpanEnd(span);
+            }
         }
 
     }

@@ -53,6 +53,19 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
+        internal void EndAppStartSpan(DateTimeOffset? endTime = null)
+        {
+            lock (_endLock)
+            {
+                if (Ended)
+                {
+                    return;
+                }
+                Ended = true;
+            }
+            EndTime = endTime == null ? DateTimeOffset.UtcNow : endTime.Value;
+        }
+
         internal void EndNetworkSpan(BugsnagUnityWebRequest request)
         {
             lock (_endLock)

@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    public class AppStartHandler
+    public class AppStartHandler : IPhasedStartup
     {
 
         private static Span _rootSpan;
@@ -12,9 +13,48 @@ namespace BugsnagUnityPerformance
         private static Span _splashScreenSpan;
         private static Span _firstSceneSpan;
 
+        private static bool _complete;
+        private static DateTimeOffset? _defaultAppStartEndTime = null; 
+
+        private static List<Span> _appStartSpans = new List<Span>();
+
+        private static AutoInstrumentAppStartSetting _appStartSetting = AutoInstrumentAppStartSetting.NONE;
+
+        public void Configure(PerformanceConfiguration config)
+        {
+            _appStartSetting = config.AutoInstrumentAppStart;
+        }
+
+        public void Start()
+        {
+            if (_appStartSetting != AutoInstrumentAppStartSetting.OFF)
+            {
+                MainThreadDispatchBehaviour.Instance().Enqueue(CheckForAppStartCompletion());
+            }
+        }
+
+        private IEnumerator CheckForAppStartCompletion()
+        {
+            while (!_complete)
+            {
+                CheckForAutomaticAppStartEnd();
+                yield return new WaitForSeconds(1);
+            }
+            BugsnagPerformance.ProccessAppStartSpans(_appStartSpans);
+        }
+
         private static Span CreateAppStartSpan(string name, string category)
         {
             return BugsnagPerformance.CreateAutoAppStartSpan(name, category);
+        }
+
+        private static void EndAppStartSpan(Span span, DateTimeOffset? endTime = null)
+        {
+            if (span != null)
+            {
+                span.EndAppStartSpan(endTime);
+                _appStartSpans.Add(span);
+            }
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -31,7 +71,7 @@ namespace BugsnagUnityPerformance
         static void AfterAssembliesLoaded()
         {
             Debug.Log("AfterAssembliesLoaded");
-            EndSpan(_loadAssembliesSpan);
+            EndAppStartSpan(_loadAssembliesSpan);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
@@ -54,17 +94,35 @@ namespace BugsnagUnityPerformance
         static void AfterSceneLoad()
         {
             Debug.Log("AfterSceneLoad");
-            EndSpan(_splashScreenSpan);
-            EndSpan(_firstSceneSpan);
-            EndSpan(_rootSpan);
+            EndAppStartSpan(_splashScreenSpan);
+            EndAppStartSpan(_firstSceneSpan);
+
+            _defaultAppStartEndTime = DateTimeOffset.UtcNow;
         }
 
-        private static void EndSpan(Span span)
+        private void CheckForAutomaticAppStartEnd()
         {
-            if (span != null)
+            if (_defaultAppStartEndTime != null)
             {
-                span.End();
+                if (_appStartSetting == AutoInstrumentAppStartSetting.FULL)
+                {
+                    if (_rootSpan != null && !_rootSpan.Ended)
+                    {
+                        EndAppStartSpan(_rootSpan, _defaultAppStartEndTime);
+                        _complete = true;
+                    }
+                }
             }
         }
+
+        public static void ReportAppStarted()
+        {
+            if (_rootSpan != null && !_rootSpan.Ended)
+            {
+                EndAppStartSpan(_rootSpan);
+                _complete = true;
+            }
+        }
+
     }
 }
