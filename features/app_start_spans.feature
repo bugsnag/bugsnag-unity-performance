@@ -22,6 +22,7 @@ Feature: App Start
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.parentSpanId" equals the stored value "splash_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.parentSpanId" is null
 
+    * the span named "[AppStart/UnityRuntime]" has a maximum duration of 3000000000
 
 Scenario: App Start Start Only
     When I run the game in the "AppStartStartOnly" state
@@ -41,6 +42,8 @@ Scenario: App Start Start Only
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.parentSpanId" equals the stored value "root_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.parentSpanId" equals the stored value "splash_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.parentSpanId" is null
+
+    * the span named "[AppStart/UnityRuntime]" has a minimum duration of 9000000000
 
 Scenario: App Start Off
     When I run the game in the "AppStartOff" state

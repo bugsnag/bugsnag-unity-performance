@@ -113,3 +113,45 @@ rescue Selenium::WebDriver::Error::UnknownError
   # Ignore Appium errors (e.g. during an ANR)
   return false
 end
+
+Then("the span named {string} has a minimum duration of {int}") do |span_name,duration|
+
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
+  raise Test::Unit::AssertionFailedError.new "No spans were found with the name #{span_name}" if spans_with_name.empty?
+  
+  span = spans_with_name.first
+
+  start_time = Integer(span["startTimeUnixNano"])
+
+  end_time = Integer(span["endTimeUnixNano"])
+
+  found_duration = end_time - start_time
+
+  print(found_duration)
+
+  Maze.check.true(found_duration > duration);
+
+end
+
+Then("the span named {string} has a maximum duration of {int}") do |span_name,duration|
+
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
+  raise Test::Unit::AssertionFailedError.new "No spans were found with the name #{span_name}" if spans_with_name.empty?
+  
+  span = spans_with_name.first
+
+  start_time = Integer(span["startTimeUnixNano"])
+
+  end_time = Integer(span["endTimeUnixNano"])
+
+  found_duration = end_time - start_time
+
+  print(found_duration)
+
+  Maze.check.true(found_duration < duration);
+
+end
