@@ -7,6 +7,7 @@ public class AppStartFull : Scenario
     public override void PrepareConfig(string apiKey, string host)
     {
         base.PrepareConfig(apiKey, host);
-        SetMaxBatchAgeSeconds(10);
+        SetMaxBatchAgeSeconds(5);
+        Configuration.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
     }
 }

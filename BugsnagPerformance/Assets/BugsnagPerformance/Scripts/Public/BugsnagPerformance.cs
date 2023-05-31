@@ -230,5 +230,10 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        public static void ReportAppStarted()
+        {
+            AppStartHandler.ReportAppStarted();
+        }
+
     }
 }

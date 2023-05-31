@@ -13,12 +13,12 @@ namespace BugsnagUnityPerformance
         private static Span _splashScreenSpan;
         private static Span _firstSceneSpan;
 
-        private static bool _complete;
+        private static bool _appStartComplete;
         private static DateTimeOffset? _defaultAppStartEndTime = null; 
 
         private static List<Span> _appStartSpans = new List<Span>();
 
-        private static AutoInstrumentAppStartSetting _appStartSetting = AutoInstrumentAppStartSetting.NONE;
+        private static AutoInstrumentAppStartSetting _appStartSetting;
 
         public void Configure(PerformanceConfiguration config)
         {
@@ -35,12 +35,32 @@ namespace BugsnagUnityPerformance
 
         private IEnumerator CheckForAppStartCompletion()
         {
-            while (!_complete)
+            while (!_appStartComplete)
             {
-                CheckForAutomaticAppStartEnd();
+                if (_appStartSetting == AutoInstrumentAppStartSetting.FULL)
+                {
+                    CheckForAutomaticAppStartEnd();
+                }
                 yield return new WaitForSeconds(1);
             }
             BugsnagPerformance.ProccessAppStartSpans(_appStartSpans);
+        }
+
+        private void CheckForAutomaticAppStartEnd()
+        {
+            if (_defaultAppStartEndTime != null)
+            {
+                ReportAppStarted(_defaultAppStartEndTime);
+            }
+        }
+
+        internal static void ReportAppStarted(DateTimeOffset? endTime = null)
+        {
+            if (_rootSpan != null && !_rootSpan.Ended)
+            {
+                EndAppStartSpan(_rootSpan, endTime);
+                _appStartComplete = true;
+            }
         }
 
         private static Span CreateAppStartSpan(string name, string category)
@@ -58,9 +78,8 @@ namespace BugsnagUnityPerformance
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void SubsystemRegistration()
+        private static void SubsystemRegistration()
         {
-            Debug.Log("SubsystemRegistration");
             _rootSpan = CreateAppStartSpan("[AppStart/UnityRuntime]", "app_start");
 
             _loadAssembliesSpan = CreateAppStartSpan("[AppStartPhase/LoadAssemblies]", "app_start_phase");
@@ -68,60 +87,33 @@ namespace BugsnagUnityPerformance
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-        static void AfterAssembliesLoaded()
+        private static void AfterAssembliesLoaded()
         {
-            Debug.Log("AfterAssembliesLoaded");
             EndAppStartSpan(_loadAssembliesSpan);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        static void BeforeSplashScreen()
+        private static void BeforeSplashScreen()
         {
-            Debug.Log("BeforeSplashScreen");
             _splashScreenSpan = CreateAppStartSpan("[AppStartPhase/SplashScreen]", "app_start_phase");
             _splashScreenSpan.SetAttribute("bugsnag.phase", "SplashScreen");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void BeforeSceneLoad()
+        private static void BeforeSceneLoad()
         {
-            Debug.Log("BeforeSceneLoad");
             _firstSceneSpan = CreateAppStartSpan("[AppStartPhase/LoadFirstScene]", "app_start_phase");
             _firstSceneSpan.SetAttribute("bugsnag.phase", "LoadFirstScene");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void AfterSceneLoad()
+        private static void AfterSceneLoad()
         {
-            Debug.Log("AfterSceneLoad");
             EndAppStartSpan(_splashScreenSpan);
             EndAppStartSpan(_firstSceneSpan);
 
+            // Save the time so that we can use it later if full auto instrumentation is set
             _defaultAppStartEndTime = DateTimeOffset.UtcNow;
-        }
-
-        private void CheckForAutomaticAppStartEnd()
-        {
-            if (_defaultAppStartEndTime != null)
-            {
-                if (_appStartSetting == AutoInstrumentAppStartSetting.FULL)
-                {
-                    if (_rootSpan != null && !_rootSpan.Ended)
-                    {
-                        EndAppStartSpan(_rootSpan, _defaultAppStartEndTime);
-                        _complete = true;
-                    }
-                }
-            }
-        }
-
-        public static void ReportAppStarted()
-        {
-            if (_rootSpan != null && !_rootSpan.Ended)
-            {
-                EndAppStartSpan(_rootSpan);
-                _complete = true;
-            }
         }
 
     }
