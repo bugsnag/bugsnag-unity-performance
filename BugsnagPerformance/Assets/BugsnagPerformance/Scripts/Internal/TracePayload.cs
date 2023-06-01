@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace BugsnagUnityPerformance
 {
@@ -11,6 +14,7 @@ namespace BugsnagUnityPerformance
 
         public string PayloadId;
         public SortedList<double, int> SamplingHistogram { get;  private set; }
+        public Dictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
 
         private ResourceModel _resourceModel;
         private List<SpanModel> _spans = new List<SpanModel>();
@@ -32,10 +36,20 @@ namespace BugsnagUnityPerformance
             SamplingHistogram = CalculateSamplingHistorgram(spans);
         }
 
-        public TracePayload(string cachedJson, string payloadId)
+        private TracePayload(Dictionary<string, string> headers, string cachedJson, string payloadId)
         {
             PayloadId = payloadId;
+            Headers = headers;
             _jsonbody = cachedJson;
+        }
+
+        public override bool Equals(object obj) => (obj is TracePayload other) && Equals(other);
+
+        public bool Equals(TracePayload other)
+        {
+            return GetJsonBody() == other.GetJsonBody() &&
+                Headers.Count == other.Headers.Count &&
+                !Headers.Except(other.Headers).Any();
         }
 
         private static SortedList<double, int> CalculateSamplingHistorgram(List<Span> spans)
@@ -56,7 +70,7 @@ namespace BugsnagUnityPerformance
             return new SortedList<double, int>(histogram);
         }
 
-        public string GetJsonBody()
+        internal string GetJsonBody()
         {
             if (string.IsNullOrEmpty(_jsonbody))
             {
@@ -72,6 +86,48 @@ namespace BugsnagUnityPerformance
                 });
             }            
             return _jsonbody;
+        }
+
+        internal void StreamHeadersSection(Stream output)
+        {
+            var writer = new StreamWriter(output);
+            foreach (var header in Headers)
+            {
+                writer.Write("{0}: {1}\n", header.Key, header.Value);
+            }
+            writer.WriteLine("");
+            writer.Flush();
+        }
+
+        public void Serialize(Stream output)
+        {
+            StreamHeadersSection(output);
+            var writer = new StreamWriter(output);
+            writer.Write(GetJsonBody());
+            writer.Flush();
+        }
+
+        private static Dictionary<string, string> DeserializeHeaders(StreamReader reader)
+        {
+            var headers = new Dictionary<string, string>();
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line == "")
+                {
+                    return headers;
+                }
+                var kv = Regex.Split(line, @"\s*:\s*");
+                headers[kv[0]] = kv[1];
+            }
+        }
+
+        public static TracePayload Deserialize(String id, Stream input)
+        {
+            var reader = new StreamReader(input);
+            var headers = DeserializeHeaders(reader);
+            var jsonData = reader.ReadToEnd();
+            return new TracePayload(headers, jsonData, id);
         }
 
     }

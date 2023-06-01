@@ -24,6 +24,7 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
+            Directory.CreateDirectory(_cacheDirectory);
         }
 
         public void Start()
@@ -53,8 +54,6 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        
-
         public void CacheBatch(TracePayload payload)
         {
             var existingBatches = GetCachedBatchPaths();
@@ -65,8 +64,9 @@ namespace BugsnagUnityPerformance
                     return;
                 }
             }
-            var newPath = _cacheDirectory + "/" + payload.PayloadId + BATCH_FILE_SUFFIX;
-            WriteFile(newPath, payload.GetJsonBody());
+            var newPath = _cacheDirectory + Path.DirectorySeparatorChar + payload.PayloadId + BATCH_FILE_SUFFIX;
+            var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write);
+            payload.Serialize(stream);
         }
 
         public List<TracePayload> GetCachedBatchesForDelivery()
@@ -76,10 +76,15 @@ namespace BugsnagUnityPerformance
             var payloads = new List<TracePayload>();
             foreach (var path in existingBatches)
             {
-                var json = GetJsonFromCachePath(path);
                 var id = Path.GetFileNameWithoutExtension(path);
-                var payload = new TracePayload(json,id);
-                payloads.Add(payload);
+                try {
+                    var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    var payload = TracePayload.Deserialize(id, stream);
+                    payloads.Add(payload);
+                } catch
+                {
+                    // Ignore
+                }
             }
             return payloads;
         }

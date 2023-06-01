@@ -5,11 +5,70 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using BugsnagUnityPerformance;
 using System;
+using System.IO;
 
 namespace Tests
 {
     public class TracePayloadTests
     {
+        [Test]
+        public void TestPersistenceNoHeaders()
+        {
+            var dir = CreateTempDir("TestPersistence");
+            var payload = PayloadWithPValues(new List<double> { 1.0 });
+            var filePath = dir + Path.DirectorySeparatorChar + "payload.bin";
+            var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            payload.Serialize(stream);
+            stream.Close();
+
+            stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
+            stream.Close();
+
+            Assert.AreEqual(payload, loadedPayload);
+            Directory.Delete(dir, true);
+        }
+
+        [Test]
+        public void TestPersistenceOneHeader()
+        {
+            var dir = CreateTempDir("TestPersistence");
+            var payload = PayloadWithPValues(new List<double> { 1.0 });
+            payload.Headers["BugsnagSomething"] = "blah";
+            var filePath = dir + Path.DirectorySeparatorChar + "payload.bin";
+            var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            payload.Serialize(stream);
+            stream.Close();
+
+            stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
+            stream.Close();
+
+            Assert.AreEqual(payload, loadedPayload);
+            Directory.Delete(dir, true);
+        }
+
+        [Test]
+        public void TestPersistenceMultipleHeaders()
+        {
+            var dir = CreateTempDir("TestPersistence");
+            var payload = PayloadWithPValues(new List<double> { 1.0 });
+            payload.Headers["BugsnagSomething"] = "blah";
+            payload.Headers["BugsnagSomethingElse"] = "foo";
+            payload.Headers["BugsnagSomethingCompletelyDifferent"] = "bar";
+            var filePath = dir + Path.DirectorySeparatorChar + "payload.bin";
+            var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            payload.Serialize(stream);
+            stream.Close();
+
+            stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
+            stream.Close();
+
+            Assert.AreEqual(payload, loadedPayload);
+            Directory.Delete(dir, true);
+        }
+
         [Test]
         public void TestHistogram()
         {
@@ -48,11 +107,16 @@ namespace Tests
                 });
         }
 
-        private void AssertSpanSamplingHistogram(List<double> pValues, SortedList<double, int> expectedHistogram)
+        private TracePayload PayloadWithPValues(List<double> pValues)
         {
             var cacheManager = new CacheManager(Application.temporaryCachePath);
             var resourceModel = new ResourceModel(cacheManager);
-            var payload = new TracePayload(resourceModel, SpansWithProbabilities(pValues));
+            return new TracePayload(resourceModel, SpansWithProbabilities(pValues));
+        }
+
+        private void AssertSpanSamplingHistogram(List<double> pValues, SortedList<double, int> expectedHistogram)
+        {
+            var payload = PayloadWithPValues(pValues);
             Assert.AreEqual(expectedHistogram, payload.SamplingHistogram);
         }
 
@@ -82,6 +146,21 @@ namespace Tests
         private void OnSpanEnd(Span span)
         {
             // Nothing to do
+        }
+
+        private string CreateTempDir(string name)
+        {
+            var dir = Application.persistentDataPath + Path.DirectorySeparatorChar + name;
+            try
+            {
+                Directory.Delete(dir, true);
+            }
+            catch
+            {
+                // Ignored
+            }
+            Directory.CreateDirectory(dir);
+            return dir;
         }
     }
 }
