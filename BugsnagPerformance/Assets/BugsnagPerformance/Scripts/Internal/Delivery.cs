@@ -40,14 +40,7 @@ namespace BugsnagUnityPerformance
         public void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(_resourceModel, batch);
-            if (BugsnagPerformance.IsStarted)
-            {
-                MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
-            }
-            else
-            {
-                _cacheManager.CacheBatch(payload);
-            }
+            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
         private IEnumerator PushToServer(TracePayload payload)

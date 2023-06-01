@@ -10,7 +10,7 @@ namespace BugsnagUnityPerformance
 {
     public class BugsnagPerformance
     {
-        private static BugsnagPerformance _sharedInstance = new BugsnagPerformance();
+        private static BugsnagPerformance _sharedInstance;
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
         private static object _startLock = new object();
         internal static bool IsStarted = false;
@@ -52,12 +52,19 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private Sampler _sampler = new Sampler();
         private Tracer _tracer;
-        private AppStartHandler _appStartHandler = new AppStartHandler();
+        private AppStartHandler _appStartHandler;
 
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
         // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
         private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void SubsystemRegistration()
+        {
+            _sharedInstance = new BugsnagPerformance();
+            _sharedInstance._appStartHandler.SubsystemRegistration();
+        }
 
         private BugsnagPerformance()
         {
@@ -66,6 +73,7 @@ namespace BugsnagUnityPerformance
             _delivery = new Delivery(_resourceModel, _cacheManager);
             _tracer = new Tracer(_sampler, _delivery);
             _spanFactory = new SpanFactory(OnSpanEnd);
+            _appStartHandler = new AppStartHandler(_spanFactory);
         }
 
         internal class SceneLoadSpanContainer
@@ -213,20 +221,7 @@ namespace BugsnagUnityPerformance
             {
                 return _spanFactory.StartCustomSpan(name, spanOptions);
             }
-        }
-
-        internal static Span CreateAutoAppStartSpan(string name, string category)
-        {
-            return _sharedInstance._spanFactory.CreateAutoAppStartSpan(name,category);
-        }
-
-        internal static void ProccessAppStartSpans(List<Span> spans)
-        {
-            foreach (var span in spans)
-            {
-                _sharedInstance._tracer.OnSpanEnd(span);
-            }
-        }
+        }      
 
         public static void ReportAppStarted()
         {

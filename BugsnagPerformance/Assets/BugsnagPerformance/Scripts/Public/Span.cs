@@ -53,7 +53,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void EndAppStartSpan(DateTimeOffset? endTime = null)
+        internal void End(DateTimeOffset? endTime)
         {
             lock (_endLock)
             {
@@ -64,6 +64,7 @@ namespace BugsnagUnityPerformance
                 Ended = true;
             }
             EndTime = endTime == null ? DateTimeOffset.UtcNow : endTime.Value;
+            _onSpanEnd(this);
         }
 
         internal void EndNetworkSpan(BugsnagUnityWebRequest request)

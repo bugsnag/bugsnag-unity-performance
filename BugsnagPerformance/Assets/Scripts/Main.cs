@@ -24,9 +24,9 @@ public class Main : MonoBehaviour
         {
             config.ReleaseStage = ReleaseStage;
         }
-        config.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.OFF;
+        config.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
         BugsnagPerformance.Start(config);
-        Invoke("ReportAppStart",10);
+        //Invoke("ReportAppStart",10);
     }
 
     private void ReportAppStart()
