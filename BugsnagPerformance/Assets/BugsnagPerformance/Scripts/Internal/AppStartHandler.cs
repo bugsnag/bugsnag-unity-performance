@@ -28,6 +28,30 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _appStartSetting = config.AutoInstrumentAppStart;
+            if (_appStartSetting == AutoInstrumentAppStartSetting.OFF)
+            {
+                AbortAppStartSpans();
+            }
+        }
+
+        private void AbortAppStartSpans()
+        {
+            if (_rootSpan != null && !_rootSpan.Ended)
+            {
+                _rootSpan.Abort();
+            }
+            if (_loadAssembliesSpan != null && !_loadAssembliesSpan.Ended)
+            {
+                _loadAssembliesSpan.Abort();
+            }
+            if (_splashScreenSpan != null && !_splashScreenSpan.Ended)
+            {
+                _splashScreenSpan.Abort();
+            }
+            if (_firstSceneSpan != null && !_firstSceneSpan.Ended)
+            {
+                _firstSceneSpan.Abort();
+            }
         }
 
         public void Start()

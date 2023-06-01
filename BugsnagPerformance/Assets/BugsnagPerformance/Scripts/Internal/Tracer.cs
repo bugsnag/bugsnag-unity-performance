@@ -30,6 +30,9 @@ namespace BugsnagUnityPerformance
 
         private bool _started;
 
+        private static AutoInstrumentAppStartSetting _appStartSetting;
+
+
 
         public Tracer(Sampler sampler, Delivery delivery)
         {
@@ -41,6 +44,7 @@ namespace BugsnagUnityPerformance
         {
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
+            _appStartSetting = config.AutoInstrumentAppStart;
         }
 
         public void Start()
@@ -67,6 +71,10 @@ namespace BugsnagUnityPerformance
         {
             foreach (var span in _preStartSpans)
             {
+                if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                {
+                    continue;
+                }
                 Sample(span);
             }
         }

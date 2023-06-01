@@ -22,6 +22,7 @@ namespace BugsnagUnityPerformance
         internal bool Ended;
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
+        internal bool IsAppStartSpan;
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -65,6 +66,18 @@ namespace BugsnagUnityPerformance
             }
             EndTime = endTime == null ? DateTimeOffset.UtcNow : endTime.Value;
             _onSpanEnd(this);
+        }
+
+        internal void Abort()
+        {
+            lock (_endLock)
+            {
+                if (Ended)
+                {
+                    return;
+                }
+                Ended = true;
+            }
         }
 
         internal void EndNetworkSpan(BugsnagUnityWebRequest request)

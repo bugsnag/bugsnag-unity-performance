@@ -8,7 +8,7 @@ public class AppStartStartOnly : Scenario
     public override void PrepareConfig(string apiKey, string host)
     {
         base.PrepareConfig(apiKey, host);
-        SetMaxBatchAgeSeconds(12);
+        SetMaxBatchSize(4);
         Configuration.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.START_ONLY;
     }
 
