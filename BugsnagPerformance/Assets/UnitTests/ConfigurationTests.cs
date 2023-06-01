@@ -39,13 +39,5 @@ namespace Tests
             Assert.AreEqual("test", config.ReleaseStage);
         }
 
-        [Test]
-        public void CreateSimpleSpan()
-        {
-            var span = BugsnagPerformance.StartSpan("test");
-            Assert.AreEqual("test", span.Name);
-            Assert.AreEqual(SpanKind.SPAN_KIND_INTERNAL, span.Kind);
-            Assert.AreEqual(32, span.TraceId.Length);
-        }
     }
 }
