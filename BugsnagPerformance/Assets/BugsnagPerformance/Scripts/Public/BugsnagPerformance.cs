@@ -10,7 +10,7 @@ namespace BugsnagUnityPerformance
 {
     public class BugsnagPerformance
     {
-        private static BugsnagPerformance _sharedInstance = new BugsnagPerformance();
+        private static BugsnagPerformance _sharedInstance;
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
         private static object _startLock = new object();
         internal static bool IsStarted = false;
@@ -52,11 +52,19 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private Sampler _sampler = new Sampler();
         private Tracer _tracer;
+        private AppStartHandler _appStartHandler;
 
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
         // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
         private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void SubsystemRegistration()
+        {
+            _sharedInstance = new BugsnagPerformance();
+            _sharedInstance._appStartHandler.SubsystemRegistration();
+        }
 
         private BugsnagPerformance()
         {
@@ -65,6 +73,7 @@ namespace BugsnagUnityPerformance
             _delivery = new Delivery(_resourceModel, _cacheManager);
             _tracer = new Tracer(_sampler, _delivery);
             _spanFactory = new SpanFactory(OnSpanEnd);
+            _appStartHandler = new AppStartHandler(_spanFactory);
         }
 
         internal class SceneLoadSpanContainer
@@ -80,6 +89,7 @@ namespace BugsnagUnityPerformance
             _resourceModel.Configure(config);
             _sampler.Configure(config);
             _tracer.Configure(config);
+            _appStartHandler.Configure(config);
         }
 
         private void Start()
@@ -89,7 +99,7 @@ namespace BugsnagUnityPerformance
             _resourceModel.Start();
             _sampler.Start();
             _tracer.Start();
-
+            _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
             IsStarted = true;
@@ -119,7 +129,6 @@ namespace BugsnagUnityPerformance
             {
                 var path = SceneUtility.GetScenePathByBuildIndex((int)sceneId);
                 sceneName = Path.GetFileNameWithoutExtension(path);
-                Debug.Log("Got scene name from index: " + sceneName);
             }
             else
             {
@@ -212,6 +221,11 @@ namespace BugsnagUnityPerformance
             {
                 return _spanFactory.StartCustomSpan(name, spanOptions);
             }
+        }      
+
+        public static void ReportAppStarted()
+        {
+            AppStartHandler.ReportAppStarted();
         }
 
     }

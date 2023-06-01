@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class Tracer: IPhasedStartup
+    internal class Tracer : IPhasedStartup
     {
         private int _maxBatchSize = 100;
 
@@ -14,7 +14,11 @@ namespace BugsnagUnityPerformance
 
         private List<Span> _spanQueue = new List<Span>();
 
+        private List<Span> _preStartSpans = new List<Span>();
+
         private object _queueLock = new object();
+
+        private object _prestartLock = new object();
 
         private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
 
@@ -23,6 +27,12 @@ namespace BugsnagUnityPerformance
         private Sampler _sampler;
 
         private Delivery _delivery;
+
+        private bool _started;
+
+        private static AutoInstrumentAppStartSetting _appStartSetting;
+
+
 
         public Tracer(Sampler sampler, Delivery delivery)
         {
@@ -34,11 +44,15 @@ namespace BugsnagUnityPerformance
         {
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
+            _appStartSetting = config.AutoInstrumentAppStart;
         }
 
         public void Start()
         {
             StartTracerWorker();
+            _started = true;
+            // Flush after setting _started so that no new spans are added to the prestart list during or after flushing
+            FlushPreStartSpans();
         }
 
         private void StartTracerWorker()
@@ -50,6 +64,18 @@ namespace BugsnagUnityPerformance
             catch
             {
                 //Ignore this exception in unit tests, will not be an issue in a build
+            }
+        }
+
+        private void FlushPreStartSpans()
+        {
+            foreach (var span in _preStartSpans)
+            {
+                if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                {
+                    continue;
+                }
+                Sample(span);
             }
         }
 
@@ -66,6 +92,19 @@ namespace BugsnagUnityPerformance
         }
 
         public void OnSpanEnd(Span span)
+        {
+            if (!_started)
+            {
+                lock (_prestartLock)
+                {
+                    _preStartSpans.Add(span);
+                }
+                return;
+            }
+            Sample(span);
+        }
+
+        private void Sample(Span span)
         {
             if (_sampler.Sampled(span))
             {
@@ -85,11 +124,11 @@ namespace BugsnagUnityPerformance
             {
                 DeliverBatch();
             }
-        }   
-       
+        }
+
         private void DeliverBatch()
         {
-            new Thread(()=>
+            new Thread(() =>
             {
                 List<Span> batch = null;
                 lock (_queueLock)
@@ -101,15 +140,10 @@ namespace BugsnagUnityPerformance
                     batch = _spanQueue;
                     _spanQueue = new List<Span>();
                 }
-                if (BugsnagPerformance.IsStarted)
-                {
-                    _lastBatchSendTime = DateTimeOffset.UtcNow;
-                    _delivery.Deliver(batch);
-                }
-                else
-                {
-                    //TODO persist batch for later delivery
-                }                
+
+                _lastBatchSendTime = DateTimeOffset.UtcNow;
+                _delivery.Deliver(batch);
+
             }).Start();
         }
 

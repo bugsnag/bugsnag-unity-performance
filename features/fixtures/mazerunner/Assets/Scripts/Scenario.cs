@@ -15,7 +15,8 @@ public class Scenario : MonoBehaviour
     {
         Configuration = new PerformanceConfiguration(apiKey)
         {
-            Endpoint = host + "/traces"
+            Endpoint = host + "/traces",
+            AutoInstrumentAppStart = AutoInstrumentAppStartSetting.OFF
         };
     }
 

@@ -24,7 +24,14 @@ public class Main : MonoBehaviour
         {
             config.ReleaseStage = ReleaseStage;
         }
+        config.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
         BugsnagPerformance.Start(config);
+        //Invoke("ReportAppStart",10);
+    }
+
+    private void ReportAppStart()
+    {
+        BugsnagPerformance.ReportAppStarted();
     }
 
     public void DoSpan()

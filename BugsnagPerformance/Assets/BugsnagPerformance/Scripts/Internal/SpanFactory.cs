@@ -131,14 +131,25 @@ namespace BugsnagUnityPerformance
 
         private ISpanContext GetCurrentContext()
         {
-            if (_contextStack != null && _contextStack.Count > 0)
-            {
-                return _contextStack.Peek();
-            }
-            else
+            if (_contextStack == null || _contextStack.Count == 0)
             {
                 return null;
             }
+
+            while (_contextStack.Count > 0)
+            {
+                var top = (Span)_contextStack.Peek();
+                if (top.Ended)
+                {
+                    _contextStack.Pop();
+                }
+                else
+                {
+                    return top;
+                }
+            }
+
+            return null;
         }
 
         private void AddToContextStack(ISpanContext spanContext)
@@ -148,6 +159,14 @@ namespace BugsnagUnityPerformance
                 _contextStack = new Stack<ISpanContext>();
             }
             _contextStack.Push(spanContext);
+        }
+
+        internal Span CreateAutoAppStartSpan(string name, string category)
+        {
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT,new SpanOptions());
+            span.SetAttribute("bugsnag.span.category", category);
+            span.IsAppStartSpan = true;
+            return span;
         }
     }
 }
