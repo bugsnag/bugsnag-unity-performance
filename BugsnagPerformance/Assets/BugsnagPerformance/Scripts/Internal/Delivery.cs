@@ -40,6 +40,10 @@ namespace BugsnagUnityPerformance
         public void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(_resourceModel, batch);
+            if (payload.SamplingHistogram != null)
+            {
+                payload.Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(payload);
+            }
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
@@ -63,21 +67,14 @@ namespace BugsnagUnityPerformance
 
             using (var req = new UnityWebRequest(_endpoint))
             {
-
+                foreach (var header in payload.Headers)
+                {
+                    req.SetRequestHeader(header.Key, header.Value);
+                }
                 req.SetRequestHeader("Bugsnag-Api-Key", _apiKey);
                 req.SetRequestHeader("Content-Type", "application/json");
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
-
-                if (payload.SamplingHistogram == null)
-                {
-                    // TODO: Temporarily hardcoded for cached payloads until sampling is completed
-                    req.SetRequestHeader("Bugsnag-Span-Sampling", string.Format("1:{0}", payload.BatchSize));
-                }
-                else
-                {
-                    req.SetRequestHeader("Bugsnag-Span-Sampling", BuildSamplingHistogram(payload));
-                }
 
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
@@ -105,7 +102,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static string BuildSamplingHistogram(TracePayload payload)
+        private static string BuildSamplingHistogramHeader(TracePayload payload)
         {
             var builder = new StringBuilder();
 
