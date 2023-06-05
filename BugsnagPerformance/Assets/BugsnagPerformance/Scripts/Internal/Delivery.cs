@@ -20,6 +20,9 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private CacheManager _cacheManager;
 
+        private const int MAX_PAYLOAD_BYTES = 1000000;
+
+
         public Delivery(ResourceModel resourceModel, CacheManager cacheManager)
         {
             _resourceModel = resourceModel;
@@ -49,7 +52,7 @@ namespace BugsnagUnityPerformance
 
         private IEnumerator PushToServer(TracePayload payload)
         {
-            byte[] body = null;           
+            byte[] body = null;
             // There is no threading on webgl, so we treat the payload differently
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
@@ -65,6 +68,11 @@ namespace BugsnagUnityPerformance
                 yield return new WaitUntil(() => bodyReady);
             }
 
+            if (body == null)
+            {
+                yield break;
+            }
+
             using (var req = new UnityWebRequest(_endpoint))
             {
                 foreach (var header in payload.Headers)
@@ -75,6 +83,7 @@ namespace BugsnagUnityPerformance
                 req.SetRequestHeader("Content-Type", "application/json");
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+                req.SetRequestHeader("Bugsnag-Uncompressed-Content-Length", body.Length.ToString());
 
                 req.uploadHandler = new UploadHandlerRaw(body);
                 req.downloadHandler = new DownloadHandlerBuffer();
@@ -92,7 +101,10 @@ namespace BugsnagUnityPerformance
                 else if (code == 0 || code == 408 || code == 429 || code >= 500)
                 {
                     // sending failed with retryable error, cache for later retry
-                    _cacheManager.CacheBatch(payload);
+                    if (body.Length <= MAX_PAYLOAD_BYTES)
+                    {
+                        _cacheManager.CacheBatch(payload);
+                    }
                 }
                 else
                 {
