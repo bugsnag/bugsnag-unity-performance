@@ -101,7 +101,7 @@ namespace BugsnagUnityPerformance
                 else if (code == 0 || code == 408 || code == 429 || code >= 500)
                 {
                     // sending failed with retryable error, cache for later retry
-                    if (body.Length < MAX_PAYLOAD_BYTES)
+                    if (body.Length <= MAX_PAYLOAD_BYTES)
                     {
                         _cacheManager.CacheBatch(payload);
                     }
