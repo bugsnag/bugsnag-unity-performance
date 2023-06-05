@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
-using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace BugsnagUnityPerformance
@@ -34,6 +33,10 @@ namespace BugsnagUnityPerformance
             }
             BatchSize = spans.Count;
             SamplingHistogram = CalculateSamplingHistorgram(spans);
+            if (SamplingHistogram.Count > 0)
+            {
+                Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+            }
         }
 
         private TracePayload(Dictionary<string, string> headers, string cachedJson, string payloadId)
@@ -117,8 +120,8 @@ namespace BugsnagUnityPerformance
                 {
                     return headers;
                 }
-                var kv = Regex.Split(line, @"\s*:\s*");
-                headers[kv[0]] = kv[1];
+                var kv = line.Split(new[] { ':' }, 2);
+                headers[kv[0].TrimEnd()] = kv[1].TrimStart();
             }
         }
 
@@ -130,6 +133,20 @@ namespace BugsnagUnityPerformance
             return new TracePayload(headers, jsonData, id);
         }
 
+        private static string BuildSamplingHistogramHeader(TracePayload payload)
+        {
+            var builder = new StringBuilder();
+
+            foreach (KeyValuePair<double, int> pair in payload.SamplingHistogram)
+            {
+                builder.Append(pair.Key);
+                builder.Append(':');
+                builder.Append(pair.Value);
+                builder.Append(';');
+            }
+            builder.Remove(builder.Length - 1, 1);
+            return builder.ToString();
+        }
     }
 
     [Serializable]

@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 
 namespace BugsnagUnityPerformance
 {
-    internal class Delivery: IPhasedStartup
+    internal class Delivery : IPhasedStartup
     {
         private string _endpoint;
         private string _apiKey;
@@ -43,10 +43,6 @@ namespace BugsnagUnityPerformance
         public void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(_resourceModel, batch);
-            if (payload.SamplingHistogram != null)
-            {
-                payload.Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(payload);
-            }
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
         }
 
@@ -112,21 +108,6 @@ namespace BugsnagUnityPerformance
                     // do nothing
                 }
             }
-        }
-
-        private static string BuildSamplingHistogramHeader(TracePayload payload)
-        {
-            var builder = new StringBuilder();
-
-            foreach (KeyValuePair<double, int> pair in payload.SamplingHistogram)
-            {
-                builder.Append(pair.Key);
-                builder.Append(':');
-                builder.Append(pair.Value);
-                builder.Append(';');
-            }
-            builder.Remove(builder.Length-1, 1);
-            return builder.ToString();
         }
 
         private void FlushCache()
