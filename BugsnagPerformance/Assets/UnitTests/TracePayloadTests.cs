@@ -26,6 +26,8 @@ namespace Tests
             stream.Close();
 
             Assert.AreEqual(payload, loadedPayload);
+            Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
+
             Directory.Delete(dir, true);
         }
 
@@ -45,6 +47,8 @@ namespace Tests
             stream.Close();
 
             Assert.AreEqual(payload, loadedPayload);
+            Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
+
             Directory.Delete(dir, true);
         }
 
@@ -66,45 +70,19 @@ namespace Tests
             stream.Close();
 
             Assert.AreEqual(payload, loadedPayload);
+            Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
+
             Directory.Delete(dir, true);
         }
 
         [Test]
         public void TestHistogram()
         {
-            AssertSpanSamplingHistogram(
-                new List<double> { },
-                new SortedList<double, int> {
-                });
-
-
-            AssertSpanSamplingHistogram(
-                new List<double> { 1.0 },
-                new SortedList<double, int> {
-                    { 1.0, 1 }
-                });
-
-            AssertSpanSamplingHistogram(
-                new List<double> { 1.0, 1.0 },
-                new SortedList<double, int> {
-                    { 1.0, 2 }
-                });
-
-            AssertSpanSamplingHistogram(
-                new List<double> { 1.0, 0.5, 1.0 },
-                new SortedList<double, int> {
-                    { 0.5, 1 },
-                    { 1.0, 2 }
-                });
-
-            AssertSpanSamplingHistogram(
-                new List<double> { 1.0, 0.1, 0.5, 1.0, 0.5, 0.2, 1.0, 0.5 },
-                new SortedList<double, int> {
-                    { 0.1, 1 },
-                    { 0.2, 1 },
-                    { 0.5, 3 },
-                    { 1.0, 3 }
-                });
+            AssertSpanSamplingHistogram(new List<double> { }, "");
+            AssertSpanSamplingHistogram(new List<double> { 1.0 }, "1:1");
+            AssertSpanSamplingHistogram(new List<double> { 1.0, 1.0 }, "1:2");
+            AssertSpanSamplingHistogram(new List<double> { 1.0, 0.5, 1.0 }, "0.5:1;1:2");
+            AssertSpanSamplingHistogram(new List<double> { 1.0, 0.1, 0.5, 1.0, 0.5, 0.2, 1.0, 0.5 }, "0.1:1;0.2:1;0.5:3;1:3");
         }
 
         private TracePayload PayloadWithPValues(List<double> pValues)
@@ -114,10 +92,16 @@ namespace Tests
             return new TracePayload(resourceModel, SpansWithProbabilities(pValues));
         }
 
-        private void AssertSpanSamplingHistogram(List<double> pValues, SortedList<double, int> expectedHistogram)
+        private void AssertSpanSamplingHistogram(List<double> pValues, string expectedHistogram)
         {
             var payload = PayloadWithPValues(pValues);
-            Assert.AreEqual(expectedHistogram, payload.SamplingHistogram);
+            if (expectedHistogram.Length > 0)
+            {
+                Assert.AreEqual(expectedHistogram, payload.Headers["Bugsnag-Span-Sampling"]);
+            } else
+            {
+                Assert.IsFalse(payload.Headers.ContainsKey("Bugsnag-Span-Sampling"));
+            }
         }
 
         private List<Span> SpansWithProbabilities(List<double> pValues)
