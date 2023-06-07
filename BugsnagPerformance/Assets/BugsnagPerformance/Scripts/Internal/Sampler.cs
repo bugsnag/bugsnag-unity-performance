@@ -1,24 +1,50 @@
-﻿using UnityEngine;
-
+﻿
 namespace BugsnagUnityPerformance
 {
     public class Sampler : IPhasedStartup
     {
-        public double probability;
+        private PersistentState _persistentState;
+
+        private double _probability = -1;
+
+        public double Probability
+        {
+            get
+            {
+                return _probability;
+            }
+            set
+            {
+                _probability = value;
+                _persistentState.Probability = value;
+            }
+        }
+
+        public Sampler(PersistentState persistentState)
+        {
+            _persistentState = persistentState;
+        }
 
         public void Configure(PerformanceConfiguration config)
         {
-            probability = config.SamplingProbability;
+            _probability = config.SamplingProbability;
         }
 
         public void Start()
         {
-            // Nothing to do
+            var storedProbability = _persistentState.Probability;
+            if (storedProbability >= 0)
+            {
+                _probability = storedProbability;
+            } else
+            {
+                _persistentState.Probability = _probability;
+            }
         }
 
         public bool Sampled(Span span)
         {
-            var p = probability;
+            var p = Probability;
             var isSampled = IsSampled(span, GetUpperBound(p));
             if (isSampled)
             {
