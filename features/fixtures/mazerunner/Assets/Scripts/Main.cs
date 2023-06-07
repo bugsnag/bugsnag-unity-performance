@@ -154,6 +154,10 @@ public class Main : MonoBehaviour
 
     private void ClearUnityCache()
     {
+        if (Directory.Exists(Application.persistentDataPath + "/bugsnag-performance"))
+        {
+            Directory.Delete(Application.persistentDataPath + "/bugsnag-performance", true);
+        }
         if (Directory.Exists(Application.persistentDataPath + "/Bugsnag"))
         {
             Directory.Delete(Application.persistentDataPath + "/Bugsnag", true);

@@ -20,9 +20,10 @@ namespace BugsnagUnityPerformance
         private CacheManager _cacheManager;
         private Delivery _delivery;
         private ResourceModel _resourceModel;
-        private Sampler _sampler = new Sampler();
+        private Sampler _sampler;
         private Tracer _tracer;
         private AppStartHandler _appStartHandler;
+        private PersistentState _persistentState;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -65,6 +66,8 @@ namespace BugsnagUnityPerformance
         private BugsnagPerformance()
         {
             _cacheManager = new CacheManager(Application.persistentDataPath);
+            _persistentState = new PersistentState(_cacheManager);
+            _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager);
             _tracer = new Tracer(_sampler, _delivery);
@@ -81,6 +84,7 @@ namespace BugsnagUnityPerformance
         private void Configure(PerformanceConfiguration config)
         {
             _cacheManager.Configure(config);
+            _persistentState.Configure(config);
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
@@ -90,7 +94,9 @@ namespace BugsnagUnityPerformance
 
         private void Start()
         {
+            // The ordering of Start() must be carefully curated.
             _cacheManager.Start();
+            _persistentState.Start();
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();

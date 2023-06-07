@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
@@ -11,12 +10,14 @@ namespace BugsnagUnityPerformance
         private int _maxPersistedBatchAgeSeconds;
         private string _cacheDirectory;
         private string _deviceidFilePath;
+        private string _persistentStateFilePath;
 
         private const string BATCH_FILE_SUFFIX = ".json";
 
         public CacheManager(string basePath)
         {
             _cacheDirectory = basePath + "/bugsnag-performance/v1";
+            _persistentStateFilePath = _cacheDirectory + "/persistent-state.json";
             // Must be set to this path to share with the bugsnag unity notifier
             _deviceidFilePath = basePath + "/Bugsnag/deviceId.txt";
         }
@@ -52,6 +53,11 @@ namespace BugsnagUnityPerformance
                 // not possible in unit tests
                 return string.Empty;
             }
+        }
+
+        public Stream OpenPersistentStateStream()
+        {
+            return new FileStream(_persistentStateFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
         public void CacheBatch(TracePayload payload)
@@ -99,6 +105,15 @@ namespace BugsnagUnityPerformance
                     DeleteFile(path);
                 }
             }
+        }
+
+        public void Clear()
+        {
+            if (Directory.Exists(_cacheDirectory))
+            {
+                Directory.Delete(_cacheDirectory, true);
+            }
+            Directory.CreateDirectory(_cacheDirectory);
         }
 
         private void RemoveExpiredPayloads()
