@@ -40,9 +40,11 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.response_content_length" exists
 
   Scenario: Post Success
     When I run the game in the "NetworkPostSuccess" state
@@ -82,6 +84,10 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.request_content_length" exists
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.response_content_length" exists

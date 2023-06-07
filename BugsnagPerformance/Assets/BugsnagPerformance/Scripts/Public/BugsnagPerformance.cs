@@ -14,6 +14,15 @@ namespace BugsnagUnityPerformance
         private const string ALREADY_STARTED_WARNING = "BugsnagPerformance.start has already been called";
         private static object _startLock = new object();
         internal static bool IsStarted = false;
+        private object _startSpanLock = new object();
+        private object _networkSpansLock = new object();
+        private SpanFactory _spanFactory;
+        private CacheManager _cacheManager;
+        private Delivery _delivery;
+        private ResourceModel _resourceModel;
+        private Sampler _sampler = new Sampler();
+        private Tracer _tracer;
+        private AppStartHandler _appStartHandler;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -40,19 +49,6 @@ namespace BugsnagUnityPerformance
         {
             return _sharedInstance.StartSpanInternal(name, spanOptions);
         }
-
-        private object _startSpanLock = new object();
-
-        private object _networkSpansLock = new object();
-
-        private SpanFactory _spanFactory;
-
-        private CacheManager _cacheManager;
-        private Delivery _delivery;
-        private ResourceModel _resourceModel;
-        private Sampler _sampler = new Sampler();
-        private Tracer _tracer;
-        private AppStartHandler _appStartHandler;
 
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
@@ -189,7 +185,7 @@ namespace BugsnagUnityPerformance
 
         private void OnRequestAbort(BugsnagUnityWebRequest request)
         {
-            EndNetworkSpan(request);
+            EndNetworkSpan(request, true);
         }
 
         private void OnRequestComplete(BugsnagUnityWebRequest request)
@@ -197,11 +193,12 @@ namespace BugsnagUnityPerformance
             EndNetworkSpan(request);
         }
 
-        private void EndNetworkSpan(BugsnagUnityWebRequest request)
+        private void EndNetworkSpan(BugsnagUnityWebRequest request, bool abort = false)
         {
+            var discard = abort || request.isHttpError || request.isNetworkError;
             lock (_networkSpansLock)
             {
-                if (_networkSpans.ContainsKey(request))
+                if (!discard && _networkSpans.ContainsKey(request))
                 {
                     var span = _networkSpans[request];
                     span.EndNetworkSpan(request);

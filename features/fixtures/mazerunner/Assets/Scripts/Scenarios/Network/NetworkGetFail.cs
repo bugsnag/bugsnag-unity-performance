@@ -14,7 +14,14 @@ public class NetworkGetFail : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Get(FAIL_URL).SendWebRequest();
+        StartCoroutine(DoRun());
+    }
+
+    private IEnumerator DoRun()
+    {
+        yield return BugsnagUnityWebRequest.Get(FAIL_URL).SendWebRequest();
+        yield return new WaitForSeconds(1);
+        yield return BugsnagUnityWebRequest.Get(Main.MazeHost).SendWebRequest();
     }
 
 }
