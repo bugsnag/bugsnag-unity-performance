@@ -15,13 +15,10 @@ VERSION=$1
 
 echo "Copying over the src"
 
-echo "$PWD"
-
 cp -a  "$SRC_DIR." "$PKG_DIR/Runtime"
 
 
-
-# Set the specified version in the manifest
+# Set the specified version in the manifest and readme
 
 echo "Setting the version $VERSION in the copied manifest and readme"
 sed -i '' "s/VERSION_STRING/$VERSION/g" "$PKG_DIR/package.json"
