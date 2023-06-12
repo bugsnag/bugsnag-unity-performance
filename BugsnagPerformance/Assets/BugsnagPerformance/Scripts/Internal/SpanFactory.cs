@@ -12,23 +12,30 @@ namespace BugsnagUnityPerformance
         [ThreadStatic]
         private static Stack<ISpanContext> _contextStack;
 
-        private static RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
+        private RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 
-        private static string GetNewTraceId()
+        private OnSpanEnd _onSpanEnd;
+
+        public SpanFactory(OnSpanEnd onSpanEnd)
+        {
+            _onSpanEnd = onSpanEnd;
+        }
+
+        private string GetNewTraceId()
         {
             byte[] byteArray = new byte[16];
             _rNGCryptoServiceProvider.GetBytes(byteArray);
             return ByteArrayToHex(byteArray);
         }
 
-        private static string GetNewSpanId()
+        private string GetNewSpanId()
         {
             byte[] byteArray = new byte[8];
             _rNGCryptoServiceProvider.GetBytes(byteArray);
             return ByteArrayToHex(byteArray);
         }
 
-        private static string ByteArrayToHex(byte[] barray)
+        private string ByteArrayToHex(byte[] barray)
         {
             char[] c = new char[barray.Length * 2];
             byte b;
@@ -42,14 +49,14 @@ namespace BugsnagUnityPerformance
             return new string(c);
         }
 
-        internal static Span StartCustomSpan(string name, SpanOptions spanOptions)
+        internal Span StartCustomSpan(string name, SpanOptions spanOptions)
         {
             // custom spans are always first class
             spanOptions.IsFirstClass = true;
             return CreateSpan(name,SpanKind.SPAN_KIND_INTERNAL, spanOptions);
         }
 
-        private static Span CreateSpan(string name, SpanKind kind, SpanOptions spanOptions)
+        private Span CreateSpan(string name, SpanKind kind, SpanOptions spanOptions)
         {
                         
             if (spanOptions.ParentContext != null)
@@ -72,7 +79,7 @@ namespace BugsnagUnityPerformance
                 traceId = GetNewTraceId();
             }
 
-            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass);
+            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd);
 
             if (spanOptions.MakeCurrentContext)
             {
@@ -82,7 +89,7 @@ namespace BugsnagUnityPerformance
             return newSpan;
         }
 
-        internal static Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request)
+        internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request)
         {
             var verb = request.method.ToUpper();
 
@@ -99,7 +106,7 @@ namespace BugsnagUnityPerformance
         }
 
 
-        private static string GetConnectionType()
+        private string GetConnectionType()
         {
             switch (Application.internetReachability)
             {
@@ -114,7 +121,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        internal static Span CreateAutomaticSceneLoadSpan()
+        internal Span CreateAutomaticSceneLoadSpan()
         {
             // Scene load spans are always first class
             var spanOptions = new SpanOptions { IsFirstClass = true };
@@ -122,25 +129,44 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        private static ISpanContext GetCurrentContext()
+        private ISpanContext GetCurrentContext()
         {
-            if (_contextStack != null && _contextStack.Count > 0)
-            {
-                return _contextStack.Peek();
-            }
-            else
+            if (_contextStack == null || _contextStack.Count == 0)
             {
                 return null;
             }
+
+            while (_contextStack.Count > 0)
+            {
+                var top = (Span)_contextStack.Peek();
+                if (top.Ended)
+                {
+                    _contextStack.Pop();
+                }
+                else
+                {
+                    return top;
+                }
+            }
+
+            return null;
         }
 
-        private static void AddToContextStack(ISpanContext spanContext)
+        private void AddToContextStack(ISpanContext spanContext)
         {
             if (_contextStack == null)
             {
                 _contextStack = new Stack<ISpanContext>();
             }
             _contextStack.Push(spanContext);
+        }
+
+        internal Span CreateAutoAppStartSpan(string name, string category)
+        {
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT,new SpanOptions());
+            span.SetAttribute("bugsnag.span.category", category);
+            span.IsAppStartSpan = true;
+            return span;
         }
     }
 }

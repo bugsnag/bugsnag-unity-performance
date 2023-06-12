@@ -7,9 +7,9 @@ namespace BugsnagUnityPerformance
 
         //Internal config
 
-        internal static int MaxBatchSize = 100;
-        internal static float MaxBatchAgeSeconds = 30f;
-        internal static int MaxPersistedBatchAgeSeconds = 86400; //24 hours
+        internal int MaxBatchSize = 100;
+        internal float MaxBatchAgeSeconds = 30f;
+        internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
 
         //Public config
 
@@ -34,9 +34,13 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
+
         public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
+
+        public double SamplingProbability = 1.0;
 
         public PerformanceConfiguration(string apiKey)
         {

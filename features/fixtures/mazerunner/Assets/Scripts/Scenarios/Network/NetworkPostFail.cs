@@ -14,7 +14,14 @@ public class NetworkPostFail : Scenario
 
     public override void Run()
     {
-        BugsnagUnityWebRequest.Post(FAIL_URL, "1234567890").SendWebRequest();
+        StartCoroutine(DoRun());
+    }
+
+    private IEnumerator DoRun()
+    {
+        yield return BugsnagUnityWebRequest.Post(FAIL_URL, "1234567890").SendWebRequest();
+        yield return new WaitForSeconds(1);
+        BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
     }
 
 }

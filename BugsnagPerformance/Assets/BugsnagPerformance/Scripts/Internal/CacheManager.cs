@@ -2,28 +2,38 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class CacheManager
+    public class CacheManager: IPhasedStartup
     {
-
-        private static string _cacheDirectory
-        {
-            get { return Application.persistentDataPath + "/bugsnag-performance/v1"; }
-        }
-
-        // Must be set to this path to share with the bugsnag unity notifier
-        private static string _deviceidFilePath
-        {
-            get { return Application.persistentDataPath + "/Bugsnag/deviceId.txt"; }
-        }
+        private int _maxPersistedBatchAgeSeconds;
+        private string _cacheDirectory;
+        private string _deviceidFilePath;
+        private string _persistentStateFilePath;
 
         private const string BATCH_FILE_SUFFIX = ".json";
 
+        public CacheManager(string basePath)
+        {
+            _cacheDirectory = basePath + "/bugsnag-performance/v1";
+            _persistentStateFilePath = _cacheDirectory + "/persistent-state.json";
+            // Must be set to this path to share with the bugsnag unity notifier
+            _deviceidFilePath = basePath + "/Bugsnag/deviceId.txt";
+        }
 
-        public static string GetDeviceId()
+        public void Configure(PerformanceConfiguration config)
+        {
+            _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
+            Directory.CreateDirectory(_cacheDirectory);
+        }
+
+        public void Start()
+        {
+            // Nothing to do
+        }
+
+        public string GetDeviceId()
         {
             try
             {
@@ -45,9 +55,12 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        
+        public Stream OpenPersistentStateStream()
+        {
+            return new FileStream(_persistentStateFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        }
 
-        public static void CacheBatch(TracePayload payload)
+        public void CacheBatch(TracePayload payload)
         {
             var existingBatches = GetCachedBatchPaths();
             foreach (var path in existingBatches)
@@ -57,26 +70,32 @@ namespace BugsnagUnityPerformance
                     return;
                 }
             }
-            var newPath = _cacheDirectory + "/" + payload.PayloadId + BATCH_FILE_SUFFIX;
-            WriteFile(newPath, payload.GetJsonBody());
+            var newPath = _cacheDirectory + Path.DirectorySeparatorChar + payload.PayloadId + BATCH_FILE_SUFFIX;
+            var stream = new FileStream(newPath, FileMode.Create, FileAccess.Write);
+            payload.Serialize(stream);
         }
 
-        public static List<TracePayload> GetCachedBatchesForDelivery()
+        public List<TracePayload> GetCachedBatchesForDelivery()
         {
             RemoveExpiredPayloads();
             var existingBatches = GetCachedBatchPaths();
             var payloads = new List<TracePayload>();
             foreach (var path in existingBatches)
             {
-                var json = GetJsonFromCachePath(path);
                 var id = Path.GetFileNameWithoutExtension(path);
-                var payload = new TracePayload(json,id);
-                payloads.Add(payload);
+                try {
+                    var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    var payload = TracePayload.Deserialize(id, stream);
+                    payloads.Add(payload);
+                } catch
+                {
+                    // Ignore
+                }
             }
             return payloads;
         }
 
-        public static void RemoveCachedBatch(string id)
+        public void RemoveCachedBatch(string id)
         {
             var paths = GetCachedBatchPaths();
             foreach (var path in paths)
@@ -88,21 +107,30 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static void RemoveExpiredPayloads()
+        public void Clear()
+        {
+            if (Directory.Exists(_cacheDirectory))
+            {
+                Directory.Delete(_cacheDirectory, true);
+            }
+            Directory.CreateDirectory(_cacheDirectory);
+        }
+
+        private void RemoveExpiredPayloads()
         {
             var paths = GetCachedBatchPaths();
             foreach (var path in paths)
             {
                 var creationTime = File.GetCreationTimeUtc(path);
                 var timeSinceCreation = DateTimeOffset.UtcNow - creationTime;
-                if (timeSinceCreation.TotalSeconds > PerformanceConfiguration.MaxPersistedBatchAgeSeconds)
+                if (timeSinceCreation.TotalSeconds > _maxPersistedBatchAgeSeconds)
                 {
                     DeleteFile(path);
                 }
             }
         }
 
-        private static void DeleteFile(string path)
+        private void DeleteFile(string path)
         {
             try
             {
@@ -114,7 +142,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static void WriteFile(string path, string data)
+        private void WriteFile(string path, string data)
         {
             try
             {
@@ -124,7 +152,7 @@ namespace BugsnagUnityPerformance
             catch { }
         }
 
-        private static string GetJsonFromCachePath(string path)
+        private string GetJsonFromCachePath(string path)
         {
             try
             {
@@ -137,7 +165,7 @@ namespace BugsnagUnityPerformance
             return null;
         }
 
-        private static string[] GetCachedBatchPaths()
+        private string[] GetCachedBatchPaths()
         {
             if (Directory.Exists(_cacheDirectory))
             {
@@ -146,8 +174,5 @@ namespace BugsnagUnityPerformance
             }
             return new string[] { };
         }
-
-       
-
     }
 }

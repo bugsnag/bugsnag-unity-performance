@@ -9,6 +9,7 @@ Feature: Network Spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "network"
@@ -30,6 +31,7 @@ Feature: Network Spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "network"
@@ -38,9 +40,11 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.response_content_length" exists
 
   Scenario: Post Success
     When I run the game in the "NetworkPostSuccess" state
@@ -48,6 +52,7 @@ Feature: Network Spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/POST"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "network"
@@ -70,6 +75,7 @@ Feature: Network Spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/POST"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "network"
@@ -78,6 +84,10 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "https://localhost:994/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" exists
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "0"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.request_content_length" exists
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.response_content_length" exists

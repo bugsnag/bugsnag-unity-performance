@@ -8,9 +8,9 @@ namespace BugsnagUnityPerformance
 
         public ResourceModel resource;
 
-        public ResourceSpanModel(ScopeSpanModel[] scopeSpans)
+        public ResourceSpanModel(ResourceModel resourceModel, ScopeSpanModel[] scopeSpans)
         {
-            this.resource = new ResourceModel();
+            this.resource = resourceModel;
             this.scopeSpans = scopeSpans;
         }
     }

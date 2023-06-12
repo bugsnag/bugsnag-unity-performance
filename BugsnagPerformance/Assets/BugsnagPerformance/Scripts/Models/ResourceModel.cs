@@ -4,33 +4,28 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class ResourceModel
+    public class ResourceModel: IPhasedStartup
     {
-
-        private static List<AttributeModel> _resourceData;
+        private CacheManager _cacheManager;
 
         public List<AttributeModel> attributes;
 
-        public ResourceModel()
+        public ResourceModel(CacheManager cacheManager)
         {
-            attributes = GetResourceData();
+            _cacheManager = cacheManager;
         }
 
-        public static void InitResourceDataOnMainThread()
+        public void Configure(PerformanceConfiguration config)
         {
-            if (_resourceData == null)
-            {
-                _resourceData = new List<AttributeModel>
+            attributes = new List<AttributeModel>
                {
-                    new AttributeModel("deployment.environment", BugsnagPerformance.Configuration.ReleaseStage),
+                    new AttributeModel("deployment.environment", config.ReleaseStage),
 
                     new AttributeModel("telemetry.sdk.name", "bugsnag.performance.unity"),
 
                     new AttributeModel("telemetry.sdk.version", Version.VersionString),
 
                     new AttributeModel("os.version", Environment.OSVersion.VersionString),
-
-                    new AttributeModel("device.id", CacheManager.GetDeviceId()),
 
                     new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
 
@@ -40,32 +35,31 @@ namespace BugsnagUnityPerformance
 
                     new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
                };
-                var mobileBuildNumber = GetMobileBuildNumber();
-                if (mobileBuildNumber != null)
-                {
-                    _resourceData.Add(mobileBuildNumber);
-                }
+            var mobileBuildNumber = GetMobileBuildNumber();
+            if (mobileBuildNumber != null)
+            {
+                attributes.Add(mobileBuildNumber);
+            }
 
-                var mobileManufacturer = GetMobileManufacturer();
-                if (mobileManufacturer != null)
-                {
-                    _resourceData.Add(mobileManufacturer);
-                }
+            var mobileManufacturer = GetMobileManufacturer();
+            if (mobileManufacturer != null)
+            {
+                attributes.Add(mobileManufacturer);
+            }
 
-                var mobileArch = GetMobileArch();
-                if (mobileArch != null)
-                {
-                    _resourceData.Add(mobileArch);
-                }
+            var mobileArch = GetMobileArch();
+            if (mobileArch != null)
+            {
+                attributes.Add(mobileArch);
             }
         }
 
-        private static List<AttributeModel> GetResourceData()
+        public void Start()
         {
-            return _resourceData;
+            attributes.Add(new AttributeModel("device.id", _cacheManager.GetDeviceId()));
         }
 
-        private static string GetPlatform()
+        private string GetPlatform()
         {
             switch (Application.platform)
             {
@@ -77,7 +71,7 @@ namespace BugsnagUnityPerformance
             return string.Empty;
         }
 
-        private static AttributeModel GetMobileBuildNumber()
+        private AttributeModel GetMobileBuildNumber()
         {
 #if UNITY_EDITOR
             return null;
@@ -88,7 +82,7 @@ namespace BugsnagUnityPerformance
 #endif
         }
 
-        private static AttributeModel GetMobileArch()
+        private AttributeModel GetMobileArch()
         {
 #if UNITY_EDITOR
             return null;
@@ -99,7 +93,7 @@ namespace BugsnagUnityPerformance
 #endif
         }
 
-        private static AttributeModel GetMobileManufacturer()
+        private AttributeModel GetMobileManufacturer()
         {
 #if UNITY_EDITOR
             return null;
@@ -109,7 +103,5 @@ namespace BugsnagUnityPerformance
             return new AttributeModel("device.manufacturer", AndroidNative.GetManufacture());
 #endif
         }
-
-
     }
 }
