@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
@@ -8,6 +10,9 @@ namespace BugsnagUnityPerformance
     public class PersistentState : IPhasedStartup
     {
         private CacheManager _cacheManager;
+        bool _isStarted = false;
+
+        private Mutex _fileStreamMutex = new Mutex();
 
         [JsonProperty("probability")]
         private double _probability = -1;
@@ -21,7 +26,11 @@ namespace BugsnagUnityPerformance
             set
             {
                 _probability = value;
-                Save();
+                if (_isStarted)
+                {
+                    Save();
+
+                }
             }
         }
 
@@ -38,34 +47,55 @@ namespace BugsnagUnityPerformance
         public void Start()
         {
             Load();
+            _isStarted = true;
         }
 
         private void Load()
         {
             try
             {
-                using (StreamReader sw = new StreamReader(_cacheManager.OpenPersistentStateStream()))
-                using (JsonReader reader = new JsonTextReader(sw))
+                _fileStreamMutex.WaitOne();
+                string serialized = File.ReadAllText(_cacheManager.PersistentStateFilePath);
+                if (serialized != null)
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Populate(reader, this);
+                    JsonConvert.PopulateObject(serialized, this);
                 }
             }
             catch (Exception)
             {
                 // If anything goes wrong, do nothing.
             }
+            finally
+            {
+                _fileStreamMutex.ReleaseMutex();
+            }
         }
 
         private void Save()
         {
-            using (StreamWriter sw = new StreamWriter(_cacheManager.OpenPersistentStateStream()))
-            using (JsonWriter writer = new JsonTextWriter(sw))
+            try
             {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.NullValueHandling = NullValueHandling.Ignore;
-                serializer.Serialize(writer, this);
-                writer.Flush();
+                _fileStreamMutex.WaitOne();
+                var serialized = JsonConvert.SerializeObject(this);
+                if (serialized != null)
+                {
+                    // File.WriteAllText doesn't overwrite an existing file like the documentation says.
+                    // Instead, it throws a sharing violation exception.
+                    if (File.Exists(_cacheManager.PersistentStateFilePath))
+                    {
+                        File.Delete(_cacheManager.PersistentStateFilePath);
+                    }
+                    var parent = Directory.GetParent(_cacheManager.PersistentStateFilePath);
+                    File.WriteAllText(_cacheManager.PersistentStateFilePath, serialized);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Failed to save persistent state: " + e);
+            }
+            finally
+            {
+                _fileStreamMutex.ReleaseMutex();
             }
         }
     }

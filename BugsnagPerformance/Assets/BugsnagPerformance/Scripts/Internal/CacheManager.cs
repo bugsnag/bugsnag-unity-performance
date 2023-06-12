@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BugsnagUnityPerformance
 {
-    public class CacheManager: IPhasedStartup
+    public class CacheManager : IPhasedStartup
     {
         private int _maxPersistedBatchAgeSeconds;
         private string _cacheDirectory;
@@ -13,6 +13,13 @@ namespace BugsnagUnityPerformance
         private string _persistentStateFilePath;
 
         private const string BATCH_FILE_SUFFIX = ".json";
+
+        public string PersistentStateFilePath  {
+            get
+            {
+                return _persistentStateFilePath;
+            }
+        }
 
         public CacheManager(string basePath)
         {
@@ -25,12 +32,14 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
-            Directory.CreateDirectory(_cacheDirectory);
         }
 
         public void Start()
         {
-            // Nothing to do
+            if (!Directory.Exists(_cacheDirectory))
+            {
+                Directory.CreateDirectory(_cacheDirectory);
+            }
         }
 
         public string GetDeviceId()
@@ -53,11 +62,6 @@ namespace BugsnagUnityPerformance
                 // not possible in unit tests
                 return string.Empty;
             }
-        }
-
-        public Stream OpenPersistentStateStream()
-        {
-            return new FileStream(_persistentStateFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
         public void CacheBatch(TracePayload payload)

@@ -16,7 +16,7 @@ namespace BugsnagUnityPerformance
         public Dictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
 
         private ResourceModel _resourceModel;
-        private List<SpanModel> _spans = new List<SpanModel>();
+        private List<SpanModel> _spans = null;
 
         // Temporary method to allow hard coding the Bugsnag-Span-Sampling header until sampling is properly implemented
         public int BatchSize;
@@ -26,16 +26,20 @@ namespace BugsnagUnityPerformance
         public TracePayload(ResourceModel resourceModel, List<Span> spans)
         {
             _resourceModel = resourceModel;
-            PayloadId = Guid.NewGuid().ToString();
-            foreach (var span in spans)
+            if (spans != null)
             {
-                _spans.Add(new SpanModel(span));
-            }
-            BatchSize = spans.Count;
-            SamplingHistogram = CalculateSamplingHistorgram(spans);
-            if (SamplingHistogram.Count > 0)
-            {
-                Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+                _spans = new List<SpanModel>();
+                PayloadId = Guid.NewGuid().ToString();
+                foreach (var span in spans)
+                {
+                    _spans.Add(new SpanModel(span));
+                }
+                BatchSize = spans.Count;
+                SamplingHistogram = CalculateSamplingHistorgram(spans);
+                if (SamplingHistogram.Count > 0)
+                {
+                    Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+                }
             }
         }
 
@@ -77,16 +81,22 @@ namespace BugsnagUnityPerformance
         {
             if (string.IsNullOrEmpty(_jsonbody))
             {
-                var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
-                var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(_resourceModel, scopeSpans) };
-                var serialiseablePayload = new TracePayloadBody()
+                if (_spans == null)
                 {
-                    resourceSpans = resourceSpans
-                };
-                _jsonbody = JsonConvert.SerializeObject(serialiseablePayload, new JsonSerializerSettings
+                    return "{\"resourceSpans\": []}";
+                } else
                 {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+                    var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
+                    var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(_resourceModel, scopeSpans) };
+                    var serialiseablePayload = new TracePayloadBody()
+                    {
+                        resourceSpans = resourceSpans
+                    };
+                    _jsonbody = JsonConvert.SerializeObject(serialiseablePayload, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+                }
             }            
             return _jsonbody;
         }
