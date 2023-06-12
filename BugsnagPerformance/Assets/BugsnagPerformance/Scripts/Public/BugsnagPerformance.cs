@@ -69,12 +69,12 @@ namespace BugsnagUnityPerformance
             _persistentState = new PersistentState(_cacheManager);
             _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
-            _delivery = new Delivery(_resourceModel, _cacheManager);
+            _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
             _tracer = new Tracer(_sampler, _delivery);
             _spanFactory = new SpanFactory(OnSpanEnd);
             _appStartHandler = new AppStartHandler(_spanFactory);
         }
-
+        
         internal class SceneLoadSpanContainer
         {
             public string SceneName;
@@ -104,12 +104,19 @@ namespace BugsnagUnityPerformance
             _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
+
+            _delivery.DeliverPValueRequest();
             IsStarted = true;
         }
 
         private void OnSpanEnd(Span span)
         {
             _tracer.OnSpanEnd(span);
+        }
+
+        private void OnProbabilityChanged(double newProbability)
+        {
+            _sampler.Probability = newProbability;
         }
 
         private void SetupSceneLoadListeners()

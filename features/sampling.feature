@@ -4,6 +4,7 @@ Feature: Sampling spans
     Given I clear the Bugsnag cache
 
   Scenario: With probability 1, all spans are sampled
+    Given I set the sampling probability for the next traces to "1"
     When I run the game in the "ConfiguredSamplingRate1" state
     And I wait for 4 spans
     Then the trace Bugsnag-Integrity header is valid
@@ -19,5 +20,6 @@ Feature: Sampling spans
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"    
 
   Scenario: With probability 0, no spans are sampled
+    Given I set the sampling probability for the next traces to "0"
     When I run the game in the "ConfiguredSamplingRate0" state
     Then I should receive no traces

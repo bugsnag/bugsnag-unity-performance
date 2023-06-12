@@ -10,23 +10,50 @@ using UnityEngine.Networking;
 
 namespace BugsnagUnityPerformance
 {
+    public delegate void OnProbabilityChanged(double newProbability);
+
     internal class Delivery : IPhasedStartup
     {
         private string _endpoint;
         private string _apiKey;
+        private OnProbabilityChanged _onProbabilityChanged;
 
         private bool _flushingCache;
 
         private ResourceModel _resourceModel;
         private CacheManager _cacheManager;
 
+        private enum RequestResult
+        {
+            Success,
+            RetriableFailure,
+            PermanentFailure
+        };
+
+        private delegate void OnServerResponse(TracePayload payload, UnityWebRequest req);
+
         private const int MAX_PAYLOAD_BYTES = 1000000;
 
+        private static RequestResult GetRequestResult(UnityWebRequest req)
+        {
+            switch (req.responseCode) {
+                case 200:
+                case 202:
+                    return RequestResult.Success;
+                case 0:
+                case 408:
+                case 429:
+                    return RequestResult.RetriableFailure;
+                default:
+                    return req.responseCode >= 500 ? RequestResult.RetriableFailure : RequestResult.PermanentFailure;
+            }
+        }
 
-        public Delivery(ResourceModel resourceModel, CacheManager cacheManager)
+        public Delivery(ResourceModel resourceModel, CacheManager cacheManager, OnProbabilityChanged onProbabilityChanged)
         {
             _resourceModel = resourceModel;
             _cacheManager = cacheManager;
+            _onProbabilityChanged = onProbabilityChanged;
         }
 
         public void Configure(PerformanceConfiguration config)
@@ -43,10 +70,44 @@ namespace BugsnagUnityPerformance
         public void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(_resourceModel, batch);
-            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload));
+            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
-        private IEnumerator PushToServer(TracePayload payload)
+        private void OnTraceDeliveryCompleted(TracePayload payload, UnityWebRequest req)
+        {
+            switch (GetRequestResult(req))
+            {
+                case RequestResult.Success:
+                    CheckForProbabilityUpdate(req);
+                    PayloadSendSuccess(payload.PayloadId);
+                    FlushCache();
+                    return;
+                case RequestResult.RetriableFailure:
+                    if (req.uploadedBytes <= MAX_PAYLOAD_BYTES)
+                    {
+                        _cacheManager.CacheBatch(payload);
+                    }
+                    return;
+                case RequestResult.PermanentFailure:
+                    break;
+            }
+        }
+
+        public void DeliverPValueRequest()
+        {
+            var payload = new TracePayload(_resourceModel, null);
+            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnPValueRequestCompleted));
+        }
+
+        private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req)
+        {
+            if (GetRequestResult(req) == RequestResult.Success)
+            {
+                CheckForProbabilityUpdate(req);
+            }
+        }
+
+        private IEnumerator PushToServer(TracePayload payload, OnServerResponse onServerResponse)
         {
             byte[] body = null;
             // There is no threading on webgl, so we treat the payload differently
@@ -86,28 +147,37 @@ namespace BugsnagUnityPerformance
                 req.method = UnityWebRequest.kHttpVerbPOST;
 
                 yield return req.SendWebRequest();
+                onServerResponse(payload, req);
+            }
+        }
 
-                var code = req.responseCode;
-                if (code == 200 || code == 202)
+        private void CheckForProbabilityUpdate(UnityWebRequest req)
+        {
+            var onProbabilityChanged = _onProbabilityChanged;
+            if (onProbabilityChanged != null)
+            {
+                var newProbability = ReadResponseProbability(req);
+                if (!Double.IsNaN(newProbability))
                 {
-                    // success!
-                    PayloadSendSuccess(payload.PayloadId);
-                    FlushCache();
-                }
-                else if (code == 0 || code == 408 || code == 429 || code >= 500)
-                {
-                    // sending failed with retryable error, cache for later retry
-                    if (body.Length <= MAX_PAYLOAD_BYTES)
-                    {
-                        _cacheManager.CacheBatch(payload);
-                    }
-                }
-                else
-                {
-                    // sending failed with an unacceptable status code or network error
-                    // do nothing
+                    onProbabilityChanged(newProbability);
                 }
             }
+        }
+
+        private static double ReadResponseProbability(UnityWebRequest req)
+        {
+            try
+            {
+                var probabilityStr = req.GetResponseHeader("Bugsnag-Sampling-Probability");
+                if (probabilityStr != null)
+                {
+                    return Convert.ToDouble(probabilityStr);
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return double.NaN;
         }
 
         private void FlushCache()
@@ -126,7 +196,7 @@ namespace BugsnagUnityPerformance
             foreach (var payload in payloads)
             {
                 //Process one batch at a time to save on performance costs of web requests
-                yield return PushToServer(payload);
+                yield return PushToServer(payload, OnTraceDeliveryCompleted);
             }
             _flushingCache = false;
         }
