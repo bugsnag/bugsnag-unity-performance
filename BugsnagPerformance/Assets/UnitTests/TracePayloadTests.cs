@@ -78,7 +78,7 @@ namespace Tests
         [Test]
         public void TestHistogram()
         {
-            AssertSpanSamplingHistogram(new List<double> { }, "");
+            AssertSpanSamplingHistogram(new List<double> { }, "1:0");
             AssertSpanSamplingHistogram(new List<double> { 1.0 }, "1:1");
             AssertSpanSamplingHistogram(new List<double> { 1.0, 1.0 }, "1:2");
             AssertSpanSamplingHistogram(new List<double> { 1.0, 0.5, 1.0 }, "0.5:1;1:2");

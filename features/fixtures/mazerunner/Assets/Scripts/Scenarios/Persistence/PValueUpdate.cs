@@ -15,7 +15,6 @@ public class PValueUpdate : Scenario
 
     public override void Run()
     {
-        Debug.Log("### PValueUpdate.Run");
         StartCoroutine(doStuff());
     }
 
