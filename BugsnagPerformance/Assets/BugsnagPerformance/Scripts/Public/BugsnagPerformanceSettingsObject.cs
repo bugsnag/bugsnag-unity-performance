@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using BugsnagUnity;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace BugsnagUnityPerformance
     [Serializable]
     public class BugsnagPerformanceSettingsObject : ScriptableObject
     {
+
+        public bool ShareNotifierSettings = false;
 
         public bool StartAutomaticallyAtLaunch = true;
 
@@ -38,7 +41,17 @@ namespace BugsnagUnityPerformance
 
         internal PerformanceConfiguration GetConfig()
         {
-            var config = new PerformanceConfiguration(ApiKey);
+            PerformanceConfiguration config = null;
+
+            if (ShareNotifierSettings && NotifierConfigAvaliable())
+            {
+                config = GetSettingsFromNotifier();
+            }
+            else
+            {
+                config = new PerformanceConfiguration(ApiKey);
+            }
+
             config.Endpoint = Endpoint;
             if (string.IsNullOrEmpty(ReleaseStage))
             {
@@ -51,6 +64,21 @@ namespace BugsnagUnityPerformance
             config.ReleaseStage =  ReleaseStage;
             config.SamplingProbability = SamplingProbability;
             return config;
+        }
+
+        private PerformanceConfiguration GetSettingsFromNotifier()
+        {
+            var notifierSettings = Resources.Load("Bugsnag/BugsnagSettingsObject");
+            var settingsType = notifierSettings.GetType();
+            var apiKey = settingsType.GetField("ApiKey").GetValue(notifierSettings).ToString();
+            var config = new PerformanceConfiguration(apiKey);
+            config.ReleaseStage = settingsType.GetField("ReleaseStage").GetValue(notifierSettings).ToString();
+            return config;
+        }
+
+        private bool NotifierConfigAvaliable()
+        {
+            return File.Exists(Application.dataPath + "/Resources/Bugsnag/BugsnagSettingsObject.asset");
         }
     }
 }

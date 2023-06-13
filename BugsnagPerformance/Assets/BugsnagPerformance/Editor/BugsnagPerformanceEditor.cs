@@ -75,15 +75,22 @@ public class BugsnagPerformanceEditor : EditorWindow
         var so = new SerializedObject(settings);
         EditorGUI.indentLevel++;
 
-        EditorGUIUtility.labelWidth = 70;
-        EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
+        settings.ShareNotifierSettings = EditorGUILayout.Toggle("Share BugSnag Notifier Settings", settings.ShareNotifierSettings);
 
-        EditorGUIUtility.labelWidth = 280;
-        settings.StartAutomaticallyAtLaunch = EditorGUILayout.Toggle("Start Automatically (requires API key to be set)", settings.StartAutomaticallyAtLaunch);
+        if (!settings.ShareNotifierSettings)
+        {
+            EditorGUIUtility.labelWidth = 70;
+            EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
 
+            EditorGUIUtility.labelWidth = 280;
+            settings.StartAutomaticallyAtLaunch = EditorGUILayout.Toggle("Start Automatically (requires API key to be set)", settings.StartAutomaticallyAtLaunch);
+
+            EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
+        }
+        
         EditorGUIUtility.labelWidth = 200;
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
-        EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
+        
         EditorGUILayout.PropertyField(so.FindProperty("SamplingProbability"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
 

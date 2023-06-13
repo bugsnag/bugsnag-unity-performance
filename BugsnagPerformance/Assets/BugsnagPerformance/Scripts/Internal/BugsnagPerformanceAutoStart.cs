@@ -1,25 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BugsnagUnity;
+using BugsnagUnityPerformance;
 using UnityEngine;
-namespace BugsnagUnityPerformance
+
+internal class BugsnagPerformanceAutoStart : MonoBehaviour
 {
-    public class BugsnagPerformanceAutoStart : MonoBehaviour
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    static void OnBeforeSceneLoadRuntimeMethod()
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void OnBeforeSceneLoadRuntimeMethod()
+        var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
+        if (settings != null && settings.StartAutomaticallyAtLaunch)
         {
-            var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
-            if (settings != null && settings.StartAutomaticallyAtLaunch)
+            var config = settings.GetConfig();
+            if (string.IsNullOrEmpty(config.ApiKey))
             {
-                if (string.IsNullOrEmpty(settings.ApiKey))
-                {
-                    Debug.LogError("Bugsnag not auto started as the API key is not set in the Bugsnag Performance Settings window.");
-                    return;
-                }
-                var config = settings.GetConfig();
-                BugsnagPerformance.Start(config);
+                Debug.LogError("Bugsnag Performance not auto started as the API key is not set.");
+                return;
             }
+            BugsnagPerformance.Start(config);
         }
     }
 }
