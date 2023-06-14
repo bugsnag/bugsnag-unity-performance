@@ -21,7 +21,7 @@
 
    ```
    git tag v1.x.x
-   git push origin v6.x.x
+   git push origin v1.x.x
    ```
 
 6. Wait. The CI build will build the new package and create a draft release.
