@@ -231,7 +231,7 @@ namespace BugsnagUnityPerformance
             {
                 return _spanFactory.StartCustomSpan(name, spanOptions);
             }
-        }      
+        }
 
         public static void ReportAppStarted()
         {

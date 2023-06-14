@@ -45,7 +45,7 @@ namespace BugsnagUnityPerformance
 
             if (ShareNotifierSettings && NotifierConfigAvaliable())
             {
-                config = GetSettingsFromNotifier();
+                config = GetSettingsFromNotifier(out StartAutomaticallyAtLaunch);
             }
             else
             {
@@ -66,13 +66,14 @@ namespace BugsnagUnityPerformance
             return config;
         }
 
-        private PerformanceConfiguration GetSettingsFromNotifier()
+        private PerformanceConfiguration GetSettingsFromNotifier(out bool autoStart)
         {
             var notifierSettings = Resources.Load("Bugsnag/BugsnagSettingsObject");
             var settingsType = notifierSettings.GetType();
             var apiKey = settingsType.GetField("ApiKey").GetValue(notifierSettings).ToString();
             var config = new PerformanceConfiguration(apiKey);
             config.ReleaseStage = settingsType.GetField("ReleaseStage").GetValue(notifierSettings).ToString();
+            autoStart = (bool)notifierSettings.GetType().GetField("StartAutomaticallyAtLaunch").GetValue(notifierSettings);
             return config;
         }
 

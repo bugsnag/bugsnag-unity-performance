@@ -10,6 +10,7 @@ using UnityEngine;
 public class BugsnagPerformanceEditor : EditorWindow
 {
 
+
     public Texture DarkIcon, LightIcon;
 
     private static string GetFullSettingsPath()
@@ -75,7 +76,12 @@ public class BugsnagPerformanceEditor : EditorWindow
         var so = new SerializedObject(settings);
         EditorGUI.indentLevel++;
 
-        settings.ShareNotifierSettings = EditorGUILayout.Toggle("Share BugSnag Notifier Settings", settings.ShareNotifierSettings);
+        if (NotifierConfigAvaliable())
+        {
+            EditorGUIUtility.labelWidth = 200;
+
+            settings.ShareNotifierSettings = EditorGUILayout.Toggle("Share BugSnag Notifier Settings", settings.ShareNotifierSettings);
+        }
 
         if (!settings.ShareNotifierSettings)
         {
@@ -87,10 +93,19 @@ public class BugsnagPerformanceEditor : EditorWindow
 
             EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
         }
-        
+
+        if (NotifierConfigAvaliable() && settings.ShareNotifierSettings)
+        {
+            GUI.enabled = false;
+            EditorGUILayout.LabelField("Api Key: " + GetNotifierApiKey());
+            EditorGUILayout.Toggle("Start Automatically", GetNotifierAutoStart());
+            EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
+            GUI.enabled = true;
+
+        }
+
         EditorGUIUtility.labelWidth = 200;
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
-        
         EditorGUILayout.PropertyField(so.FindProperty("SamplingProbability"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
 
@@ -99,5 +114,35 @@ public class BugsnagPerformanceEditor : EditorWindow
 
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
+    }
+
+
+    private string GetNotifierReleaseStage()
+    {
+        var notifierSettings = GetNotifierSettingsObject();
+        return notifierSettings.GetType().GetField("ReleaseStage").GetValue(notifierSettings).ToString();
+    }
+
+    private string GetNotifierApiKey()
+    {
+        var notifierSettings = GetNotifierSettingsObject();
+        return notifierSettings.GetType().GetField("ApiKey").GetValue(notifierSettings).ToString();
+    }
+
+    private bool GetNotifierAutoStart()
+    {
+        var notifierSettings = GetNotifierSettingsObject();
+        return (bool)notifierSettings.GetType().GetField("StartAutomaticallyAtLaunch").GetValue(notifierSettings);
+    }
+
+    private Object GetNotifierSettingsObject()
+    {
+        return Resources.Load("Bugsnag/BugsnagSettingsObject");
+    }
+
+
+    private bool NotifierConfigAvaliable()
+    {
+        return File.Exists(Application.dataPath + "/Resources/Bugsnag/BugsnagSettingsObject.asset");
     }
 }
