@@ -3,7 +3,7 @@
   "version": "VERSION_STRING",
   "displayName": "BugSnag Unity Performance",
   "description": "Monitor the start-up, scene loading and network requests of your game and see the results in your BugSnag dashboard.",
-  "unity": "2018.1",
+  "unity": "2020",
   "documentationUrl": "https://docs.bugsnag.com/performance/unity",
   "changelogUrl": "https://github.com/bugsnag/bugsnag-unity-performance/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/bugsnag/bugsnag-unity-performance/blob/main/LICENSE",
