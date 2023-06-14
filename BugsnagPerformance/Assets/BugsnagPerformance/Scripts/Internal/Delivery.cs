@@ -30,7 +30,7 @@ namespace BugsnagUnityPerformance
             PermanentFailure
         };
 
-        private delegate void OnServerResponse(TracePayload payload, UnityWebRequest req);
+        internal delegate void OnServerResponse(TracePayload payload, UnityWebRequest req, double newProbability);
 
         private const int MAX_PAYLOAD_BYTES = 1000000;
 
@@ -73,12 +73,12 @@ namespace BugsnagUnityPerformance
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
-        private void OnTraceDeliveryCompleted(TracePayload payload, UnityWebRequest req)
+        private void OnTraceDeliveryCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
         {
             switch (GetRequestResult(req))
             {
                 case RequestResult.Success:
-                    CheckForProbabilityUpdate(req);
+                    CheckForProbabilityUpdate(newProbability);
                     PayloadSendSuccess(payload.PayloadId);
                     FlushCache();
                     return;
@@ -93,17 +93,21 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public void DeliverPValueRequest()
+        public void DeliverPValueRequest(OnServerResponse onResponse = null)
         {
+            if (onResponse == null)
+            {
+                onResponse = OnPValueRequestCompleted;
+            }
             var payload = new TracePayload(_resourceModel, null);
-            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnPValueRequestCompleted));
+            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
         }
 
-        private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req)
+        private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
         {
             if (GetRequestResult(req) == RequestResult.Success)
             {
-                CheckForProbabilityUpdate(req);
+                CheckForProbabilityUpdate(newProbability);
             }
         }
 
@@ -147,20 +151,17 @@ namespace BugsnagUnityPerformance
                 req.method = UnityWebRequest.kHttpVerbPOST;
 
                 yield return req.SendWebRequest();
-                onServerResponse(payload, req);
+                var newProbability = GetRequestResult(req) == RequestResult.Success ? ReadResponseProbability(req) : double.NaN;
+                onServerResponse(payload, req, newProbability);
             }
         }
 
-        private void CheckForProbabilityUpdate(UnityWebRequest req)
+        private void CheckForProbabilityUpdate(double newProbability)
         {
             var onProbabilityChanged = _onProbabilityChanged;
-            if (onProbabilityChanged != null)
+            if (onProbabilityChanged != null && !Double.IsNaN(newProbability))
             {
-                var newProbability = ReadResponseProbability(req);
-                if (!Double.IsNaN(newProbability))
-                {
-                    onProbabilityChanged(newProbability);
-                }
+                onProbabilityChanged(newProbability);
             }
         }
 
@@ -174,7 +175,7 @@ namespace BugsnagUnityPerformance
                     return Convert.ToDouble(probabilityStr);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
             }
             return double.NaN;

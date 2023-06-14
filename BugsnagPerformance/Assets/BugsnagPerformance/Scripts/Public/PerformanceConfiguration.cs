@@ -10,6 +10,8 @@ namespace BugsnagUnityPerformance
         internal int MaxBatchSize = 100;
         internal float MaxBatchAgeSeconds = 30f;
         internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
+        internal float PValueTimeoutSeconds = 86400f;
+        internal float PValueCheckIntervalSeconds = 30f;
 
         //Public config
 

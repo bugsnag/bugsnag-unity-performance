@@ -88,3 +88,36 @@ Feature: Trace and state persistence
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
     Then I should receive no traces
+
+Scenario: P value expiry
+    Given I run the game in the "PValueExpiry" state
+    And I wait to receive a sampling request
+    # https://smartbear.atlassian.net/browse/PLAT-10274
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+
+Scenario: P value retry (success case)
+    Given I run the game in the "PValueRetry" state
+    And I wait to receive a sampling request
+    And I discard the oldest sampling request
+    And I should receive no sampling request
+
+Scenario: P value retry (error case)
+    When I set the HTTP status code to 408
+    And I run the game in the "PValueExpiry" state
+    And I wait to receive a sampling request
+    # https://smartbear.atlassian.net/browse/PLAT-10274
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
+    # And I discard the oldest sampling request
+    # And I wait to receive a sampling request
