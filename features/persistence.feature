@@ -38,7 +38,7 @@ Feature: Trace and state persistence
     Then I should receive no traces
     Then I close the Unity app
     # Block the next initial P value request so that it keeps its 0.0 P value
-    And I set the HTTP status code for the next requests to "404"
+    And I set the HTTP status code for the next request to 404
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
@@ -67,7 +67,7 @@ Feature: Trace and state persistence
     And I discard the oldest trace
     Then I close the Unity app
     # Block the next initial P value request so that it keeps its 1.0 P value
-    And I set the HTTP status code for the next requests to "404"
+    And I set the HTTP status code for the next request to 404
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
