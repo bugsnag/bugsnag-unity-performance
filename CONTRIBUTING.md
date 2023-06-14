@@ -42,7 +42,7 @@ Once the UnityPackage release is confirmed a UPM release should be deployed
 
 5. Replace the contents of the repo with the contents of the `upm/package` directory in the `bugsnag-unity-performance` repo
 
-6. Commit these changes to main with the message `Release V1.x.x`
+6. Commit these changes to main with the message `Release v1.x.x`
 
 7. Tag the release and push the tag
   ```
