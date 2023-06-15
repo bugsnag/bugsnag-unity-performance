@@ -36,7 +36,11 @@ namespace BugsnagUnityPerformance
                 }
                 BatchSize = spans.Count;
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
-                if (SamplingHistogram.Count > 0)
+                if (SamplingHistogram.Count == 0)
+                {
+                    Headers["Bugsnag-Span-Sampling"] = "1:0";
+                }
+                else
                 {
                     Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
                 }

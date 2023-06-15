@@ -24,6 +24,7 @@ namespace BugsnagUnityPerformance
         private Tracer _tracer;
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
+        private PValueUpdater _pValueUpdater;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -73,6 +74,7 @@ namespace BugsnagUnityPerformance
             _tracer = new Tracer(_sampler, _delivery);
             _spanFactory = new SpanFactory(OnSpanEnd);
             _appStartHandler = new AppStartHandler(_spanFactory);
+            _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
         
         internal class SceneLoadSpanContainer
@@ -88,6 +90,7 @@ namespace BugsnagUnityPerformance
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
+            _pValueUpdater.Configure(config);
             _tracer.Configure(config);
             _appStartHandler.Configure(config);
         }
@@ -100,12 +103,12 @@ namespace BugsnagUnityPerformance
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();
+            _pValueUpdater.Start();
             _tracer.Start();
             _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
 
-            _delivery.DeliverPValueRequest();
             IsStarted = true;
         }
 
