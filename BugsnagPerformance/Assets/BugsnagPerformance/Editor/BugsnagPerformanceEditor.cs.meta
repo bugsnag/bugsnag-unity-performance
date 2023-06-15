@@ -3,7 +3,10 @@ guid: c89f696ba92104d07896812dd1d6c94d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - DarkIcon: {fileID: 2800000, guid: 4063fb15bcca646418a64ba68e112dc9, type: 3}
+  - LightIcon: {fileID: 2800000, guid: 85ce04c9089bb47ca97cf6a6a4072081, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

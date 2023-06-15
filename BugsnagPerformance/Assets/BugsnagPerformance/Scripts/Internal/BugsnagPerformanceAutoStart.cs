@@ -14,7 +14,7 @@ internal class BugsnagPerformanceAutoStart : MonoBehaviour
             var config = settings.GetConfig();
             if (string.IsNullOrEmpty(config.ApiKey))
             {
-                Debug.LogError("Bugsnag Performance not auto started as the API key is not set.");
+                Debug.LogError("BugSnag Performance not auto started as the API key is not set.");
                 return;
             }
             BugsnagPerformance.Start(config);

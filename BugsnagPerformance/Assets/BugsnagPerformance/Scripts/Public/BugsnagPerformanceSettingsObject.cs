@@ -10,7 +10,7 @@ namespace BugsnagUnityPerformance
     public class BugsnagPerformanceSettingsObject : ScriptableObject
     {
 
-        public bool ShareNotifierSettings = false;
+        public bool UseNotifierSettings = true;
 
         public bool StartAutomaticallyAtLaunch = true;
 
@@ -34,7 +34,7 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                throw new Exception("No Bugsnag Performance Settings Object found.");
+                throw new Exception("No BugSnag Performance Settings Object found.");
             }
         }
 
@@ -42,7 +42,7 @@ namespace BugsnagUnityPerformance
         {
             PerformanceConfiguration config = null;
 
-            if (ShareNotifierSettings && NotifierConfigAvaliable())
+            if (UseNotifierSettings && NotifierConfigAvaliable())
             {
                 config = GetSettingsFromNotifier(out StartAutomaticallyAtLaunch);
             }

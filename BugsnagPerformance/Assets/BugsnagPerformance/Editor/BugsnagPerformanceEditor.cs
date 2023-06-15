@@ -13,7 +13,7 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private void OnEnable()
     {
-        titleContent.text = "Bugsnag Performance";
+        titleContent.text = "BugSnag Performance";
     }
 
     private static string GetFullSettingsPath()
@@ -82,10 +82,10 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (NotifierConfigAvaliable())
         {
             EditorGUIUtility.labelWidth = 200;
-            settings.ShareNotifierSettings = EditorGUILayout.Toggle("Share BugSnag Notifier Settings", settings.ShareNotifierSettings);
+            settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Notifier Settings", settings.UseNotifierSettings);
         }
 
-        if (!settings.ShareNotifierSettings)
+        if (!settings.UseNotifierSettings)
         {
             EditorGUIUtility.labelWidth = 70;
             EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
@@ -96,7 +96,7 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
         }
 
-        if (NotifierConfigAvaliable() && settings.ShareNotifierSettings)
+        if (NotifierConfigAvaliable() && settings.UseNotifierSettings)
         {
             GUI.enabled = false;
             EditorGUILayout.LabelField("Api Key: " + GetNotifierApiKey());
