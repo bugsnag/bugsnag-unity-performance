@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using BugsnagUnity;
-using BugsnagUnity.Editor;
 using BugsnagUnityPerformance;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +10,11 @@ public class BugsnagPerformanceEditor : EditorWindow
 
 
     public Texture DarkIcon, LightIcon;
+
+    private void OnEnable()
+    {
+        titleContent.text = "Bugsnag Performance";
+    }
 
     private static string GetFullSettingsPath()
     {
@@ -79,7 +82,6 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (NotifierConfigAvaliable())
         {
             EditorGUIUtility.labelWidth = 200;
-
             settings.ShareNotifierSettings = EditorGUILayout.Toggle("Share BugSnag Notifier Settings", settings.ShareNotifierSettings);
         }
 
