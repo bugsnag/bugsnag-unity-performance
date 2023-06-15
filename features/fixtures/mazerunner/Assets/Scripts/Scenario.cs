@@ -59,4 +59,16 @@ public class Scenario : MonoBehaviour
         fieldInfo.SetValue(Configuration, seconds);
     }
 
+    public void SetPValueTimeoutSeconds(float seconds)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("PValueTimeoutSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, seconds);
+    }
+
+    public void SetPValueCheckIntervalSeconds(float seconds)
+    {
+        var fieldInfo = typeof(PerformanceConfiguration).GetField("PValueCheckIntervalSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
+        fieldInfo.SetValue(Configuration, seconds);
+    }
+
 }
