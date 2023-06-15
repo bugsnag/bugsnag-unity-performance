@@ -1,6 +1,6 @@
 {
   "name": "com.bugsnag.performance.unity",
-  "version": "VERSION_STRING",
+  "version": "1.0.0",
   "displayName": "BugSnag Unity Performance",
   "description": "Monitor the start-up, scene loading and network requests of your game and see the results in your BugSnag dashboard.",
   "unity": "2020.1",

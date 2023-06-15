@@ -12,19 +12,27 @@ fi
 
 VERSION=$1
 
+echo "Creating package structure"
 
-echo "Copying over the src"
+rm -rf "$PKG_DIR"
 
-cp -a  "$SRC_DIR/Plugins" "$PKG_DIR/Runtime/Plugins"
+mkdir -p "$PKG_DIR"
+mkdir -p "$PKG_DIR/Runtime"
+
+cp -a  "$SRC_DIR/Plugins" "$PKG_DIR/Runtime"
 cp -a  "$SRC_DIR/Plugins.meta" "$PKG_DIR/Runtime"
-cp -a  "$SRC_DIR/Scripts" "$PKG_DIR/Runtime/Scripts"
+
+cp -a  "$SRC_DIR/Scripts" "$PKG_DIR/Runtime"
 cp -a  "$SRC_DIR/Scripts.meta" "$PKG_DIR/Runtime"
+
 cp -a  "$SRC_DIR/Editor" "$PKG_DIR"
 cp -a  "$SRC_DIR/Editor.meta" "$PKG_DIR"
 
-# Set the specified version in the manifest and readme
+cp -a "../upm-resources/." "$PKG_DIR"
+
 
 echo "Setting the version $VERSION in the copied manifest and readme"
+
 sed -i '' "s/VERSION_STRING/$VERSION/g" "$PKG_DIR/package.json"
 sed -i '' "s/VERSION_STRING/v$VERSION/g" "$PKG_DIR/README.md"
 
