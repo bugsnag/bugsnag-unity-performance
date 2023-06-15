@@ -84,8 +84,9 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUIUtility.labelWidth = 200;
             settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Notifier Settings", settings.UseNotifierSettings);
         }
+     
 
-        if (!settings.UseNotifierSettings)
+        if (!NotifierConfigAvaliable() || (NotifierConfigAvaliable() && !settings.UseNotifierSettings))
         {
             EditorGUIUtility.labelWidth = 70;
             EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
@@ -103,7 +104,6 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUILayout.Toggle("Start Automatically", GetNotifierAutoStart());
             EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
             GUI.enabled = true;
-
         }
 
         EditorGUIUtility.labelWidth = 200;

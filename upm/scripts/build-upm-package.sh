@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SRC_DIR=../../BugsnagPerformance/Assets/BugsnagPerformance/
+SRC_DIR=../../BugsnagPerformance/Assets/BugsnagPerformance
 PKG_DIR=../package
 
 # Check for unity version
@@ -15,8 +15,12 @@ VERSION=$1
 
 echo "Copying over the src"
 
-cp -a  "$SRC_DIR." "$PKG_DIR/Runtime"
-
+cp -a  "$SRC_DIR/Plugins" "$PKG_DIR/Runtime/Plugins"
+cp -a  "$SRC_DIR/Plugins.meta" "$PKG_DIR/Runtime"
+cp -a  "$SRC_DIR/Scripts" "$PKG_DIR/Runtime/Scripts"
+cp -a  "$SRC_DIR/Scripts.meta" "$PKG_DIR/Runtime"
+cp -a  "$SRC_DIR/Editor" "$PKG_DIR"
+cp -a  "$SRC_DIR/Editor.meta" "$PKG_DIR"
 
 # Set the specified version in the manifest and readme
 
