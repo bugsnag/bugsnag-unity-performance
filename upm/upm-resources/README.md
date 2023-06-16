@@ -5,7 +5,7 @@ This is the UPM package for the Bugsnag Performance SDK for Unity.
 
 Install it via `UPM`:
 ```
-https://github.com/bugsnag/bugsnag-unity-performance-upm.git#v1.0.0
+https://github.com/bugsnag/bugsnag-unity-performance-upm.git#VERSION_STRING
 ```
 
 ## Source code
