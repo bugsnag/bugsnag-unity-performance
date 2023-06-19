@@ -26,7 +26,7 @@ namespace BugsnagUnityPerformance
         public TracePayload(ResourceModel resourceModel, List<Span> spans)
         {
             _resourceModel = resourceModel;
-            if (spans != null)
+            if (spans != null && spans.Count > 0)
             {
                 _spans = new List<SpanModel>();
                 PayloadId = Guid.NewGuid().ToString();
@@ -36,14 +36,11 @@ namespace BugsnagUnityPerformance
                 }
                 BatchSize = spans.Count;
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
-                if (SamplingHistogram.Count == 0)
-                {
-                    Headers["Bugsnag-Span-Sampling"] = "1:0";
-                }
-                else
-                {
-                    Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
-                }
+                Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+            }
+            else
+            {
+                Headers["Bugsnag-Span-Sampling"] = "1:0";
             }
         }
 
