@@ -98,6 +98,7 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUIUtility.labelWidth = 280;
             settings.StartAutomaticallyAtLaunch = EditorGUILayout.Toggle("Start Automatically (requires API key to be set)", settings.StartAutomaticallyAtLaunch);
 
+            EditorGUIUtility.labelWidth = 200;
             EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
         }
 
