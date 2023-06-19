@@ -86,7 +86,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (NotifierConfigAvaliable())
         {
             EditorGUIUtility.labelWidth = 200;
-            settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Notifier Settings", settings.UseNotifierSettings);
+            settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Error Monitoring SDK Settings", settings.UseNotifierSettings);
         }
      
 
@@ -104,7 +104,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (NotifierConfigAvaliable() && settings.UseNotifierSettings)
         {
             GUI.enabled = false;
-            EditorGUILayout.LabelField("Api Key: " + GetNotifierApiKey());
+            EditorGUILayout.LabelField("API Key: " + GetNotifierApiKey());
             EditorGUILayout.Toggle("Start Automatically", GetNotifierAutoStart());
             EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
             GUI.enabled = true;
