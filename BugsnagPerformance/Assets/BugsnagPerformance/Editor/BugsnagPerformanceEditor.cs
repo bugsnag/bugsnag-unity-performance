@@ -82,7 +82,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (NotifierConfigAvaliable())
         {
             EditorGUIUtility.labelWidth = 200;
-            settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Notifier Settings", settings.UseNotifierSettings);
+            settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Error Monitoring SDK Settings", settings.UseNotifierSettings);
         }
      
 
