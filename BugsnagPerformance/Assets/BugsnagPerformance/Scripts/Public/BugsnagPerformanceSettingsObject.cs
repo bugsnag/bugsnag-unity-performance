@@ -22,8 +22,6 @@ namespace BugsnagUnityPerformance
 
         public string ReleaseStage;
 
-        public double SamplingProbability = 1.0;
-
         public static PerformanceConfiguration LoadConfiguration()
         {
             var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
@@ -34,7 +32,7 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                throw new Exception("No BugSnag Performance Settings Object found.");
+                throw new Exception("No BugSnag Performance Settings Object found. Please open Window>BugSnag>Performance Configuration, to create one.");
             }
         }
 
@@ -61,7 +59,6 @@ namespace BugsnagUnityPerformance
                 config.ReleaseStage = ReleaseStage;
             }
             config.ReleaseStage =  ReleaseStage;
-            config.SamplingProbability = SamplingProbability;
             return config;
         }
 

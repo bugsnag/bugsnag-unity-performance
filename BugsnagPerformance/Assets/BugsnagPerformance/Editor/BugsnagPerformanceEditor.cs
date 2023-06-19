@@ -11,6 +11,10 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     public Texture DarkIcon, LightIcon;
 
+    private const string SETTINGS_PATH = "/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset";
+
+    private const string NOTIFIER_SETTINGS_PATH = "/Resources/Bugsnag/BugsnagSettingsObject.asset";
+
     private void OnEnable()
     {
         titleContent.text = "BugSnag Performance";
@@ -18,7 +22,7 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private static string GetFullSettingsPath()
     {
-        return Application.dataPath + "/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset";
+        return Application.dataPath + SETTINGS_PATH;
     }
 
     [MenuItem("Window/Bugsnag/Performance Configuration", false, 0)]
@@ -54,7 +58,7 @@ public class BugsnagPerformanceEditor : EditorWindow
             Directory.CreateDirectory(resPath);
         }
         var asset = CreateInstance<BugsnagPerformanceSettingsObject>();
-        AssetDatabase.CreateAsset(asset, "Assets/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset");
+        AssetDatabase.CreateAsset(asset, "Assets" + SETTINGS_PATH);
         AssetDatabase.SaveAssets();
     }
 
@@ -86,7 +90,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         }
      
 
-        if (!NotifierConfigAvaliable() || (NotifierConfigAvaliable() && !settings.UseNotifierSettings))
+        if (!NotifierConfigAvaliable() || !settings.UseNotifierSettings)
         {
             EditorGUIUtility.labelWidth = 70;
             EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
@@ -108,7 +112,6 @@ public class BugsnagPerformanceEditor : EditorWindow
 
         EditorGUIUtility.labelWidth = 200;
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
-        EditorGUILayout.PropertyField(so.FindProperty("SamplingProbability"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
 
         EditorGUI.indentLevel--;
@@ -145,6 +148,6 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private bool NotifierConfigAvaliable()
     {
-        return File.Exists(Application.dataPath + "/Resources/Bugsnag/BugsnagSettingsObject.asset");
+        return File.Exists(Application.dataPath + NOTIFIER_SETTINGS_PATH);
     }
 }
