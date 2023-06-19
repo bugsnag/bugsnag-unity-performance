@@ -11,10 +11,6 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     public Texture DarkIcon, LightIcon;
 
-    private const string SETTINGS_PATH = "/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset";
-
-    private const string NOTIFIER_SETTINGS_PATH = "/Resources/Bugsnag/BugsnagSettingsObject.asset";
-
     private void OnEnable()
     {
         titleContent.text = "BugSnag Performance";
@@ -22,7 +18,7 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private static string GetFullSettingsPath()
     {
-        return Application.dataPath + SETTINGS_PATH;
+        return Application.dataPath + "/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset";
     }
 
     [MenuItem("Window/Bugsnag/Performance Configuration", false, 0)]
@@ -58,7 +54,7 @@ public class BugsnagPerformanceEditor : EditorWindow
             Directory.CreateDirectory(resPath);
         }
         var asset = CreateInstance<BugsnagPerformanceSettingsObject>();
-        AssetDatabase.CreateAsset(asset, "Assets" + SETTINGS_PATH);
+        AssetDatabase.CreateAsset(asset, "Assets/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset");
         AssetDatabase.SaveAssets();
     }
 
@@ -149,6 +145,6 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private bool NotifierConfigAvaliable()
     {
-        return File.Exists(Application.dataPath + NOTIFIER_SETTINGS_PATH);
+        return File.Exists(Application.dataPath + "/Resources/Bugsnag/BugsnagSettingsObject.asset");
     }
 }
