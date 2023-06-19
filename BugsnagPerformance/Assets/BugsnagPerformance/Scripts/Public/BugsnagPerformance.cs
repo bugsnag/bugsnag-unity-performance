@@ -76,7 +76,7 @@ namespace BugsnagUnityPerformance
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
-        
+
         internal class SceneLoadSpanContainer
         {
             public string SceneName;
@@ -234,7 +234,7 @@ namespace BugsnagUnityPerformance
             {
                 return _spanFactory.StartCustomSpan(name, spanOptions);
             }
-        }      
+        }
 
         public static void ReportAppStarted()
         {

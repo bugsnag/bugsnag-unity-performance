@@ -1,0 +1,17 @@
+{
+    "name": "BugsnagPerformanceEditor",
+    "references": [
+        "GUID:3137aba2b553b48a982168b6b15dc8bd"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

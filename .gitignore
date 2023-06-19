@@ -13,3 +13,6 @@ GraphicsSettings.asset
 BugsnagPerformance/Assets/Resources
 packages-lock.json
 upm/package/Runtime
+upm/package/Editor
+Editor.meta
+upm/package
