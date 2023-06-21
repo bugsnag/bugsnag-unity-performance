@@ -155,7 +155,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         var notifierSettings = GetNotifierSettingsObject();
         if (notifierSettings != null)
         {
-            var field = notifierSettings.GetType().GetField("StartAutomaticallyAtLaunch");
+            var field = notifierSettings.GetType().GetField(key);
             if (field != null)
             {
                 return field.GetValue(notifierSettings);
