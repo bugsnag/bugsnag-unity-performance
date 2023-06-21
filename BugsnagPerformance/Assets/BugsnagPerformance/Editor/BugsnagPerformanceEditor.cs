@@ -81,7 +81,7 @@ public class BugsnagPerformanceEditor : EditorWindow
 
         if (NotifierConfigAvaliable())
         {
-            EditorGUIUtility.labelWidth = 200;
+            EditorGUIUtility.labelWidth = 280;
             settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Error Monitoring SDK Settings", settings.UseNotifierSettings);
         }
      
@@ -121,20 +121,47 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     private string GetNotifierReleaseStage()
     {
-        var notifierSettings = GetNotifierSettingsObject();
-        return notifierSettings.GetType().GetField("ReleaseStage").GetValue(notifierSettings).ToString();
+        var notifierValue = GetValueFromNotifer("ReleaseStage");
+        if (notifierValue != null)
+        {
+            return notifierValue.ToString();
+        }
+        return string.Empty;
     }
 
     private string GetNotifierApiKey()
     {
-        var notifierSettings = GetNotifierSettingsObject();
-        return notifierSettings.GetType().GetField("ApiKey").GetValue(notifierSettings).ToString();
+
+        var notifierValue = GetValueFromNotifer("ApiKey");
+        if (notifierValue != null)
+        {
+            return notifierValue.ToString();
+        }
+        return string.Empty;      
     }
 
     private bool GetNotifierAutoStart()
     {
+        var notifierValue = GetValueFromNotifer("StartAutomaticallyAtLaunch");
+        if (notifierValue != null)
+        {
+            return (bool)notifierValue;
+        }
+        return true;
+    }
+
+    private object GetValueFromNotifer(string key)
+    {
         var notifierSettings = GetNotifierSettingsObject();
-        return (bool)notifierSettings.GetType().GetField("StartAutomaticallyAtLaunch").GetValue(notifierSettings);
+        if (notifierSettings != null)
+        {
+            var field = notifierSettings.GetType().GetField(key);
+            if (field != null)
+            {
+                return field.GetValue(notifierSettings);
+            }
+        }
+        return null;
     }
 
     private Object GetNotifierSettingsObject()
