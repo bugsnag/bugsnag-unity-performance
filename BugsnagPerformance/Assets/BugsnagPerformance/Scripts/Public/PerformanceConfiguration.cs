@@ -12,6 +12,7 @@ namespace BugsnagUnityPerformance
         internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
         internal float PValueTimeoutSeconds = 86400f;
         internal float PValueCheckIntervalSeconds = 30f;
+        internal double SamplingProbability = 1.0;
 
         //Public config
 
@@ -41,8 +42,6 @@ namespace BugsnagUnityPerformance
         public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
-
-        public double SamplingProbability = 1.0;
 
         public PerformanceConfiguration(string apiKey)
         {
