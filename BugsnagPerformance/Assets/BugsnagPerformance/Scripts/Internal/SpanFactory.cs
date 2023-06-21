@@ -98,7 +98,7 @@ namespace BugsnagUnityPerformance
             var spanOptions = new SpanOptions { MakeCurrentContext = false };
 
             var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, spanOptions);
-            span.SetAttribute("bugsnag.span_category", "network");
+            span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", request.url);
             span.SetAttribute("http.method", verb);
             span.SetAttribute("net.host.connection.type", GetConnectionType());
