@@ -4,6 +4,7 @@ using BugsnagUnityPerformance;
 using System;
 using System.IO;
 using System.Text;
+using System.Reflection;
 
 namespace Tests
 {
@@ -57,16 +58,6 @@ namespace Tests
         }
 
         [Test]
-        public void TestCustomConfig()
-        {
-            var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.SamplingProbability = 0.1;
-            var sampler = NewSampler(config, true);
-
-            Assert.AreEqual(0.1, sampler.Probability);
-        }
-
-        [Test]
         public void TestPersistence()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
@@ -89,7 +80,6 @@ namespace Tests
         public void TestProbability1_0()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.SamplingProbability = 1.0;
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -108,7 +98,7 @@ namespace Tests
         public void TestProbability0_0()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.SamplingProbability = 0.0;
+            SetSamplingProbability(config, 0.0);
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -127,7 +117,7 @@ namespace Tests
         public void TestProbability0_1()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.SamplingProbability = 0.1;
+            SetSamplingProbability(config, 0.1);
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -157,7 +147,7 @@ namespace Tests
         public void TestProbability0_9()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.SamplingProbability = 0.9;
+            SetSamplingProbability(config, 0.9);
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -191,6 +181,12 @@ namespace Tests
                 OnSpanEnd);
             Assert.IsFalse(sampler.Sampled(span));
 
+        }
+
+        private void SetSamplingProbability(PerformanceConfiguration configuration, double p)
+        {
+            var fieldInfo = typeof(PerformanceConfiguration).GetField("SamplingProbability", BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldInfo.SetValue(configuration, p);
         }
     }
 }
