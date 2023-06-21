@@ -9,7 +9,6 @@ public class PValueUpdate : Scenario
     public override void PrepareConfig(string apiKey, string host)
     {
         base.PrepareConfig(apiKey, host);
-        Configuration.SamplingProbability = 1;
         SetMaxBatchAgeSeconds(1);
     }
 
