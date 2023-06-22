@@ -10,6 +10,7 @@ Feature: App Start
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
 
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.app_start.type" equals "UnityRuntime"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[AppStartPhase/LoadAssemblies]"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "[AppStartPhase/SplashScreen]"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.name" equals "[AppStartPhase/LoadFirstScene]"

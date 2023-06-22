@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -37,9 +38,19 @@ namespace BugsnagUnityPerformance
                 }
                 IsStarted = true;
             }
+            if (ReleaseStageEnabled(configuration))
+            {
+                _sharedInstance.Configure(configuration);
+                _sharedInstance.Start();
+            }
 
-            _sharedInstance.Configure(configuration);
-            _sharedInstance.Start();
+        }
+
+        private static bool ReleaseStageEnabled(PerformanceConfiguration configuration)
+        {
+            return configuration.ReleaseStage == null
+                || configuration.EnabledReleaseStages == null
+                || configuration.EnabledReleaseStages.Contains(configuration.ReleaseStage);
         }
 
         public static Span StartSpan(string name)
