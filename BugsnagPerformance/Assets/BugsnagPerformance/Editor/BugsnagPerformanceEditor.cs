@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using BugsnagUnityPerformance;
 using UnityEditor;
@@ -104,9 +105,20 @@ public class BugsnagPerformanceEditor : EditorWindow
         {
             GUI.enabled = false;
             EditorGUILayout.LabelField("API Key: " + GetNotifierApiKey());
-            EditorGUILayout.Toggle("Start Automatically", GetNotifierAutoStart());
+            EditorGUILayout.Toggle("Start Automatically: ", GetNotifierAutoStart());
             EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
-            EditorGUILayout.LabelField("Enabled Release Stages");
+
+            var notifierReleaseStages = (string[])GetValueFromNotifer("EnabledReleaseStages");
+            var stagesString = string.Empty;
+            if (notifierReleaseStages != null)
+            {
+                foreach (var stage in notifierReleaseStages)
+                {
+                    stagesString += " " + stage + ",";
+                }
+            }
+            stagesString = stagesString.TrimEnd(',');
+            EditorGUILayout.LabelField("Enabled Release Stages:" + stagesString);
             GUI.enabled = true;
         }
 

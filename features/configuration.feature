@@ -24,7 +24,9 @@ Feature: Configuration tests
     When I run the game in the "DisabledReleaseStages" state
     Then I should receive no traces
 
-
+  Scenario: Empty Release Stage
+    When I run the game in the "EmptyReleaseStages" state
+    Then I should receive no traces
 
   Scenario: Max Batch Size
     When I run the game in the "MaxBatchSize" state

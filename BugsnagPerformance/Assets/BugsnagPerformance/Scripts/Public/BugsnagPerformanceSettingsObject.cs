@@ -71,23 +71,15 @@ namespace BugsnagUnityPerformance
         {
             var notifierSettings = Resources.Load("Bugsnag/BugsnagSettingsObject");
 
-            var apiKeyValue = GetValueFromNotifer(notifierSettings, "ApiKey");
-
-            var apiKey = apiKeyValue == null ? null : apiKeyValue.ToString();
+            var apiKey = (string)GetValueFromNotifer(notifierSettings, "ApiKey");
 
             var config = new PerformanceConfiguration(apiKey);
 
-            var releaseStageValue = GetValueFromNotifer(notifierSettings, "ReleaseStage");
+            config.ReleaseStage = (string)GetValueFromNotifer(notifierSettings, "ReleaseStage");
 
-            config.ReleaseStage = releaseStageValue == null ? null : releaseStageValue.ToString();
+            config.EnabledReleaseStages = (string[])GetValueFromNotifer(notifierSettings, "EnabledReleaseStages");
 
-            var enabledReleaseStagesValue = GetValueFromNotifer(notifierSettings, "EnabledReleaseStages");
-
-            config.EnabledReleaseStages = enabledReleaseStagesValue == null ? null : (string[])enabledReleaseStagesValue;
-
-            var autoStartValue = GetValueFromNotifer(notifierSettings, "StartAutomaticallyAtLaunch");
-
-            autoStart = autoStartValue == null ? false : (bool)autoStartValue;
+            autoStart = (bool)GetValueFromNotifer(notifierSettings, "StartAutomaticallyAtLaunch");
 
             return config;
         }

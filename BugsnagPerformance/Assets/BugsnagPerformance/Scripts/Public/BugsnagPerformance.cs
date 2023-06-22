@@ -48,11 +48,9 @@ namespace BugsnagUnityPerformance
 
         private static bool ReleaseStageEnabled(PerformanceConfiguration configuration)
         {
-            if (configuration.EnabledReleaseStages == null || configuration.EnabledReleaseStages.Length == 0)
-            {
-                return true;
-            }
-            return configuration.EnabledReleaseStages.Contains(configuration.ReleaseStage);
+            return configuration.ReleaseStage == null
+                || configuration.EnabledReleaseStages == null
+                || configuration.EnabledReleaseStages.Contains(configuration.ReleaseStage);
         }
 
         public static Span StartSpan(string name)
