@@ -39,6 +39,8 @@ namespace BugsnagUnityPerformance
 
         public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
 
+        public string[] EnabledReleaseStages;
+
         public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";

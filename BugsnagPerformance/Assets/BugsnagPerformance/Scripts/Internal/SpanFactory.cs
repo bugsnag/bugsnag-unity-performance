@@ -165,6 +165,7 @@ namespace BugsnagUnityPerformance
         {
             var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT,new SpanOptions());
             span.SetAttribute("bugsnag.span.category", category);
+            span.SetAttribute("bugsnag.app_start.type", "UnityRuntime");
             span.IsAppStartSpan = true;
             return span;
         }

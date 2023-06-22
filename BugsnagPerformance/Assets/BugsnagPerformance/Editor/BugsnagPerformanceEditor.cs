@@ -96,6 +96,8 @@ public class BugsnagPerformanceEditor : EditorWindow
 
             EditorGUIUtility.labelWidth = 200;
             EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
+
+            EditorGUILayout.PropertyField(so.FindProperty("EnabledReleaseStages"));
         }
 
         if (NotifierConfigAvaliable() && settings.UseNotifierSettings)
@@ -104,6 +106,7 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUILayout.LabelField("API Key: " + GetNotifierApiKey());
             EditorGUILayout.Toggle("Start Automatically", GetNotifierAutoStart());
             EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
+            EditorGUILayout.LabelField("Enabled Release Stages");
             GUI.enabled = true;
         }
 
