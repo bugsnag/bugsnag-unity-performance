@@ -22,7 +22,8 @@ Feature: Configuration tests
 
   Scenario: Disabled Release Stage
     When I run the game in the "DisabledReleaseStages" state
-    And I should recieve no spans
+    Then I should receive no traces
+
 
 
   Scenario: Max Batch Size

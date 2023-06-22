@@ -48,7 +48,7 @@ namespace BugsnagUnityPerformance
 
         private static bool ReleaseStageEnabled(PerformanceConfiguration configuration)
         {
-            if (configuration.EnabledReleaseStages?.Length == 0)
+            if (configuration.EnabledReleaseStages == null || configuration.EnabledReleaseStages.Length == 0)
             {
                 return true;
             }
