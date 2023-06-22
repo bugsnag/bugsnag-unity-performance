@@ -12,7 +12,7 @@ Feature: Scene Load Spans
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/Scene]Scene1"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "view_load"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "view_load"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.type" equals "scene"
 
@@ -31,7 +31,7 @@ Feature: Scene Load Spans
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/Scene]Scene1"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "view_load"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "view_load"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.type" equals "scene"
 
@@ -49,7 +49,7 @@ Scenario: Load Scene Async
     * the trace "Bugsnag-Span-Sampling" header equals "1:3"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/Scene]Scene1"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span_category" equals "view_load"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "view_load"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 

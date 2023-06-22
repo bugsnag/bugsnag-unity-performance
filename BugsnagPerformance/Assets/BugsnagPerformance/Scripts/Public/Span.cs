@@ -124,7 +124,7 @@ namespace BugsnagUnityPerformance
             Ended = true;
             EndTime = DateTimeOffset.UtcNow;
             Name = "[ViewLoad/Scene]" + sceneName;
-            SetAttribute("bugsnag.span_category", "view_load");
+            SetAttribute("bugsnag.span.category", "view_load");
             SetAttribute("bugsnag.view.type", "scene");
             SetAttribute("bugsnag.view.name", sceneName);
             _onSpanEnd(this);
