@@ -11,22 +11,19 @@ public class Main : MonoBehaviour
 {
     public string ApiKey;
     public string Endpoint;
-    public string ReleaseStage;
-
+    public bool StartPerf;
     void Start()
     {
         var config = new PerformanceConfiguration(ApiKey);
-        if (!string.IsNullOrEmpty(Endpoint))
+
+        config.Endpoint = Endpoint;
+
+        config.ReleaseStage = "Custom";
+
+        if (StartPerf)
         {
-            config.Endpoint = Endpoint;
+            BugsnagPerformance.Start(config);
         }
-        if (!string.IsNullOrEmpty(ReleaseStage))
-        {
-            config.ReleaseStage = ReleaseStage;
-        }
-        config.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
-        BugsnagPerformance.Start(config);
-        //Invoke("ReportAppStart",10);
     }
 
     private void ReportAppStart()
