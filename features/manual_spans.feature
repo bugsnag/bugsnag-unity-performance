@@ -16,7 +16,9 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.kind" equals 1
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.startTimeUnixNano" matches the regex "^[0-9]+$"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.endTimeUnixNano" matches the regex "^[0-9]+$"    
-    
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "custom"
+
+
     #Resource attributes
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "production"
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.name" equals "bugsnag.performance.unity"
