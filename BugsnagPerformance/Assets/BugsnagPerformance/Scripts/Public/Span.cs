@@ -123,9 +123,9 @@ namespace BugsnagUnityPerformance
             // no need for thread safe checks as all scene load events happen on the main thread.
             Ended = true;
             EndTime = DateTimeOffset.UtcNow;
-            Name = "[ViewLoad/Scene]" + sceneName;
+            Name = "[ViewLoad/UnityScene]" + sceneName;
             SetAttribute("bugsnag.span.category", "view_load");
-            SetAttribute("bugsnag.view.type", "scene");
+            SetAttribute("bugsnag.view.type", "UnityScene");
             SetAttribute("bugsnag.view.name", sceneName);
             _onSpanEnd(this);
         }

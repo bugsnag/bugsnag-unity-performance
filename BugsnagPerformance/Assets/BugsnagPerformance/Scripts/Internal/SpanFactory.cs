@@ -53,7 +53,9 @@ namespace BugsnagUnityPerformance
         {
             // custom spans are always first class
             spanOptions.IsFirstClass = true;
-            return CreateSpan(name,SpanKind.SPAN_KIND_INTERNAL, spanOptions);
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
+            span.SetAttribute("bugsnag.span.category", "custom");
+            return span;
         }
 
         private Span CreateSpan(string name, SpanKind kind, SpanOptions spanOptions)
