@@ -29,13 +29,13 @@ namespace BugsnagUnityPerformance
 
                     new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
 
-                    new AttributeModel("service.version", Application.version),
+                    new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
 
                     new AttributeModel("bugsnag.app.platform", GetPlatform()),
 
                     new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
                };
-            var mobileBuildNumber = GetMobileBuildNumber();
+            var mobileBuildNumber = GetMobileBuildNumber(config);
             if (mobileBuildNumber != null)
             {
                 attributes.Add(mobileBuildNumber);
@@ -71,14 +71,14 @@ namespace BugsnagUnityPerformance
             return string.Empty;
         }
 
-        private AttributeModel GetMobileBuildNumber()
+        private AttributeModel GetMobileBuildNumber(PerformanceConfiguration config)
         {
 #if UNITY_EDITOR
             return null;
 #elif UNITY_IOS
-            return new AttributeModel("device.bundle_version", iOSNative.GetBundleVersion());
+            return new AttributeModel("device.bundle_version", string.IsNullOrEmpty(config.BundleVersion) ? iOSNative.GetBundleVersion() : config.BundleVersion);
 #elif UNITY_ANDROID
-            return new AttributeModel("device.version_code", AndroidNative.GetVersionCode());
+            return new AttributeModel("device.version_code", config.VersionCode < 0 ? AndroidNative.GetVersionCode() : config.VersionCode);
 #endif
         }
 

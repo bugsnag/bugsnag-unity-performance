@@ -24,6 +24,10 @@ namespace BugsnagUnityPerformance
 
         public string ReleaseStage;
 
+        public string AppVersion;
+        public int VersionCode = -1;
+        public string BundleVersion;
+
         public static PerformanceConfiguration LoadConfiguration()
         {
             var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
@@ -48,22 +52,32 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                config = new PerformanceConfiguration(ApiKey);
-                if (string.IsNullOrEmpty(ReleaseStage))
-                {
-                    config.ReleaseStage = Debug.isDebugBuild ? "development" : "production";
-                }
-                else
-                {
-                    config.ReleaseStage = ReleaseStage;
-                }
-                config.EnabledReleaseStages = EnabledReleaseStages;
+                config = GetStandaloneConfig();
             }
 
             config.AutoInstrumentAppStart = AutoInstrumentAppStart;
 
             config.Endpoint = Endpoint;
             
+            return config;
+        }
+
+        private PerformanceConfiguration GetStandaloneConfig()
+        {
+            var config = new PerformanceConfiguration(ApiKey);
+            if (string.IsNullOrEmpty(ReleaseStage))
+            {
+                config.ReleaseStage = Debug.isDebugBuild ? "development" : "production";
+            }
+            else
+            {
+                config.ReleaseStage = ReleaseStage;
+            }
+            config.EnabledReleaseStages = EnabledReleaseStages;
+            config.AppVersion = AppVersion;
+            config.BundleVersion = BundleVersion;
+            config.VersionCode = VersionCode;
+
             return config;
         }
 
@@ -78,6 +92,10 @@ namespace BugsnagUnityPerformance
             config.ReleaseStage = (string)GetValueFromNotifer(notifierSettings, "ReleaseStage");
 
             config.EnabledReleaseStages = (string[])GetValueFromNotifer(notifierSettings, "EnabledReleaseStages");
+
+            config.AppVersion = (string)GetValueFromNotifer(notifierSettings, "AppVersion");
+            config.BundleVersion = (string)GetValueFromNotifer(notifierSettings, "BundleVersion");
+            config.VersionCode = (int)GetValueFromNotifer(notifierSettings, "VersionCode");
 
             autoStart = (bool)GetValueFromNotifer(notifierSettings, "StartAutomaticallyAtLaunch");
 
