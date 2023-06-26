@@ -38,7 +38,7 @@ public class Builder : MonoBehaviour
     public static void AndroidBuild()
     {
         Debug.Log("Building Android app...");
-        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.bugsnag.mazerunner");
+        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.bugsnag.fixtures.unity.performance.android");
         var opts = CommonOptions("mazerunner.apk");
         opts.target = BuildTarget.Android;
 
@@ -50,8 +50,8 @@ public class Builder : MonoBehaviour
     public static void IosBuild()
     {
         Debug.Log("Building iOS app...");
-        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.bugsnag.unity.mazerunner");
-        PlayerSettings.iOS.appleDeveloperTeamID = "372ZUL2ZB7";
+        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.bugsnag.fixtures.unity.performance.ios");
+        PlayerSettings.iOS.appleDeveloperTeamID = "7W9PZ27Y5F";
         PlayerSettings.iOS.appleEnableAutomaticSigning = true;
         PlayerSettings.iOS.allowHTTPDownload = true;
 
