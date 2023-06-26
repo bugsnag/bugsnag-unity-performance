@@ -26,7 +26,7 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "os.version" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.id" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.model.identifier" exists
-    * the trace payload field "resourceSpans.0.resource" string attribute "service.version" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.0"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" is one of:
       | Android   |
       | iOS |

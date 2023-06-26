@@ -73,18 +73,19 @@ namespace BugsnagUnityPerformance
 
         private AttributeModel GetMobileBuildNumber(PerformanceConfiguration config)
         {
-#if UNITY_EDITOR
+
+#if UNITY_EDITOR 
             return null;
 #elif UNITY_IOS
             return new AttributeModel("device.bundle_version", string.IsNullOrEmpty(config.BundleVersion) ? iOSNative.GetBundleVersion() : config.BundleVersion);
 #elif UNITY_ANDROID
-            return new AttributeModel("device.version_code", config.VersionCode < 0 ? AndroidNative.GetVersionCode() : config.VersionCode);
+            return new AttributeModel("device.version_code", config.VersionCode < 0 ? AndroidNative.GetVersionCode() : config.VersionCode.ToString());
 #endif
         }
 
         private AttributeModel GetMobileArch()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR 
             return null;
 #elif UNITY_IOS
             return new AttributeModel("host.arch", iOSNative.GetArch());
@@ -95,7 +96,7 @@ namespace BugsnagUnityPerformance
 
         private AttributeModel GetMobileManufacturer()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR 
             return null;
 #elif UNITY_IOS
             return new AttributeModel("device.manufacturer", "Apple");
