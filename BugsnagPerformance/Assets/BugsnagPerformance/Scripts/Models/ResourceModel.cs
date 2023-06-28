@@ -85,7 +85,7 @@ namespace BugsnagUnityPerformance
             {
                 return new AttributeModel("device.version_code", config.VersionCode.ToString());
             }
-            return new AttributeModel("device.bundle_version", AndroidNative.GetVersionCode());
+            return new AttributeModel("device.version_code", AndroidNative.GetVersionCode());
         }
 
         private AttributeModel GetMobileArch()
