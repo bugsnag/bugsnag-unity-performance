@@ -107,7 +107,7 @@ namespace BugsnagUnityPerformance
                 case RuntimePlatform.IPhonePlayer:
                     return new AttributeModel("device.manufacturer", "Apple");
                 case RuntimePlatform.Android:
-                    return new AttributeModel("device.manufacturer", AndroidNative.GetManufacture());
+                    return new AttributeModel("device.manufacturer", AndroidNative.GetManufacturer());
             }
             return null;
         }
