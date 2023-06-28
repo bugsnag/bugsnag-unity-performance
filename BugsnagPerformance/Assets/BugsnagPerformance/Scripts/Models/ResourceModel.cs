@@ -35,23 +35,10 @@ namespace BugsnagUnityPerformance
 
                     new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
                };
-            var mobileBuildNumber = GetMobileBuildNumber(config);
-            if (mobileBuildNumber != null)
-            {
-                attributes.Add(mobileBuildNumber);
-            }
-
-            var mobileManufacturer = GetMobileManufacturer();
-            if (mobileManufacturer != null)
-            {
-                attributes.Add(mobileManufacturer);
-            }
-
-            var mobileArch = GetMobileArch();
-            if (mobileArch != null)
-            {
-                attributes.Add(mobileArch);
-            }
+      
+            attributes.Add(GetMobileVersionInfo(config));
+            attributes.Add(GetMobileManufacturer());
+            attributes.Add(GetMobileArch());
         }
 
         public void Start()
@@ -71,38 +58,58 @@ namespace BugsnagUnityPerformance
             return string.Empty;
         }
 
-        private AttributeModel GetMobileBuildNumber(PerformanceConfiguration config)
+        private AttributeModel GetMobileVersionInfo(PerformanceConfiguration config)
         {
-
-#if UNITY_EDITOR 
+            switch (Application.platform)
+            {
+                case RuntimePlatform.IPhonePlayer:
+                    return GetiOSBundleVersion(config);
+                case RuntimePlatform.Android:
+                    return GetAndroidVersionCode(config);
+            }
             return null;
-#elif UNITY_IOS
-            return new AttributeModel("device.bundle_version", string.IsNullOrEmpty(config.BundleVersion) ? iOSNative.GetBundleVersion() : config.BundleVersion);
-#elif UNITY_ANDROID
-            return new AttributeModel("device.version_code", config.VersionCode < 0 ? AndroidNative.GetVersionCode() : config.VersionCode.ToString());
-#endif
+        }
+
+        private AttributeModel GetiOSBundleVersion(PerformanceConfiguration config)
+        {
+            if (!string.IsNullOrEmpty(config.BundleVersion))
+            {
+                return new AttributeModel("device.bundle_version",  config.BundleVersion);
+            }
+            return new AttributeModel("device.bundle_version", iOSNative.GetBundleVersion());
+        }
+
+        private AttributeModel GetAndroidVersionCode(PerformanceConfiguration config)
+        {
+            if (config.VersionCode > -1)
+            {
+                return new AttributeModel("device.version_code", config.VersionCode.ToString());
+            }
+            return new AttributeModel("device.bundle_version", AndroidNative.GetVersionCode());
         }
 
         private AttributeModel GetMobileArch()
         {
-#if UNITY_EDITOR 
+            switch (Application.platform)
+            {
+                case RuntimePlatform.IPhonePlayer:
+                    return new AttributeModel("host.arch", iOSNative.GetArch());
+                case RuntimePlatform.Android:
+                    return new AttributeModel("host.arch", AndroidNative.GetArch());
+            }
             return null;
-#elif UNITY_IOS
-            return new AttributeModel("host.arch", iOSNative.GetArch());
-#elif UNITY_ANDROID
-            return new AttributeModel("host.arch", AndroidNative.GetArch());
-#endif
         }
 
         private AttributeModel GetMobileManufacturer()
         {
-#if UNITY_EDITOR 
+            switch (Application.platform)
+            {
+                case RuntimePlatform.IPhonePlayer:
+                    return new AttributeModel("device.manufacturer", "Apple");
+                case RuntimePlatform.Android:
+                    return new AttributeModel("device.manufacturer", AndroidNative.GetManufacture());
+            }
             return null;
-#elif UNITY_IOS
-            return new AttributeModel("device.manufacturer", "Apple");
-#elif UNITY_ANDROID
-            return new AttributeModel("device.manufacturer", AndroidNative.GetManufacture());
-#endif
         }
     }
 }

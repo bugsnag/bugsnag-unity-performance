@@ -6,9 +6,9 @@ namespace BugsnagUnityPerformance
 {
     internal class AndroidNative
     {
-#if UNITY_ANDROID && !UNITY_EDITOR
         public static string GetVersionCode()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             var playerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             var activity = playerClass.GetStatic<AndroidJavaObject>("currentActivity");
             var context = activity.Call<AndroidJavaObject>("getApplicationContext");
@@ -16,18 +16,26 @@ namespace BugsnagUnityPerformance
             var packageName = context.Call<AndroidJavaObject>("getPackageName");
             var packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, 0);
             return packageInfo.Get<int>("versionCode").ToString();
+#endif
+            return null;
         }
 
         private static int GetAndroidSDKInt()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+
             using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
             {
                 return version.GetStatic<int>("SDK_INT");
             }
+#endif
+            return 0;
         }
 
         public static string GetArch()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+
             var build = new AndroidJavaClass("android.os.Build");
 
             if (GetAndroidSDKInt() >= 21)
@@ -46,19 +54,26 @@ namespace BugsnagUnityPerformance
                     return AbiToArchitecture(abi);
                 }
             }
-
+#endif
             return string.Empty;
         }
 
         public static string GetManufacture()
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+
             var build = new AndroidJavaClass("android.os.Build");
             return build.GetStatic<string>("MANUFACTURER");
+
+#endif
+            return null;
         }
 
 
         private static string AbiToArchitecture(string input)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+
             switch (input.ToLower())
             {
                 case "arm64-v8a":
@@ -70,9 +85,10 @@ namespace BugsnagUnityPerformance
                 case "x86":
                     return "x86";
             }
+#endif
             return string.Empty;
+
         }
 
-#endif
     }
 }

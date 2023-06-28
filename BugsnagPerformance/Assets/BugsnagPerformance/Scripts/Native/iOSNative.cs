@@ -20,16 +20,22 @@ namespace BugsnagUnityPerformance
 
         [DllImport(Import)]
         internal static extern string bugsnag_performance_get_arch();
+#endif
 
         public static string GetBundleVersion()
         {
+#if UNITY_IOS && !UNITY_EDITOR
             return bugsnag_performance_getBundleVersion();
+#endif
+            return null;
         }
 
         public static string GetArch()
         {
+#if UNITY_IOS && !UNITY_EDITOR
             return bugsnag_performance_get_arch();
-        }
 #endif
+            return null;
+        }
     }
 }
