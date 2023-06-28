@@ -97,12 +97,12 @@ namespace BugsnagUnityPerformance
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
-                SetAttribute("http.request_content_length", request.uploadHandler.data.Length.ToString());
+                SetAttribute("http.request_content_length", request.uploadHandler.data.Length);
             }
 
             if (request.downloadHandler != null && request.downloadHandler.data != null)
             {
-                SetAttribute("http.response_content_length", request.downloadHandler.data.Length.ToString());
+                SetAttribute("http.response_content_length", request.downloadHandler.data.Length);
             }
 
             _onSpanEnd(this);
@@ -116,6 +116,11 @@ namespace BugsnagUnityPerformance
         internal void SetAttribute(string key, bool value)
         {
             Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, int value)
+        {
+            Attributes.Add(new AttributeModel(key,value));
         }
 
         internal void EndSceneLoadSpan(string sceneName)
