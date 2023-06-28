@@ -89,37 +89,12 @@ public class BugsnagPerformanceEditor : EditorWindow
 
         if (!NotifierConfigAvaliable() || !settings.UseNotifierSettings)
         {
-            EditorGUIUtility.labelWidth = 70;
-            EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
-
-            EditorGUIUtility.labelWidth = 280;
-            settings.StartAutomaticallyAtLaunch = EditorGUILayout.Toggle("Start Automatically (requires API key to be set)", settings.StartAutomaticallyAtLaunch);
-
-            EditorGUIUtility.labelWidth = 200;
-            EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
-
-            EditorGUILayout.PropertyField(so.FindProperty("EnabledReleaseStages"));
+            DrawStandaloneSettings(so,settings);
         }
 
         if (NotifierConfigAvaliable() && settings.UseNotifierSettings)
         {
-            GUI.enabled = false;
-            EditorGUILayout.LabelField("API Key: " + GetNotifierApiKey());
-            EditorGUILayout.Toggle("Start Automatically: ", GetNotifierAutoStart());
-            EditorGUILayout.LabelField("Release Stage: " + GetNotifierReleaseStage());
-
-            var notifierReleaseStages = (string[])GetValueFromNotifer("EnabledReleaseStages");
-            var stagesString = string.Empty;
-            if (notifierReleaseStages != null)
-            {
-                foreach (var stage in notifierReleaseStages)
-                {
-                    stagesString += " " + stage + ",";
-                }
-            }
-            stagesString = stagesString.TrimEnd(',');
-            EditorGUILayout.LabelField("Enabled Release Stages:" + stagesString);
-            GUI.enabled = true;
+            DrawNotifierSettings();
         }
 
         EditorGUIUtility.labelWidth = 200;
@@ -133,36 +108,49 @@ public class BugsnagPerformanceEditor : EditorWindow
         EditorUtility.SetDirty(settings);
     }
 
-
-    private string GetNotifierReleaseStage()
+    private void DrawStandaloneSettings(SerializedObject so, BugsnagPerformanceSettingsObject settings)
     {
-        var notifierValue = GetValueFromNotifer("ReleaseStage");
-        if (notifierValue != null)
-        {
-            return notifierValue.ToString();
-        }
-        return string.Empty;
+        EditorGUIUtility.labelWidth = 70;
+        EditorGUILayout.PropertyField(so.FindProperty("ApiKey"));
+
+        EditorGUIUtility.labelWidth = 280;
+        settings.StartAutomaticallyAtLaunch = EditorGUILayout.Toggle("Start Automatically (requires API key to be set)", settings.StartAutomaticallyAtLaunch);
+
+        EditorGUIUtility.labelWidth = 200;
+        EditorGUILayout.PropertyField(so.FindProperty("ReleaseStage"));
+
+        EditorGUILayout.PropertyField(so.FindProperty("EnabledReleaseStages"));
+
+        EditorGUILayout.PropertyField(so.FindProperty("AppVersion"));
+        settings.VersionCode = EditorGUILayout.IntField(new GUIContent("Version Code ⓘ", "Android devices only"), settings.VersionCode);
+        settings.BundleVersion = EditorGUILayout.TextField(new GUIContent("Bundle Version ⓘ", "Apple devices only"), settings.BundleVersion);
     }
 
-    private string GetNotifierApiKey()
+    private void DrawNotifierSettings()
     {
+        GUI.enabled = false;
 
-        var notifierValue = GetValueFromNotifer("ApiKey");
-        if (notifierValue != null)
-        {
-            return notifierValue.ToString();
-        }
-        return string.Empty;      
-    }
+        EditorGUILayout.LabelField("API Key: " + (string)GetValueFromNotifer("ApiKey"));
+        EditorGUILayout.Toggle("Start Automatically: ", (bool)GetValueFromNotifer("StartAutomaticallyAtLaunch"));
+        EditorGUILayout.LabelField("Release Stage: " + (string)GetValueFromNotifer("ReleaseStage"));
 
-    private bool GetNotifierAutoStart()
-    {
-        var notifierValue = GetValueFromNotifer("StartAutomaticallyAtLaunch");
-        if (notifierValue != null)
+        var notifierReleaseStages = (string[])GetValueFromNotifer("EnabledReleaseStages");
+        var stagesString = string.Empty;
+        if (notifierReleaseStages != null)
         {
-            return (bool)notifierValue;
+            foreach (var stage in notifierReleaseStages)
+            {
+                stagesString += " " + stage + ",";
+            }
         }
-        return true;
+        stagesString = stagesString.TrimEnd(',');
+
+        EditorGUILayout.LabelField("Enabled Release Stages:" + stagesString);
+        EditorGUILayout.LabelField("App Version: " + (string)GetValueFromNotifer("AppVersion"));
+        EditorGUILayout.LabelField("Version Code: " + (int)GetValueFromNotifer("VersionCode"));
+        EditorGUILayout.LabelField("Bundle Version: " + (string)GetValueFromNotifer("BundleVersion"));
+
+        GUI.enabled = true;
     }
 
     private object GetValueFromNotifer(string key)
@@ -183,7 +171,6 @@ public class BugsnagPerformanceEditor : EditorWindow
     {
         return Resources.Load("Bugsnag/BugsnagSettingsObject");
     }
-
 
     private bool NotifierConfigAvaliable()
     {

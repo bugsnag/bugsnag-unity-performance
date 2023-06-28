@@ -175,7 +175,7 @@ namespace BugsnagUnityPerformance
                     return Convert.ToDouble(probabilityStr);
                 }
             }
-            catch (Exception e)
+            catch
             {
             }
             return double.NaN;
