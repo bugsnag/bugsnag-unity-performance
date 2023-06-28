@@ -58,7 +58,7 @@ namespace BugsnagUnityPerformance
             return string.Empty;
         }
 
-        public static string GetManufacture()
+        public static string GetManufacturer()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
 
