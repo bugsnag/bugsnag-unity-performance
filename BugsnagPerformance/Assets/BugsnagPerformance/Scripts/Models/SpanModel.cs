@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace BugsnagUnityPerformance
 {
     internal class SpanModel
     {
+
+        static DateTimeOffset _unixStart = new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc);
+
         public string name;
         public int kind;
         public string spanId;
@@ -20,8 +24,8 @@ namespace BugsnagUnityPerformance
             spanId = span.SpanId;
             traceId = span.TraceId.Replace("-",string.Empty);
             parentSpanId = span.ParentSpanId;
-            startTimeUnixNano = span.StartTime.Ticks.ToString();
-            endTimeUnixNano = span.EndTime.Ticks.ToString();
+            startTimeUnixNano = GetNanoSeconds(span.StartTime);
+            endTimeUnixNano = GetNanoSeconds(span.EndTime);
             foreach (var attr in span.Attributes)
             {
                 if (!string.IsNullOrEmpty(attr.key))
@@ -30,5 +34,12 @@ namespace BugsnagUnityPerformance
                 }
             }
         }
+
+        private string GetNanoSeconds(DateTimeOffset time)
+        {
+            var duration = time - _unixStart;
+            return (duration.Ticks * 100).ToString();
+        }
+
     }
 }
