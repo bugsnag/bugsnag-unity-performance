@@ -10,6 +10,7 @@ Feature: Sampling spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     And the trace "Bugsnag-Span-Sampling" header equals "1:4"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * a span name equals "ManualSpan1"
     * a span name equals "ManualSpan2"
     * a span name equals "ManualSpan3"

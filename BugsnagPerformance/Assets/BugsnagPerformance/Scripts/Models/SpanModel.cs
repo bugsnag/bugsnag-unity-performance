@@ -20,8 +20,8 @@ namespace BugsnagUnityPerformance
             spanId = span.SpanId;
             traceId = span.TraceId.Replace("-",string.Empty);
             parentSpanId = span.ParentSpanId;
-            startTimeUnixNano = (span.StartTime.Ticks * 100).ToString();
-            endTimeUnixNano = (span.EndTime.Ticks * 100).ToString();
+            startTimeUnixNano = span.StartTime.Ticks.ToString();
+            endTimeUnixNano = span.EndTime.Ticks.ToString();
             foreach (var attr in span.Attributes)
             {
                 if (!string.IsNullOrEmpty(attr.key))
