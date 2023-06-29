@@ -6,7 +6,7 @@ namespace BugsnagUnityPerformance
     internal class SpanModel
     {
 
-        static readonly DateTimeOffset _unixStart = new DateTime(1970,1,1,0,0,0, DateTimeKind.Utc);
+        static readonly DateTimeOffset _unixStart = new DateTimeOffset(1970,1,1,0,0,0, TimeSpan.Zero);
 
         public string name;
         public int kind;
