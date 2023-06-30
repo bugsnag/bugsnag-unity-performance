@@ -53,6 +53,11 @@ namespace BugsnagUnityPerformance
 
         public override bool Equals(object obj) => (obj is TracePayload other) && Equals(other);
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public bool Equals(TracePayload other)
         {
             return GetJsonBody() == other.GetJsonBody() &&
@@ -165,5 +170,7 @@ namespace BugsnagUnityPerformance
     {
         public ResourceSpanModel[] resourceSpans;
     }
+
+
         
 }
