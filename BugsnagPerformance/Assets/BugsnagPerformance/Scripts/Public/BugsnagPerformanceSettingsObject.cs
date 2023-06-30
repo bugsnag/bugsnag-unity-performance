@@ -73,7 +73,10 @@ namespace BugsnagUnityPerformance
             {
                 config.ReleaseStage = ReleaseStage;
             }
-            config.EnabledReleaseStages = EnabledReleaseStages;
+            if (EnabledReleaseStages != null && EnabledReleaseStages.Length > 0)
+            {
+                config.EnabledReleaseStages = EnabledReleaseStages;
+            }
             config.AppVersion = AppVersion;
             config.BundleVersion = BundleVersion;
             config.VersionCode = VersionCode;
