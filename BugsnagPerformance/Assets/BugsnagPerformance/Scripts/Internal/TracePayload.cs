@@ -47,15 +47,6 @@ namespace BugsnagUnityPerformance
             _jsonbody = cachedJson;
         }
 
-        public override bool Equals(object obj) => (obj is TracePayload other) && Equals(other);
-
-        public bool Equals(TracePayload other)
-        {
-            return GetJsonBody() == other.GetJsonBody() &&
-                Headers.Count == other.Headers.Count &&
-                !Headers.Except(other.Headers).Any();
-        }
-
         private static SortedList<double, int> CalculateSamplingHistorgram(List<Span> spans)
         {
             var histogram = new Dictionary<double, int>();
@@ -155,17 +146,13 @@ namespace BugsnagUnityPerformance
             return builder.ToString();
         }
 
-        public override int GetHashCode()
+        public bool PayloadsAreEqual(TracePayload other)
         {
-            int hashCode = -991266399;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PayloadId);
-            hashCode = hashCode * -1521134295 + EqualityComparer<SortedList<double, int>>.Default.GetHashCode(SamplingHistogram);
-            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, string>>.Default.GetHashCode(Headers);
-            hashCode = hashCode * -1521134295 + EqualityComparer<ResourceModel>.Default.GetHashCode(_resourceModel);
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<SpanModel>>.Default.GetHashCode(_spans);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_jsonbody);
-            return hashCode;
+            return GetJsonBody() == other.GetJsonBody() &&
+                Headers.Count == other.Headers.Count &&
+                !Headers.Except(other.Headers).Any();
         }
+
     }
 
     [Serializable]
@@ -174,6 +161,4 @@ namespace BugsnagUnityPerformance
         public ResourceSpanModel[] resourceSpans;
     }
 
-
-        
 }
