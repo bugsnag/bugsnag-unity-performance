@@ -18,9 +18,6 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private List<SpanModel> _spans = null;
 
-        // Temporary method to allow hard coding the Bugsnag-Span-Sampling header until sampling is properly implemented
-        public int BatchSize;
-
         private string _jsonbody;
 
         public TracePayload(ResourceModel resourceModel, List<Span> spans)
@@ -34,7 +31,6 @@ namespace BugsnagUnityPerformance
                 {
                     _spans.Add(new SpanModel(span));
                 }
-                BatchSize = spans.Count;
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
                 Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
             }
@@ -49,15 +45,6 @@ namespace BugsnagUnityPerformance
             PayloadId = payloadId;
             Headers = headers;
             _jsonbody = cachedJson;
-        }
-
-        public override bool Equals(object obj) => (obj is TracePayload other) && Equals(other);
-
-        public bool Equals(TracePayload other)
-        {
-            return GetJsonBody() == other.GetJsonBody() &&
-                Headers.Count == other.Headers.Count &&
-                !Headers.Except(other.Headers).Any();
         }
 
         private static SortedList<double, int> CalculateSamplingHistorgram(List<Span> spans)
@@ -158,6 +145,14 @@ namespace BugsnagUnityPerformance
             builder.Remove(builder.Length - 1, 1);
             return builder.ToString();
         }
+
+        public bool PayloadsAreEqual(TracePayload other)
+        {
+            return GetJsonBody() == other.GetJsonBody() &&
+                Headers.Count == other.Headers.Count &&
+                !Headers.Except(other.Headers).Any();
+        }
+
     }
 
     [Serializable]
@@ -165,5 +160,5 @@ namespace BugsnagUnityPerformance
     {
         public ResourceSpanModel[] resourceSpans;
     }
-        
+
 }
