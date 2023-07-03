@@ -90,7 +90,6 @@ namespace BugsnagUnityPerformance
 
         internal class SceneLoadSpanContainer
         {
-            public string SceneName;
             public List<Span> Spans = new List<Span>();
         }
 

@@ -11,6 +11,7 @@ namespace Tests
 {
     public class TracePayloadTests
     {
+
         [Test]
         public void TestPersistenceNoHeaders()
         {
@@ -25,7 +26,7 @@ namespace Tests
             var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
             stream.Close();
 
-            Assert.AreEqual(payload, loadedPayload);
+            Assert.IsTrue(payload.PayloadsAreEqual(loadedPayload));
             Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
 
             Directory.Delete(dir, true);
@@ -46,7 +47,7 @@ namespace Tests
             var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
             stream.Close();
 
-            Assert.AreEqual(payload, loadedPayload);
+            Assert.IsTrue(payload.PayloadsAreEqual(loadedPayload));
             Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
 
             Directory.Delete(dir, true);
@@ -69,7 +70,7 @@ namespace Tests
             var loadedPayload = TracePayload.Deserialize(payload.PayloadId, stream);
             stream.Close();
 
-            Assert.AreEqual(payload, loadedPayload);
+            Assert.IsTrue(payload.PayloadsAreEqual(loadedPayload));
             Assert.AreEqual("1:1", loadedPayload.Headers["Bugsnag-Span-Sampling"]);
 
             Directory.Delete(dir, true);
