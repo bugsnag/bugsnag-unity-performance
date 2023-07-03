@@ -18,9 +18,6 @@ namespace BugsnagUnityPerformance
         private ResourceModel _resourceModel;
         private List<SpanModel> _spans = null;
 
-        // Temporary method to allow hard coding the Bugsnag-Span-Sampling header until sampling is properly implemented
-        public int BatchSize;
-
         private string _jsonbody;
 
         public TracePayload(ResourceModel resourceModel, List<Span> spans)
@@ -34,7 +31,6 @@ namespace BugsnagUnityPerformance
                 {
                     _spans.Add(new SpanModel(span));
                 }
-                BatchSize = spans.Count;
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
                 Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
             }
@@ -52,11 +48,6 @@ namespace BugsnagUnityPerformance
         }
 
         public override bool Equals(object obj) => (obj is TracePayload other) && Equals(other);
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
 
         public bool Equals(TracePayload other)
         {
@@ -162,6 +153,18 @@ namespace BugsnagUnityPerformance
             }
             builder.Remove(builder.Length - 1, 1);
             return builder.ToString();
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -991266399;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PayloadId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SortedList<double, int>>.Default.GetHashCode(SamplingHistogram);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, string>>.Default.GetHashCode(Headers);
+            hashCode = hashCode * -1521134295 + EqualityComparer<ResourceModel>.Default.GetHashCode(_resourceModel);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<SpanModel>>.Default.GetHashCode(_spans);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_jsonbody);
+            return hashCode;
         }
     }
 
