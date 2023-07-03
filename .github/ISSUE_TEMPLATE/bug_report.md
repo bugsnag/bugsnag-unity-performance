@@ -19,12 +19,12 @@ A clear and concise description of what the bug is.
 4. See error
 
 ### Environment
-* Bugsnag Performance library version:
-* Bugsnag Error Monitoring library version (if any):
+* BugSnag Performance library version:
+* BugSnag Error Monitoring library version (if any):
 * Unity version:
 * iOS/Android/macOS/Windows/browser version:
 * simulator/emulator or physical device:
-* Initializing bugsnag performance via a Unity GameObject or in code?:
+* Initializing bugSnag performance via a Unity GameObject or in code?:
 * Player Settings:
     * Scripting backend (Mono or IL2CPP):
     * API compatibility level for .NET:

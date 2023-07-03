@@ -1,7 +1,7 @@
 ## Are you having trouble getting started?
 If you haven't already, please checkout our [documentation](https://docs.bugsnag.com/performance/unity/) for guides, references and tutorials.
 
-Or, if you wish you can [contact us directly](mailto:support@bugsnag.com) for assistance on integrating Bugsnag into your application, troubleshooting an issue or a question about our supported features.
+Or, if you wish you can [contact us directly](mailto:support@bugsnag.com) for assistance on integrating BugSnag into your application, troubleshooting an issue or a question about our supported features.
 
 When contacting support, please include as much information as necessary, including:
 
@@ -9,12 +9,12 @@ When contacting support, please include as much information as necessary, includ
 - steps to reproduce
 - expected/actual behaviour 
 
-* Bugsnag Performance library version:
-* Bugsnag Error Monitoring library version (if any):
+* BugSnag Performance library version:
+* BugSnag Error Monitoring library version (if any):
 * Unity version:
 * iOS/Android/macOS/Windows/browser version:
 * simulator/emulator or physical device:
-* Initializing bugsnag performance via a Unity GameObject or in code?:
+* Initializing BugSnag performance via a Unity GameObject or in code?:
 * Player Settings:
     * Scripting backend (Mono or IL2CPP):
     * API compatibility level for .NET:
