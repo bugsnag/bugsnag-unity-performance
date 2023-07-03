@@ -14,4 +14,4 @@ The source code for this project is located at: https://github.com/bugsnag/bugsn
 
 ## Resources
 
-* [Documentation](https://docs.bugsnag.com/platforms/unity/)
+* [Documentation](https://docs.bugsnag.com/performance/unity/)
