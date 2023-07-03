@@ -94,7 +94,17 @@ namespace BugsnagUnityPerformance
 
             config.ReleaseStage = (string)GetValueFromNotifer(notifierSettings, "ReleaseStage");
 
-            config.EnabledReleaseStages = (string[])GetValueFromNotifer(notifierSettings, "EnabledReleaseStages");
+            if (string.IsNullOrEmpty(config.ReleaseStage))
+            {
+                config.ReleaseStage = Debug.isDebugBuild ? "development" : "production";
+            }
+
+            var notifierReleaseStages = (string[])GetValueFromNotifer(notifierSettings, "EnabledReleaseStages");
+
+            if (notifierReleaseStages != null && notifierReleaseStages.Length > 0)
+            {
+                config.EnabledReleaseStages = notifierReleaseStages;
+            }
 
             config.AppVersion = (string)GetValueFromNotifer(notifierSettings, "AppVersion");
             config.BundleVersion = (string)GetValueFromNotifer(notifierSettings, "BundleVersion");
