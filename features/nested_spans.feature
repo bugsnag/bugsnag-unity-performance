@@ -8,7 +8,7 @@ Feature: Nested Spans
     And I wait for 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:2"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "span1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "span2"
@@ -26,7 +26,7 @@ Feature: Nested Spans
     And I wait for 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:2"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "span1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "span2"
@@ -43,7 +43,7 @@ Feature: Nested Spans
     And I wait for 3 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:3"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "span3"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "span2"
@@ -68,7 +68,7 @@ Scenario: Make Current Context
     And I wait for 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:2"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.parentSpanId" is null
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.parentSpanId" is null

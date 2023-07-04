@@ -143,7 +143,7 @@ namespace BugsnagUnityPerformance
                 req.SetRequestHeader("Bugsnag-Api-Key", _apiKey);
                 req.SetRequestHeader("Content-Type", "application/json");
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
-                req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+                req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture));
                 req.SetRequestHeader("Bugsnag-Uncompressed-Content-Length", body.Length.ToString());
 
                 req.uploadHandler = new UploadHandlerRaw(body);

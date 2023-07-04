@@ -7,9 +7,12 @@
   "documentationUrl": "https://docs.bugsnag.com/performance/unity",
   "changelogUrl": "https://github.com/bugsnag/bugsnag-unity-performance/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/bugsnag/bugsnag-unity-performance/blob/main/LICENSE",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.0"
+ },
   "author": {
     "name": "BugSnag",
     "email": "support@bugsnag.com",
     "url": "https://www.bugsnag.com/"
   }
-}
+}    

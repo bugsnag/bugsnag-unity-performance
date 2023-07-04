@@ -7,6 +7,7 @@ Feature: Configuration tests
     When I run the game in the "CustomReleaseStage" state
     And I wait for 1 span
     Then the trace Bugsnag-Integrity header is valid
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomReleaseStage"
@@ -15,6 +16,7 @@ Feature: Configuration tests
     When I run the game in the "EnabledReleaseStages" state
     And I wait for 1 span
     Then the trace Bugsnag-Integrity header is valid
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "EnabledReleaseStages"

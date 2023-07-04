@@ -17,6 +17,11 @@ public class BugsnagPerformanceEditor : EditorWindow
         titleContent.text = "BugSnag Performance";
     }
 
+    private void Update()
+    {
+        CheckForSettingsCreation();
+    }
+
     private static string GetFullSettingsPath()
     {
         return Application.dataPath + "/Resources/Bugsnag/BugsnagPerformanceSettingsObject.asset";
