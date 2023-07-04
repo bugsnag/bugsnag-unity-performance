@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.1 (4th July 2023)
+## v0.1.1 (2023-07-04)
 
 ## Bug Fixes
 
