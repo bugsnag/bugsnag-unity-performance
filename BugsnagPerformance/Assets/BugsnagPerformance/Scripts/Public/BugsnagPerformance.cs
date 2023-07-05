@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BugsnagNetworking;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 namespace BugsnagUnityPerformance
