@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace BugsnagUnityPerformance
+﻿namespace BugsnagUnityPerformance
 {
     /**
      * Phased startup ensures that components can rely on the fact that other
