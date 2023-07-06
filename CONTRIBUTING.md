@@ -3,11 +3,11 @@
 
 ## Releasing a new version
 
-#### Making the package release
+#### 1: Create release commit and tag
 
 1. Make sure any changes made since last release in `main` are merged into `next`.
 
-2. Checkout the `next` branch. Set the version number in the change log AND the `Version.cs` file.
+2. Checkout the `next` branch. Set the version number in the change log AND the `BugsnagPerformance/Assets/BugsnagPerformance/Scripts/Internal/Version.cs` file.
 
 3. Commit the changelog and version updates:
 
@@ -24,13 +24,12 @@
    git push origin v1.x.x
    ```
 
-6. Wait. The CI build will build the new package and create a draft release.
+6. Create a release from the tag in github, copy the changelog entry into the release notes and publish the release.
 
-7. Verify that the release looks good, upload the unity packages to the release, copy in the changelog entry into the release notes and publish the draft.
 
-#### Making the UPM release
+#### 2: Making the UPM release
 
-Once the UnityPackage release is confirmed a UPM release should be deployed
+Once the github release is confirmed a UPM release should be deployed
 
 1. Checkout the release commit on `main`
 
@@ -38,9 +37,9 @@ Once the UnityPackage release is confirmed a UPM release should be deployed
 
 3. Test that the built package installs by using the install local package option in unity package manager.
 
-4. Clone the `bugsnag-unity-performance-upm` repo and make sure you are in the `main` branch.
+4. Clone the `bugsnag-unity-performance-upm` repo and make sure you are in the `main` branch and it is up to date with origin.
 
-5. Replace the contents of the repo with the contents of the `upm/package` directory in the `bugsnag-unity-performance` repo
+5. Replace the entire contents of the repo with the contents of the `upm/package` directory in the `bugsnag-unity-performance` repo
 
 6. Commit these changes to main with the message `Release v1.x.x`
 
