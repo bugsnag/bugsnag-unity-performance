@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using static log4net.Appender.ColoredConsoleAppender;
+
 
 [InitializeOnLoad]
 public class AddScriptingSymbol : MonoBehaviour

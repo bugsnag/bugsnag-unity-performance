@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.IO;
 using BugsnagUnityPerformance;
 using UnityEditor;
 using UnityEngine;

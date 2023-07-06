@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.2 (2023-07-06)
+
+## Bug Fixes
+
+- Removed erroneous imports in scripts. [#63](https://github.com/bugsnag/bugsnag-unity-performance/pull/63)
+
+- Fix typo in the example project. [#62](https://github.com/bugsnag/bugsnag-unity-performance/pull/62)
+
+
 ## v0.1.1 (2023-07-04)
 
 ## Bug Fixes

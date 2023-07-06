@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using BugsnagUnityPerformance;
+﻿using BugsnagUnityPerformance;
 using UnityEngine;
 
 internal class BugsnagPerformanceAutoStart : MonoBehaviour

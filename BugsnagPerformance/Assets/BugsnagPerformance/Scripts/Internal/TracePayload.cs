@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using UnityEngine;
 using System.Linq;
 
 namespace BugsnagUnityPerformance
