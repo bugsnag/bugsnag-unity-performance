@@ -3,6 +3,7 @@ agents:
 
 steps:
 
+#2020 ----------------------------------------------------------
 
   - label: ':android: Build Android test fixture for Unity 2020'
     timeout_in_minutes: 30
@@ -119,3 +120,5 @@ steps:
     concurrency: 25
     concurrency_group: 'bitbar-app'
     concurrency_method: eager
+
+#2020 END -------------------------------------------------------------------
