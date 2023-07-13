@@ -25,13 +25,13 @@ steps:
     key: 'build-android-fixture-2021'
     depends_on: 'build-artifacts'
     env:
-      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
       artifacts#v1.5.0:
         download:
           - BugsnagPerformance.unitypackage
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk
+          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
 
@@ -50,7 +50,7 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
+          - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
         upload:
           - "maze_output/**/*"
       docker-compose#v4.8.0:
@@ -58,7 +58,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.apk"
+          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
           - "--farm=bb"
           - "--device=ANDROID_11"
           - "--no-tunnel"
@@ -72,7 +72,7 @@ steps:
     key: 'generate-fixture-project-2021'
     depends_on: 'build-artifacts'
     env:
-      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
       artifacts#v1.5.0:
         download:
@@ -94,14 +94,14 @@ steps:
     depends_on: 'generate-fixture-project-2021'
     env:
       DEVELOPER_DIR: "/Applications/Xcode13.4.app"
-      UNITY_PERFORMANCE_VERSION: "2021.3.13f1"
+      UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
       artifacts#v1.5.0:
         download:
           - BugsnagPerformance.unitypackage
           - project_2021.tgz
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2021.tgz features/fixtures/mazerunner
@@ -119,7 +119,7 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - "features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
+          - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
         upload:
           - "maze_output/**/*"
       docker-compose#v4.8.0:
@@ -127,7 +127,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.13f1.ipa"
+          - "--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
           - "--farm=bb"
           - "--device=IOS_15"
           - "--no-tunnel"
