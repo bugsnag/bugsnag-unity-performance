@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0 (2023-07-17)
+
+- Official 1.0 release for GA
+
 ## v0.1.2 (2023-07-06)
 
 ## Bug Fixes
