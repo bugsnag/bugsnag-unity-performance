@@ -91,7 +91,7 @@ namespace BugsnagUnityPerformance
             return newSpan;
         }
 
-        internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request)
+        internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request,string url)
         {
             var verb = request.method.ToUpper();
 
@@ -101,7 +101,7 @@ namespace BugsnagUnityPerformance
 
             var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, spanOptions);
             span.SetAttribute("bugsnag.span.category", "network");
-            span.SetAttribute("http.url", request.url);
+            span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", verb);
             span.SetAttribute("net.host.connection.type", GetConnectionType());
             return span;

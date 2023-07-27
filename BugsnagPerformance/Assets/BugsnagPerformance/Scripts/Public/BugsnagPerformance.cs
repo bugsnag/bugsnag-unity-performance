@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BugsnagNetworking;
@@ -24,6 +25,7 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
+        private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -36,12 +38,22 @@ namespace BugsnagUnityPerformance
                 }
                 IsStarted = true;
             }
+            ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
             {
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
             }
+            
+        }
 
+        private static void ValidateApiKey(string apiKey)
+        {
+            if (!System.Text.RegularExpressions.Regex.IsMatch(apiKey, @"\A\b[0-9a-fA-F]+\b\Z") ||
+                apiKey.Length != 32)
+            {
+                throw new System.Exception($"Invalid Bugsnag Performance configuration. apiKey should be a 32-character hexademical string, got {apiKey} ");
+            }
         }
 
         private static bool ReleaseStageEnabled(PerformanceConfiguration configuration)
@@ -93,6 +105,7 @@ namespace BugsnagUnityPerformance
 
         private void Configure(PerformanceConfiguration config)
         {
+            _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);
             _persistentState.Configure(config);
             _delivery.Configure(config);
@@ -116,7 +129,7 @@ namespace BugsnagUnityPerformance
             _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
-
+            
             IsStarted = true;
         }
 
@@ -200,12 +213,25 @@ namespace BugsnagUnityPerformance
 
         private void OnRequestSend(BugsnagUnityWebRequest request)
         {
-            var span = _spanFactory.CreateAutomaticNetworkSpan(request);
+            var url = request.url;
+            if (_networkRequestCallback != null)
+            {
+                var callbackResult = _networkRequestCallback.Invoke(new BugsnagNetworkRequestInfo(url));
+                if (callbackResult == null || string.IsNullOrEmpty(callbackResult.Url))
+                {
+                    return;
+                }
+
+                url = callbackResult.Url;
+            }
+            var span = _spanFactory.CreateAutomaticNetworkSpan(request, url);
             lock (_networkSpansLock)
             {
                 _networkSpans[request] = span;
             }
         }
+
+       
 
         private void OnRequestAbort(BugsnagUnityWebRequest request)
         {
