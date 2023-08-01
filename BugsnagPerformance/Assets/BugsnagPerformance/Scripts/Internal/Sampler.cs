@@ -45,11 +45,11 @@ namespace BugsnagUnityPerformance
         public bool Sampled(Span span)
         {
             var p = Probability;
-            span.SetAttribute("bugsnag.sampling.p", p);
             var isSampled = IsSampled(span, GetUpperBound(p));
             if (isSampled)
             {
                 span.UpdateSamplingProbability(p);
+                span.SetAttribute("bugsnag.sampling.p", p);
             }
             return isSampled;
         }
