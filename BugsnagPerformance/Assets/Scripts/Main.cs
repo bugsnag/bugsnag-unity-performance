@@ -18,12 +18,18 @@ public class Main : MonoBehaviour
 
         config.Endpoint = Endpoint;
 
-        config.ReleaseStage = "Custom";
+        config.NetworkRequestCallback = NetworkCallback;
 
         if (StartPerf)
         {
             BugsnagPerformance.Start(config);
         }
+    }
+
+    private BugsnagNetworkRequestInfo NetworkCallback(BugsnagNetworkRequestInfo info)
+    {
+        info.Url = "SANITISED";
+        return info;
     }
 
     private void ReportAppStart()
@@ -46,7 +52,7 @@ public class Main : MonoBehaviour
 
     public void DoWebRequest()
     {
-        var request = BugsnagNetworking.BugsnagUnityWebRequest.Post("www.fff.com", "hello");
+        var request = BugsnagNetworking.BugsnagUnityWebRequest.Get("www.google.com");
         request.SendWebRequest();
     }
 
