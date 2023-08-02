@@ -1,12 +1,18 @@
 # Changelog
 
+## v1.0.1 (2023-08-03)
+
+### Additions
+
+- Allow Network request span customization via callbacks. [#70](https://github.com/bugsnag/bugsnag-unity-performance/pull/70)
+
 ## v1.0.0 (2023-07-17)
 
 - Official 1.0 release for GA
 
 ## v0.1.2 (2023-07-06)
 
-## Bug Fixes
+### Bug Fixes
 
 - Removed erroneous imports in scripts. [#63](https://github.com/bugsnag/bugsnag-unity-performance/pull/63)
 
@@ -15,7 +21,7 @@
 
 ## v0.1.1 (2023-07-04)
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix issue where empty EnabledReleaseStages resulted in the SDK not starting. [#60](https://github.com/bugsnag/bugsnag-unity-performance/pull/60)
 
