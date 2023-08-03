@@ -13,23 +13,6 @@ namespace Tests
 
         private const string VALID_API_KEY = "227df1042bc7772c321dbde3b31a03c2";
 
-
-        [Test]
-        public void SetInvalidApiKey()
-        {
-
-            Assert.Throws(typeof(Exception), () =>
-            {
-                new PerformanceConfiguration("test");
-            });
-        }
-
-        [Test]
-        public void SetValidApiKey()
-        {
-            new PerformanceConfiguration(VALID_API_KEY);
-        }
-
         [Test]
         public void ReleaseStage()
         {

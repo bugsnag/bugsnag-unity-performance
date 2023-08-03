@@ -45,7 +45,7 @@ steps:
         command:
           - "--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk"
           - "--farm=bb"
-          - "--device=ANDROID_11"
+          - "--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
           - "--no-tunnel"
           - "--aws-public-ip"
     concurrency: 25

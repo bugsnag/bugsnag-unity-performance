@@ -122,6 +122,11 @@ namespace BugsnagUnityPerformance
             Attributes.Add(new AttributeModel(key,value));
         }
 
+        internal void SetAttribute(string key, double value)
+        {
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
         internal void EndSceneLoadSpan(string sceneName)
         {
             // no need for thread safe checks as all scene load events happen on the main thread.
