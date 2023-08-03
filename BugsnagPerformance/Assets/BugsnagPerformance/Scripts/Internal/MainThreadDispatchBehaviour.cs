@@ -38,6 +38,7 @@ namespace BugsnagUnityPerformance
         {
             if (_instance == null)
             {
+                Logger.I("MainThreadDispatchBehaviour created");
                 _instance = new GameObject("Bugsnag performance main thread dispatcher").AddComponent<MainThreadDispatchBehaviour>();
             }
             return _instance;
@@ -45,6 +46,7 @@ namespace BugsnagUnityPerformance
 
         public void Update()
         {
+            Logger.I("MainThreadDispatchBehaviour update");
             lock (_executionQueue)
             {
                 while (_executionQueue.Count > 0)
@@ -96,7 +98,14 @@ namespace BugsnagUnityPerformance
 
         private void Awake()
         {
+            Logger.I("MainThreadDispatchBehaviour Awake");
+
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            Logger.I("MainThreadDispatchBehaviour Destroyed");
         }
 
     }

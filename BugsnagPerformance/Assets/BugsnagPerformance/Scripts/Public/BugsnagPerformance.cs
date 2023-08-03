@@ -29,6 +29,7 @@ namespace BugsnagUnityPerformance
 
         public static void Start(PerformanceConfiguration configuration)
         {
+            Logger.I("BugsnagPerformance.Start called");
             lock (_startLock)
             {
                 if (IsStarted)
@@ -41,10 +42,12 @@ namespace BugsnagUnityPerformance
             ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
             {
+                // init main thread dispatcher on main thread
+                MainThreadDispatchBehaviour.Instance();
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
+                Logger.I("Start Complete");
             }
-            
         }
 
         private static void ValidateApiKey(string apiKey)

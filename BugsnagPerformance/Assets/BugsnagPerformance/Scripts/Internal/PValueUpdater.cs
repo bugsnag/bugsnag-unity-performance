@@ -28,6 +28,7 @@ namespace BugsnagUnityPerformance
 
         public void Start()
         {
+            Logger.I("Sending initial P value request");
             MainThreadDispatchBehaviour.Instance().Enqueue(CheckPValue());
         }
         
@@ -51,6 +52,7 @@ namespace BugsnagUnityPerformance
 
         private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
         {
+            Logger.I("P Value request complete: " + req.responseCode);
             if (!Double.IsNaN(newProbability))
             {
                 _sampler.Probability = newProbability;
