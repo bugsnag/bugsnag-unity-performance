@@ -20,23 +20,16 @@ namespace BugsnagUnityPerformance
             attributes = new List<AttributeModel>
             {
                 new AttributeModel("deployment.environment", config.ReleaseStage),
-
                 new AttributeModel("telemetry.sdk.name", "bugsnag.performance.unity"),
-
                 new AttributeModel("telemetry.sdk.version", Version.VersionString),
-
-                new AttributeModel("os.version", Environment.OSVersion.VersionString),
-
                 new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
-
                 new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
-
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
-
                 new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
                 GetNativeVersionInfo(config),
                 GetManufacturer(),
-                GetArch()
+                GetArch(),
+                GetNativeOsVersion()
             };
         }
 
@@ -115,6 +108,16 @@ namespace BugsnagUnityPerformance
                     return new AttributeModel("device.manufacturer", "Apple");
                 case RuntimePlatform.Android:
                     return new AttributeModel("device.manufacturer", AndroidNative.GetManufacturer());
+            }
+            return null;
+        }
+
+        private AttributeModel GetNativeOsVersion()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXPlayer:
+                    return new AttributeModel("os.version", MacOSNative.GetOsVersion());
             }
             return null;
         }

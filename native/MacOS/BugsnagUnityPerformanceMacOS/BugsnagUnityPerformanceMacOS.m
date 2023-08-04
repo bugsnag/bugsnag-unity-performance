@@ -2,6 +2,7 @@
 #import <sys/sysctl.h>
 #import <stdint.h>
 #import <Foundation/Foundation.h>
+
 #define CHECK_SYSCTL_NAME(TYPE, CALL)                                          \
     if (0 != (CALL)) {                                                         \
         NSLog(@"Could not get %s value for %s: %s", #CALL, name,      \
@@ -81,3 +82,11 @@ char* bugsnag_performance_get_arch ()
 {
     return convertNSStringToCString(getCpuArch());
 }
+
+char* bugsnag_performance_get_os_version()
+{
+    NSProcessInfo *pInfo = [NSProcessInfo processInfo];
+    NSString *version = [pInfo operatingSystemVersionString];
+    return convertNSStringToCString(version);
+}
+
