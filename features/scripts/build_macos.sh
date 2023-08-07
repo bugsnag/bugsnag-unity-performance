@@ -15,12 +15,15 @@ popd
 
 pushd "$script_path/../fixtures"
 
-DEFAULT_CLI_ARGS="-quit -nographics -batchmode -logFile generateXcodeProject.log"
+# Run unity and immediately exit afterwards, log all output
+DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_macos.log"
 
 project_path=`pwd`/mazerunner
 
-# Generate the Xcode project for iOS
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.IosBuild
+# Build for Android
+
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.MacOS
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
+#mv $project_path/mazerunner.apk $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.apk
