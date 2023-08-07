@@ -13,7 +13,7 @@ steps:
       - bundle install
       - bundle exec rake plugin:build:export
     plugins:
-      artifacts#v1.9.0:
+      -artifacts#v1.9.0:
         upload: "upm/package"
         compressed: package.zip
     retry:
@@ -29,7 +29,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.9.0:
+      -artifacts#v1.9.0:
         download: "upm/package"
           compressed: package.zip
         upload:
@@ -50,7 +50,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.9.0:
+      -artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
         upload:
@@ -119,7 +119,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.9.0:
+      -artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
         upload:
