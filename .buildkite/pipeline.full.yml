@@ -14,7 +14,7 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - BugsnagPerformance.unitypackage
+          - upm-package.zip
         upload:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
           - features/fixtures/import_package.log
@@ -61,7 +61,7 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - BugsnagPerformance.unitypackage
+          - upm-package.zip
         upload:
           - features/fixtures/generateXcodeProject.log
           - project_2020.tgz
@@ -83,7 +83,6 @@ steps:
     plugins:
       artifacts#v1.5.0:
         download:
-          - BugsnagPerformance.unitypackage
           - project_2020.tgz
         upload:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa
