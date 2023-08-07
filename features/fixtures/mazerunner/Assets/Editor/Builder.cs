@@ -21,7 +21,7 @@ public class Builder : MonoBehaviour
 
     public static void MacOS()
     {
-        Build("build/MacOS/Mazerunner", BuildTarget.StandaloneOSX);
+        Build("mazerunner", BuildTarget.StandaloneOSX);
     }
 
     public static void Win64()

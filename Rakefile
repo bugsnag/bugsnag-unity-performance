@@ -113,11 +113,26 @@ namespace :test do
     end
   end
 
+  namespace :macos do
+    task :build do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the Mac App
+      script = File.join("features", "scripts", "build_macos.sh")
+      unless system script
+        raise 'macos build failed'
+      end
+    end
+  end
+
   namespace :ios do
     task :generate_xcode do
-      # Check that a Unity version has been selected and the path exists before calling the build script
-      unity_path, unity = get_required_unity_paths
-
+     
       # Prepare the test fixture project by importing the plugins
       script = File.join("features", "scripts", "import_package.sh")
       unless system script
