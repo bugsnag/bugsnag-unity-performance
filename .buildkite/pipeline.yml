@@ -148,7 +148,6 @@ steps:
         upload:
           - features/fixtures/mazerunner/mazerunner_2021.3.27f1.app
           - features/fixtures/build_macos.log
-
     commands:
       - rake test:macos:build
     retry:
