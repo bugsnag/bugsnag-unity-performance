@@ -36,5 +36,12 @@ echo "Setting the version $VERSION in the copied manifest and readme"
 sed -i '' "s/VERSION_STRING/$VERSION/g" "$PKG_DIR/package.json"
 sed -i '' "s/VERSION_STRING/v$VERSION/g" "$PKG_DIR/README.md"
 
+cd upm
+
+zip -r "upm-package.zip" "package"
+
+cd ..
+
+mv "upm/upm-package.zip" `pwd`
 
 echo "complete, ready to deploy"

@@ -12,10 +12,8 @@ steps:
     commands:
       - bundle install
       - bundle exec rake plugin:build:export
-    plugins:
-      -artifacts#v1.9.0:
-        upload: "upm/package"
-        compressed: package.zip
+    artifact_paths:
+      - upm-package.zip
     retry:
       automatic:
         - exit_status: "*"
@@ -29,13 +27,14 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      -artifacts#v1.9.0:
-        download: "upm/package"
-        compressed: package.zip
+      artifacts#v1.5.0:
+        download:
+          - upm-package.zip
         upload:
-          - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
-          - "features/fixtures/import_package.log"
-          - "features/fixtures/build_android.log"
+          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
+          - features/fixtures/import_package.log
+          - features/fixtures/build_android.log
+
     commands:
       - rake test:android:build
     retry:
@@ -49,7 +48,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      -artifacts#v1.9.0:
+      artifacts#v1.5.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
         upload:
@@ -75,9 +74,9 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.9.0:
+      artifacts#v1.5.0:
         download:
-          - BugsnagPerformance.unitypackage
+          - upm-package.zip
         upload:
           - features/fixtures/generateXcodeProject.log
           - project_2021.tgz
@@ -97,9 +96,8 @@ steps:
       DEVELOPER_DIR: "/Applications/Xcode13.4.app"
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.9.0:
+      artifacts#v1.5.0:
         download:
-          - BugsnagPerformance.unitypackage
           - project_2021.tgz
         upload:
           - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
@@ -118,7 +116,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      -artifacts#v1.9.0:
+      artifacts#v1.5.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
         upload:
