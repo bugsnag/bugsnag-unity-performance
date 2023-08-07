@@ -70,46 +70,44 @@ def dev_project_path
   File.join(current_directory, "BugsnagPerformance")
 end
 
-def export_package
-  package_output = File.join(current_directory, "BugsnagPerformance.unitypackage")
-  rm_f package_output
-  unity "-projectPath", dev_project_path, "-batchmode", "-nographics", "-logFile", "unity.log", "-quit", "-exportPackage", "Assets/BugsnagPerformance", package_output, force_free: false
+def build_upm_package
+  script = File.join("upm", "scripts", "build-upm-package.sh")
+  command = "#{script} 1.2.3"
+  unless system command
+    raise 'build upm package failed'
+  end
 end
 
 def run_unit_tests
-
   unity "-runTests", "-batchmode", "-projectPath", dev_project_path, "-testPlatform", "EditMode", "-testResults", File.join(current_directory, "testResults.xml") , force_free: false
 end
 
 namespace :plugin do
   namespace :build do
 
-    desc "Export unitypackage"
+    desc "Build UPM package"
     task :export do
-      run_unit_tests
-      export_package
+     # run_unit_tests
+      build_upm_package
     end
 
   end
 end
 
 namespace :test do
-  
+
   namespace :android do
     task :build do
-      # Check that a Unity version has been selected and the path exists before calling the build script
-      unity_path, unity = get_required_unity_paths
 
-      # Prepare the test fixture project by importing the plugins
-      env = { "UNITY_PATH" => File.dirname(unity) }
+      # Prepare the test fixture project by importing the upm package
       script = File.join("features", "scripts", "import_package.sh")
-      unless system env, script
+      unless system script
         raise 'import package failed'
       end
 
       # Build the Android APK
       script = File.join("features", "scripts", "build_android.sh")
-      unless system env, script
+      unless system script
         raise 'Android APK build failed'
       end
     end
@@ -121,16 +119,15 @@ namespace :test do
       unity_path, unity = get_required_unity_paths
 
       # Prepare the test fixture project by importing the plugins
-      env = { "UNITY_PATH" => File.dirname(unity) }
       script = File.join("features", "scripts", "import_package.sh")
-      unless system env, script
+      unless system script
         raise 'import_package failed'
       end
 
       # Generate the Xcode project
       cd "features" do
         script = File.join("scripts", "generate_xcode_project.sh")
-        unless system env, script
+        unless system script
           raise 'generate_xcode_project failed'
         end
       end

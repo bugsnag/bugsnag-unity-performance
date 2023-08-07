@@ -12,8 +12,10 @@ steps:
     commands:
       - bundle install
       - bundle exec rake plugin:build:export
-    artifact_paths:
-      - BugsnagPerformance.unitypackage
+    plugins:
+      artifacts#v1.9.0:
+        upload: "upm/package"
+        compressed: package.zip
     retry:
       automatic:
         - exit_status: "*"
@@ -27,9 +29,9 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
-        download:
-          - BugsnagPerformance.unitypackage
+      artifacts#v1.9.0:
+        download: "upm/package"
+          compressed: package.zip
         upload:
           - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
           - features/fixtures/import_package.log
@@ -48,7 +50,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
         upload:
@@ -74,7 +76,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - BugsnagPerformance.unitypackage
         upload:
@@ -96,7 +98,7 @@ steps:
       DEVELOPER_DIR: "/Applications/Xcode13.4.app"
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - BugsnagPerformance.unitypackage
           - project_2021.tgz
@@ -117,7 +119,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
         upload:
