@@ -40,6 +40,24 @@ steps:
         - exit_status: "*"
           limit: 1
 
+  - label: Run MacOS e2e tests for Unity 2021
+    timeout_in_minutes: 60
+    depends_on: 'build-macos-fixture-2021'
+    agents:
+      queue: macos-12-arm-unity
+    env:
+      UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
+    plugins:
+      artifacts#v1.5.0:
+        download:
+          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.zip
+        upload:
+          - maze_output/**/*
+          - Mazerunner.log
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-macos-ci-tests.sh
+
 
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
