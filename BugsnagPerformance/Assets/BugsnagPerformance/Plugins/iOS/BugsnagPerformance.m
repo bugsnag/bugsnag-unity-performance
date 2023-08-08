@@ -81,3 +81,8 @@ char* bugsnag_performance_get_arch ()
 {
     return convertNSStringToCString(getCpuArch());
 }
+
+char* bugsnag_performance_get_os_version()
+{
+    return convertNSStringToCString(UIDevice.currentDevice.systemVersion);
+}

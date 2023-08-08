@@ -114,12 +114,20 @@ namespace BugsnagUnityPerformance
 
         private AttributeModel GetNativeOsVersion()
         {
+            string osVersion = string.Empty;
             switch (Application.platform)
             {
                 case RuntimePlatform.OSXPlayer:
-                    return new AttributeModel("os.version", MacOSNative.GetOsVersion());
+                    osVersion = MacOSNative.GetOsVersion();
+                    break;
+                case RuntimePlatform.IPhonePlayer:
+                    osVersion = iOSNative.GetOsVersion();
+                    break;
+                case RuntimePlatform.Android:
+                    osVersion = AndroidNative.GetOsVersion();
+                    break;
             }
-            return null;
+            return new AttributeModel("os.version", osVersion);
         }
     }
 }

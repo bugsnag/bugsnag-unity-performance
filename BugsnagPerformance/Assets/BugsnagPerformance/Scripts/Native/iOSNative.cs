@@ -17,6 +17,10 @@ namespace BugsnagUnityPerformance
 
         [DllImport(Import)]
         internal static extern string bugsnag_performance_get_arch();
+
+        [DllImport(Import)]
+        internal static extern string bugsnag_performance_get_os_version();
+        
 #endif
 
         public static string GetBundleVersion()
@@ -31,6 +35,14 @@ namespace BugsnagUnityPerformance
         {
 #if UNITY_IOS && !UNITY_EDITOR
             return bugsnag_performance_get_arch();
+#endif
+            return null;
+        }
+
+        public static string GetOsVersion()
+        {
+#if UNITY_IOS && !UNITY_EDITOR
+            return bugsnag_performance_get_os_version();
 #endif
             return null;
         }
