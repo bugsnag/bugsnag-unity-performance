@@ -31,8 +31,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-        upload: "features/fixtures/mazerunner/mazerunner_2021.3.27f1.app"
-        compressed: fixture.zip
+          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.zip
           - features/fixtures/build_macos.log
     commands:
       - rake test:macos:build
