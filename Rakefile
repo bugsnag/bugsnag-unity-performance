@@ -87,7 +87,7 @@ namespace :plugin do
 
     desc "Build UPM package"
     task :export do
-     # run_unit_tests
+      run_unit_tests
       build_upm_package
     end
 

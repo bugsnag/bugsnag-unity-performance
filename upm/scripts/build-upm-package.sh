@@ -38,7 +38,7 @@ sed -i '' "s/VERSION_STRING/v$VERSION/g" "$PKG_DIR/README.md"
 
 cd upm
 
-zip -r "upm-package.zip" "package"
+zip -q -r "upm-package.zip" "package"
 
 cd ..
 
