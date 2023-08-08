@@ -28,6 +28,4 @@ if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
 mv $project_path/mazerunner.app $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.app
 
-(cd $project_path && zip -r mazerunner_$UNITY_PERFORMANCE_VERSION.zip mazerunner_$UNITY_PERFORMANCE_VERSION.app)
-
-# zip -r $project_path/macos_fixture_$UNITY_PERFORMANCE_VERSION.zip $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.app
+(cd $project_path && zip -q -r mazerunner_$UNITY_PERFORMANCE_VERSION.zip mazerunner_$UNITY_PERFORMANCE_VERSION.app)

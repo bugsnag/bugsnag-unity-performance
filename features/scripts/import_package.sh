@@ -8,4 +8,4 @@ package="$root_path/upm-package.zip"
 
 rm -rf "$destination/package"
 
-unzip "$package" -d "$destination"
+unzip -q "$package" -d "$destination"
