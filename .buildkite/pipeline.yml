@@ -27,11 +27,12 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.app
+        upload: "features/fixtures/mazerunner/mazerunner_2021.3.27f1.app"
+        compressed: fixture.zip
           - features/fixtures/build_macos.log
     commands:
       - rake test:macos:build
@@ -39,7 +40,7 @@ steps:
       automatic:
         - exit_status: "*"
           limit: 1
-          
+
 
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -48,7 +49,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - upm-package.zip
         upload:
@@ -69,7 +70,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk"
         upload:
@@ -95,7 +96,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - upm-package.zip
         upload:
@@ -117,7 +118,7 @@ steps:
       DEVELOPER_DIR: "/Applications/Xcode13.4.app"
       UNITY_PERFORMANCE_VERSION: "2021.3.27f1"
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - project_2021.tgz
         upload:
@@ -137,7 +138,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      artifacts#v1.9.0:
         download:
           - "features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa"
         upload:
