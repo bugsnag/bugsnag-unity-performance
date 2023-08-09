@@ -91,7 +91,24 @@ When('I wait for requests to persist') do
 end
 
 When('I relaunch the app') do
-  Maze.driver.launch_app
+
+ platform = Maze::Helper.get_current_platform
+  case platform
+  when 'macos'
+    execute_command('close_application')
+    sleep 3
+    log = File.join(Dir.pwd, "#{state}RESTART-mazerunner.log")
+    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args -logfile #{log} > /dev/null"
+  when 'windows'
+   
+  when 'android', 'ios'
+    Maze.driver.launch_app
+  when 'browser'
+   
+  else
+    raise "Platform #{platform} has not been considered"
+  end
+
   sleep 3
 end
 

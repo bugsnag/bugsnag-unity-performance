@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 #if UNITY_STANDALONE_OSX && !UNITY_EDITOR
@@ -34,10 +36,21 @@ namespace BugsnagUnityPerformance
 
         public static string GetArch()
         {
-#if UNITY_STANDALONE_OSX && !UNITY_EDITOR
-            return bugsnag_performance_get_arch();
-#endif
-            return null;
+            if (CultureInfo.InvariantCulture.CompareInfo.IndexOf(SystemInfo.processorType, "ARM", CompareOptions.IgnoreCase) >= 0)
+            {
+                if (Environment.Is64BitProcess)
+                    return "ARM64";
+                else
+                    return "ARM";
+            }
+            else
+            {
+                // Must be in the x86 family.
+                if (Environment.Is64BitProcess)
+                    return "x86_64";
+                else
+                    return "x86";
+            }
         }
 
         public static string GetOsVersion()

@@ -88,9 +88,11 @@ namespace BugsnagUnityPerformance
         {
             switch (Application.platform)
             {
-                case RuntimePlatform.IPhonePlayer:
+                
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.OSXEditor:
+                    return new AttributeModel("host.arch", MacOSNative.GetArch());
+                case RuntimePlatform.IPhonePlayer:
                     return new AttributeModel("host.arch", iOSNative.GetArch());
                 case RuntimePlatform.Android:
                     return new AttributeModel("host.arch", AndroidNative.GetArch());
