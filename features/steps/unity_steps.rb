@@ -172,3 +172,31 @@ Then("the span named {string} has a maximum duration of {int}") do |span_name,du
   Maze.check.true(found_duration < duration);
 
 end
+
+Then('the span named {string} exists') do |span_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
+
+  Maze.check.true(spans_with_name.length() == 1);
+end
+
+Then('the span named {string} is the parent of the span named {string}') do |span1name, span2name|
+  
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  span1 = spans.find_all { |span| span['name'].eql?(span1name) }.first
+
+  span2 = spans.find_all { |span| span['name'].eql?(span2name) }.first
+
+  Maze.check.true(span1['spanId'] == span2['parentSpanId']);
+
+end
+
+Then('the span named {string} has no parent') do |spanName|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  span1 = spans.find_all { |span| span['name'].eql?(spanName) }.first
+
+  Maze.check.true(span1['parentSpanId'] == nil);
+end
