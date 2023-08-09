@@ -4,4 +4,4 @@ pushd features/fixtures/mazerunner/
 popd
 
 bundle install
-bundle exec maze-runner --fail-fast --app=features/fixtures/mazerunner/mazerunner_$UNITY_PERFORMANCE_VERSION.app --os=macos features 
+bundle exec maze-runner --app=features/fixtures/mazerunner/mazerunner_$UNITY_PERFORMANCE_VERSION.app --os=macos features 

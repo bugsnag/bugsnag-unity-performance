@@ -46,7 +46,6 @@ namespace BugsnagUnityPerformance
 
         public void Update()
         {
-            Logger.I("MainThreadDispatchBehaviour update");
             lock (_executionQueue)
             {
                 while (_executionQueue.Count > 0)
