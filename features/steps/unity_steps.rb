@@ -54,7 +54,7 @@ When('I run the game in the {string} state') do |state|
   when 'macos'
     # Call executable directly rather than use open, which flakes on CI
     log = File.join(Dir.pwd, 'mazerunner.log')
-    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner"
+    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args -logfile #{log} > /dev/null"
     Maze::Runner.run_command(command, blocking: false)
 
     execute_command('run_scenario', state)
