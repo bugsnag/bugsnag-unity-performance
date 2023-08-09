@@ -15,7 +15,7 @@ public class Builder : MonoBehaviour
         opts.scenes = scenes;
         opts.locationPathName = folder;
         opts.target = target;
-        opts.options = BuildOptions.Development;
+        opts.options = BuildOptions.None;
         BuildPipeline.BuildPlayer(opts);
     }
 
