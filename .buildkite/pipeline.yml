@@ -53,7 +53,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_2021.3.27f1.zip
         upload:
           - maze_output/**/*
-          - mazerunner.log
+          - *-mazerunner.log
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
