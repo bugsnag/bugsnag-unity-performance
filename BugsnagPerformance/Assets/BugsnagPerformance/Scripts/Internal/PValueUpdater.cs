@@ -28,7 +28,6 @@ namespace BugsnagUnityPerformance
 
         public void Start()
         {
-            Logger.I("Sending initial P value request");
             MainThreadDispatchBehaviour.Instance().Enqueue(CheckPValue());
         }
         
@@ -48,6 +47,7 @@ namespace BugsnagUnityPerformance
         private void markPValueUpdated()
         {
             _pValueTimeout = DateTime.Now.AddSeconds(_pValueTimeoutSeconds);
+            Logger.I("P value updated, new timeout: " + _pValueTimeout.ToLongTimeString());
         }
 
         private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)

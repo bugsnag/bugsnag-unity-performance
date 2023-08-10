@@ -33,10 +33,12 @@ namespace BugsnagUnityPerformance
         public void Start()
         {
             var storedProbability = _persistentState.Probability;
+            Logger.I("Got stored probability: " + storedProbability);
             if (storedProbability >= 0)
             {
                 _probability = storedProbability;
-            } else
+            }
+            else
             {
                 _persistentState.Probability = _probability;
             }
@@ -44,8 +46,14 @@ namespace BugsnagUnityPerformance
 
         public bool Sampled(Span span)
         {
+            Logger.I("Sampling span: " + span.Name);
+
             var p = Probability;
+            Logger.I("Probability: " + Probability);
+
             var isSampled = IsSampled(span, GetUpperBound(p));
+            Logger.I("Is Sampled?: " + isSampled.ToString());
+
             if (isSampled)
             {
                 span.UpdateSamplingProbability(p);

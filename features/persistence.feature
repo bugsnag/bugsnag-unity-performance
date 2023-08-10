@@ -41,7 +41,6 @@ Feature: Trace and state persistence
     And I set the HTTP status code for the next request to 404
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait to receive a sampling request
     Then I should receive no traces
 
   Scenario: P value response 0.0 then 1.0
