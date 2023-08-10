@@ -4,7 +4,6 @@ agents:
 steps:
 
 #2020 ----------------------------------------------------------
-
 - label: ':macos: Build macos test fixture for Unity 2020'
     timeout_in_minutes: 30
     key: 'build-macos-fixture-2020'
