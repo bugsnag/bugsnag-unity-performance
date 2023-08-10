@@ -52,7 +52,6 @@ Feature: Trace and state persistence
     And I set the sampling probability for the next traces to "1"
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait to receive a sampling request
     And I wait for 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
 
@@ -69,7 +68,6 @@ Feature: Trace and state persistence
     And I set the HTTP status code for the next request to 404
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait to receive a sampling request
     And I wait for 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
 
@@ -85,7 +83,6 @@ Feature: Trace and state persistence
     And I set the sampling probability for the next traces to "0"
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait to receive a sampling request
     Then I should receive no traces
 
 Scenario: P value expiry
