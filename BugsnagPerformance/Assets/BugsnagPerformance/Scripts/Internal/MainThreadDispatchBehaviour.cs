@@ -29,8 +29,8 @@ namespace BugsnagUnityPerformance
     public class MainThreadDispatchBehaviour : MonoBehaviour
     {
 
-        private static MainThreadDispatchBehaviour _instance;       
-    
+        private static MainThreadDispatchBehaviour _instance;
+
         private static readonly Queue<Action> _executionQueue = new Queue<Action>();
 
 
@@ -38,7 +38,9 @@ namespace BugsnagUnityPerformance
         {
             if (_instance == null)
             {
+#if BUGSNAG_DEBUG
                 Logger.I("MainThreadDispatchBehaviour created");
+#endif
                 _instance = new GameObject("Bugsnag performance main thread dispatcher").AddComponent<MainThreadDispatchBehaviour>();
             }
             return _instance;
@@ -97,14 +99,7 @@ namespace BugsnagUnityPerformance
 
         private void Awake()
         {
-            Logger.I("MainThreadDispatchBehaviour Awake");
-
             DontDestroyOnLoad(gameObject);
-        }
-
-        private void OnDestroy()
-        {
-            Logger.I("MainThreadDispatchBehaviour Destroyed");
         }
 
     }

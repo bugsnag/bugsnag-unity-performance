@@ -29,7 +29,9 @@ namespace BugsnagUnityPerformance
 
         public static void Start(PerformanceConfiguration configuration)
         {
+#if BUGSNAG_DEBUG
             Logger.I("BugsnagPerformance.Start called");
+#endif
             lock (_startLock)
             {
                 if (IsStarted)
@@ -46,7 +48,9 @@ namespace BugsnagUnityPerformance
                 MainThreadDispatchBehaviour.Instance();
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
+#if BUGSNAG_DEBUG
                 Logger.I("Start Complete");
+#endif
             }
         }
 

@@ -113,8 +113,6 @@ namespace BugsnagUnityPerformance
 
         private IEnumerator PushToServer(TracePayload payload, OnServerResponse onServerResponse)
         {
-            Logger.I("Delivery.PushToServer called");
-
             byte[] body = null;
             // There is no threading on webgl, so we treat the payload differently
             if (Application.platform == RuntimePlatform.WebGLPlayer)
@@ -153,7 +151,6 @@ namespace BugsnagUnityPerformance
                 req.method = UnityWebRequest.kHttpVerbPOST;
 
                 yield return req.SendWebRequest();
-                Logger.I("Request complete with code: " + req.responseCode);
 
                 var newProbability = GetRequestResult(req) == RequestResult.Success ? ReadResponseProbability(req) : double.NaN;
                 onServerResponse(payload, req, newProbability);

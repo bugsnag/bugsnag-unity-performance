@@ -13,6 +13,7 @@ namespace BugsnagUnityPerformance
         private float _pValueTimeoutSeconds;
         private float _pValueCheckIntervalSeconds;
 
+
         public PValueUpdater(Delivery delivery, Sampler sampler)
         {
             _delivery = delivery;
@@ -47,12 +48,10 @@ namespace BugsnagUnityPerformance
         private void markPValueUpdated()
         {
             _pValueTimeout = DateTime.Now.AddSeconds(_pValueTimeoutSeconds);
-            Logger.I("P value updated, new timeout: " + _pValueTimeout.ToLongTimeString());
         }
 
         private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
         {
-            Logger.I("P Value request complete: " + req.responseCode);
             if (!Double.IsNaN(newProbability))
             {
                 _sampler.Probability = newProbability;
