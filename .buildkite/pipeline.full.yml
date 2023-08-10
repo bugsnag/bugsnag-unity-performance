@@ -1,124 +1,115 @@
 agents:
   queue: macos-12-arm-unity
-
 steps:
-
-#2020 ----------------------------------------------------------
-- label: ':macos: Build macos test fixture for Unity 2020'
+  - label: ':macos: Build macos test fixture for Unity 2020'
     timeout_in_minutes: 30
-    key: 'build-macos-fixture-2020'
-    depends_on: 'build-artifacts'
+    key: build-macos-fixture-2020
+    depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: "2020.3.48f1"
+      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      artifacts#v1.9.0:
+      'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.zip
           - features/fixtures/build_macos.log
     commands:
-      - rake test:macos:build
+      - 'rake test:macos:build'
     retry:
       automatic:
-        - exit_status: "*"
+        - exit_status: '*'
           limit: 1
-
   - label: Run MacOS e2e tests for Unity 2020
     timeout_in_minutes: 60
-    depends_on: 'build-macos-fixture-2020'
+    depends_on: build-macos-fixture-2020
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: "2020.3.48f1"
+      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.zip
         upload:
           - maze_output/**/*
-          - "*-mazerunner.log"
+          - '*-mazerunner.log'
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
-
   - label: ':android: Build Android test fixture for Unity 2020'
     timeout_in_minutes: 30
-    key: 'build-android-fixture-2020'
-    depends_on: 'build-artifacts'
+    key: build-android-fixture-2020
+    depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: "2020.3.48f1"
+      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
           - upm-package.zip
         upload:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
-
     commands:
-      - rake test:android:build
+      - 'rake test:android:build'
     retry:
       automatic:
-        - exit_status: "*"
+        - exit_status: '*'
           limit: 1
-
   - label: ':bitbar: Run Android e2e tests for Unity 2020'
     timeout_in_minutes: 60
-    depends_on: 'build-android-fixture-2020'
+    depends_on: build-android-fixture-2020
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
-          - "features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk"
+          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
         upload:
-          - "maze_output/**/*"
-      docker-compose#v4.8.0:
+          - maze_output/**/*
+      'docker-compose#v4.8.0':
         pull: maze-runner
         run: maze-runner
         service-ports: true
         command:
-          - "--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk"
-          - "--farm=bb"
-          - "--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
-          - "--no-tunnel"
-          - "--aws-public-ip"
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk'
+          - '--farm=bb'
+          - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
+          - '--no-tunnel'
+          - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: 'bitbar-app'
+    concurrency_group: bitbar-app
     concurrency_method: eager
-
   - label: ':ios: Generate Xcode project - Unity 2020'
     timeout_in_minutes: 30
-    key: 'generate-fixture-project-2020'
-    depends_on: 'build-artifacts'
+    key: generate-fixture-project-2020
+    depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: "2020.3.48f1"
+      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
           - upm-package.zip
         upload:
           - features/fixtures/generateXcodeProject.log
           - project_2020.tgz
     commands:
-      - rake test:ios:generate_xcode
+      - 'rake test:ios:generate_xcode'
       - tar -zvcf project_2020.tgz features/fixtures/mazerunner/mazerunner_xcode
     retry:
       automatic:
-        - exit_status: "*"
+        - exit_status: '*'
           limit: 1
-
   - label: ':ios: Build iOS test fixture for Unity 2020'
     timeout_in_minutes: 30
-    key: 'build-ios-fixture-2020'
-    depends_on: 'generate-fixture-project-2020'
+    key: build-ios-fixture-2020
+    depends_on: generate-fixture-project-2020
     env:
-      DEVELOPER_DIR: "/Applications/Xcode13.4.app"
-      UNITY_PERFORMANCE_VERSION: "2020.3.48f1"
+      DEVELOPER_DIR: /Applications/Xcode13.4.app
+      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
           - project_2020.tgz
         upload:
@@ -126,35 +117,32 @@ steps:
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2020.tgz features/fixtures/mazerunner
-      - rake test:ios:build_xcode
+      - 'rake test:ios:build_xcode'
     retry:
       automatic:
-        - exit_status: "*"
+        - exit_status: '*'
           limit: 1
-
   - label: ':bitbar: Run iOS e2e tests for Unity 2020'
     timeout_in_minutes: 60
-    depends_on: 'build-ios-fixture-2020'
+    depends_on: build-ios-fixture-2020
     agents:
       queue: opensource
     plugins:
-      artifacts#v1.5.0:
+      'artifacts#v1.5.0':
         download:
-          - "features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa"
+          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa
         upload:
-          - "maze_output/**/*"
-      docker-compose#v4.8.0:
+          - maze_output/**/*
+      'docker-compose#v4.8.0':
         pull: maze-runner
         run: maze-runner
         service-ports: true
         command:
-          - "--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa"
-          - "--farm=bb"
-          - "--device=IOS_15"
-          - "--no-tunnel"
-          - "--aws-public-ip"
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa'
+          - '--farm=bb'
+          - '--device=IOS_15'
+          - '--no-tunnel'
+          - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: 'bitbar-app'
+    concurrency_group: bitbar-app
     concurrency_method: eager
-
-#2020 END -------------------------------------------------------------------
