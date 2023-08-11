@@ -34,6 +34,9 @@ namespace BugsnagUnityPerformance
         
         private IEnumerator CheckPValue()
         {
+#if BUGSNAG_DEBUG
+                Logger.I("Enqueue p value update request");
+#endif
             while (true)
             {
                 if (DateTime.Now.CompareTo(_pValueTimeout) >= 0)
@@ -54,6 +57,9 @@ namespace BugsnagUnityPerformance
         {
             if (!Double.IsNaN(newProbability))
             {
+#if BUGSNAG_DEBUG
+                Logger.I("OnPValueRequestCompleted Complete, new p value: " + newProbability);
+#endif
                 _sampler.Probability = newProbability;
                 markPValueUpdated();
             }

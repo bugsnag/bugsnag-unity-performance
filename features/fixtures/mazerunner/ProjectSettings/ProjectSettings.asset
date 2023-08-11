@@ -769,10 +769,10 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     0: BUGSNAG_PERFORMANCE
-    1: BUGSNAG_PERFORMANCE
-    4: BUGSNAG_PERFORMANCE
-    7: BUGSNAG_PERFORMANCE
-    13: BUGSNAG_PERFORMANCE
+    1: BUGSNAG_PERFORMANCE;BUGSNAG_DEBUG
+    4: BUGSNAG_PERFORMANCE;BUGSNAG_DEBUG
+    7: BUGSNAG_PERFORMANCE;BUGSNAG_DEBUG
+    13: BUGSNAG_PERFORMANCE;BUGSNAG_DEBUG
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

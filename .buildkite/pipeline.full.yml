@@ -28,7 +28,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.zip
         upload:
@@ -44,7 +44,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
@@ -63,7 +63,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
         upload:
@@ -88,7 +88,7 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
@@ -109,7 +109,7 @@ steps:
       DEVELOPER_DIR: /Applications/Xcode13.4.app
       UNITY_PERFORMANCE_VERSION: 2020.3.48f1
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - project_2020.tgz
         upload:
@@ -128,7 +128,7 @@ steps:
     agents:
       queue: opensource
     plugins:
-      'artifacts#v1.5.0':
+      'artifacts#v1.9.0':
         download:
           - features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa
         upload:
