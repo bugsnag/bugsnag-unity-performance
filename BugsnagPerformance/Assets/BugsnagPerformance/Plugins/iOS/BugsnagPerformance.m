@@ -70,19 +70,19 @@ static NSString* getCpuArch(void) {
                              bsgsysctl_int32ForName("hw.cpusubtype"));
 }
 
-char* bugsnag_performance_getBundleVersion()
+char* bugsnag_unity_performance_getBundleVersion()
 {
     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
     NSString *version = [info objectForKey:@"CFBundleVersion"];
     return convertNSStringToCString(version);
 }
 
-char* bugsnag_performance_get_arch () 
+char* bugsnag_unity_performance_get_arch () 
 {
     return convertNSStringToCString(getCpuArch());
 }
 
-char* bugsnag_performance_get_os_version()
+char* bugsnag_unity_performance_get_os_version()
 {
     return convertNSStringToCString(UIDevice.currentDevice.systemVersion);
 }

@@ -13,13 +13,13 @@ namespace BugsnagUnityPerformance
 
 #if UNITY_IOS && !UNITY_EDITOR
         [DllImport(Import)]
-        internal static extern string bugsnag_performance_getBundleVersion();
+        internal static extern string bugsnag_unity_performance_getBundleVersion();
 
         [DllImport(Import)]
-        internal static extern string bugsnag_performance_get_arch();
+        internal static extern string bugsnag_unity_performance_get_arch();
 
         [DllImport(Import)]
-        internal static extern string bugsnag_performance_get_os_version();
+        internal static extern string bugsnag_unity_performance_get_os_version();
         
 #endif
 
