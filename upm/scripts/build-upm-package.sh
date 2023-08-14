@@ -42,6 +42,6 @@ zip -q -r "upm-package.zip" "package"
 
 cd ..
 
-mv "upm/upm-package.zip" `pwd`
+mv "upm/upm-package.zip" .
 
 echo "complete, ready to deploy"
