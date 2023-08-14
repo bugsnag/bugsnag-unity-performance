@@ -57,7 +57,8 @@ public class Main : MonoBehaviour
             Application.platform == RuntimePlatform.IPhonePlayer)
         {
             var numTries = 0;
-            while (numTries < 5)
+            var timeOut = 15;
+            while (numTries < timeOut)
             {
                 var configPath = Application.persistentDataPath + _fixtureConfigFileName;
                 if (File.Exists(configPath))
@@ -72,7 +73,14 @@ public class Main : MonoBehaviour
                 {
                     Log("Mazerunner no fixture config found at path: " + configPath);
                     numTries++;
-                    yield return new WaitForSeconds(1);
+                    if(numTries == timeOut)
+                    {
+                        Log("Timedout looking for config file!");
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(1);
+                    }
                 }
             }
         }
