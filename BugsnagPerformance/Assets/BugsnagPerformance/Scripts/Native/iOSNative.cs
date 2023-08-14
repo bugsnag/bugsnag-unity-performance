@@ -26,7 +26,7 @@ namespace BugsnagUnityPerformance
         public static string GetBundleVersion()
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            return bugsnag_performance_getBundleVersion();
+            return bugsnag_unity_performance_getBundleVersion();
 #endif
             return null;
         }
@@ -34,7 +34,7 @@ namespace BugsnagUnityPerformance
         public static string GetArch()
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            return bugsnag_performance_get_arch();
+            return bugsnag_unity_performance_get_arch();
 #endif
             return null;
         }
@@ -42,7 +42,7 @@ namespace BugsnagUnityPerformance
         public static string GetOsVersion()
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            return bugsnag_performance_get_os_version();
+            return bugsnag_unity_performance_get_os_version();
 #endif
             return null;
         }
