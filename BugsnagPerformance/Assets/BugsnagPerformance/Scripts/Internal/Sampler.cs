@@ -36,7 +36,8 @@ namespace BugsnagUnityPerformance
             if (storedProbability >= 0)
             {
                 _probability = storedProbability;
-            } else
+            }
+            else
             {
                 _persistentState.Probability = _probability;
             }
@@ -46,6 +47,9 @@ namespace BugsnagUnityPerformance
         {
             var p = Probability;
             var isSampled = IsSampled(span, GetUpperBound(p));
+#if BUGSNAG_DEBUG
+            Logger.I(string.Format("Span {0} is sampled: {1} with p value: {2}",span.Name,isSampled,p));
+#endif
             if (isSampled)
             {
                 span.UpdateSamplingProbability(p);

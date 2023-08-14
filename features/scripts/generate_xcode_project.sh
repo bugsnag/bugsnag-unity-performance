@@ -8,8 +8,6 @@ fi
 
 UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
 
-echo "\`Unity\` executable = $UNITY_PATH/Unity"
-
 
 pushd "${0%/*}"
   script_path=`pwd`

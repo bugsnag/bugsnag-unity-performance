@@ -16,14 +16,16 @@ popd
 pushd "$script_path/../fixtures"
 
 # Run unity and immediately exit afterwards, log all output
-DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_android.log"
+DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_macos.log"
 
 project_path=`pwd`/mazerunner
 
 # Build for Android
 
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.AndroidBuild
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.MacOS
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-mv $project_path/mazerunner.apk $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.apk
+mv $project_path/mazerunner.app $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.app
+
+(cd $project_path && zip -q -r mazerunner_$UNITY_PERFORMANCE_VERSION.zip mazerunner_$UNITY_PERFORMANCE_VERSION.app)

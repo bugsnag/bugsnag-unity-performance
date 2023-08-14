@@ -53,8 +53,8 @@ When('I run the game in the {string} state') do |state|
   case platform
   when 'macos'
     # Call executable directly rather than use open, which flakes on CI
-    log = File.join(Dir.pwd, 'mazerunner.log')
-    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner"
+    log = File.join(Dir.pwd, "#{state}-mazerunner.log")
+    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args -logfile #{log} > /dev/null"
     Maze::Runner.run_command(command, blocking: false)
 
     execute_command('run_scenario', state)
@@ -91,7 +91,11 @@ When('I wait for requests to persist') do
 end
 
 When('I relaunch the app') do
-  Maze.driver.launch_app
+  platform = Maze::Helper.get_current_platform
+  case platform
+  when 'android', 'ios'
+    Maze.driver.launch_app
+  end
   sleep 3
 end
 
@@ -154,4 +158,32 @@ Then("the span named {string} has a maximum duration of {int}") do |span_name,du
 
   Maze.check.true(found_duration < duration);
 
+end
+
+Then('the span named {string} exists') do |span_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
+
+  Maze.check.true(spans_with_name.length() == 1);
+end
+
+Then('the span named {string} is the parent of the span named {string}') do |span1name, span2name|
+  
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  span1 = spans.find_all { |span| span['name'].eql?(span1name) }.first
+
+  span2 = spans.find_all { |span| span['name'].eql?(span2name) }.first
+
+  Maze.check.true(span1['spanId'] == span2['parentSpanId']);
+
+end
+
+Then('the span named {string} has no parent') do |spanName|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  span1 = spans.find_all { |span| span['name'].eql?(spanName) }.first
+
+  Maze.check.true(span1['parentSpanId'] == nil);
 end
