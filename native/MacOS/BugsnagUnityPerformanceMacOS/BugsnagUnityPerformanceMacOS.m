@@ -1,6 +1,7 @@
 #import <sys/types.h>
 #import <sys/sysctl.h>
 #import <stdint.h>
+#import <Foundation/Foundation.h>
 
 #define CHECK_SYSCTL_NAME(TYPE, CALL)                                          \
     if (0 != (CALL)) {                                                         \
@@ -77,12 +78,15 @@ char* bugsnag_unity_performance_getBundleVersion()
     return convertNSStringToCString(version);
 }
 
-char* bugsnag_unity_performance_get_arch () 
+char* bugsnag_unity_performance_get_arch ()
 {
     return convertNSStringToCString(getCpuArch());
 }
 
 char* bugsnag_unity_performance_get_os_version()
 {
-    return convertNSStringToCString(UIDevice.currentDevice.systemVersion);
+    NSProcessInfo *pInfo = [NSProcessInfo processInfo];
+    NSString *version = [pInfo operatingSystemVersionString];
+    return convertNSStringToCString(version);
 }
+

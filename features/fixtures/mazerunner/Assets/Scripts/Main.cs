@@ -57,22 +57,30 @@ public class Main : MonoBehaviour
             Application.platform == RuntimePlatform.IPhonePlayer)
         {
             var numTries = 0;
-            while (numTries < 5)
+            var timeOut = 15;
+            while (numTries < timeOut)
             {
                 var configPath = Application.persistentDataPath + _fixtureConfigFileName;
                 if (File.Exists(configPath))
                 {
                     var configJson = File.ReadAllText(configPath);
-                    Debug.Log("Mazerunner got fixture config json: " + configJson);
+                    Log("Mazerunner got fixture config json: " + configJson);
                     var config = JsonUtility.FromJson<FixtureConfig>(configJson);
                     MazeHost = "http://" + config.maze_address;
                     break;
                 }
                 else
                 {
-                    Debug.Log("Mazerunner no fixture config found at path: " + configPath);
+                    Log("Mazerunner no fixture config found at path: " + configPath);
                     numTries++;
-                    yield return new WaitForSeconds(1);
+                    if(numTries == timeOut)
+                    {
+                        Log("Timedout looking for config file!");
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(1);
+                    }
                 }
             }
         }
@@ -87,7 +95,7 @@ public class Main : MonoBehaviour
                 MazeHost = "http://bs-local.com:9339";
             }
         }
-        Debug.Log("Mazerunner host set to: " + MazeHost);
+        Log("Mazerunner host set to: " + MazeHost);
     }
 
     private void DoRunNextMazeCommand()
@@ -98,7 +106,7 @@ public class Main : MonoBehaviour
     IEnumerator RunNextMazeCommand()
     {
         var url = MazeHost + "/command";
-        Debug.Log("Trying to get next mazerunner command with url: " + url);
+        Log("Trying to get next mazerunner command with url: " + url);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
@@ -140,7 +148,7 @@ public class Main : MonoBehaviour
             }
             else
             {
-                Debug.Log("Getting next mazerunner command Failed: " + request.error);
+                Log("Getting next mazerunner command Failed: " + request.error);
 
             }
         }
@@ -183,7 +191,6 @@ public class Main : MonoBehaviour
     public static void Log(string msg)
     {
         _instance.DebugText.text += Environment.NewLine + msg;
-        Console.WriteLine(msg);
         Debug.Log(msg);
     }
 

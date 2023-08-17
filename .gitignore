@@ -17,3 +17,9 @@ upm/package/Editor
 Editor.meta
 upm/package
 BugsnagPerformance/Assets/Bugsnag
+native/MacOS/BugsnagUnityPerformanceMacOS/BugsnagUnityPerformanceMacOS.xcodeproj/project.xcworkspace/xcuserdata
+native/MacOS/BugsnagUnityPerformanceMacOS/BugsnagUnityPerformanceMacOS.xcodeproj/xcuserdata
+upm-package.zip
+mazerunner_*.zip
+features/fixtures/mazerunner/Packages/package
+features/fixtures/mazerunner/mazerunner_BackUpThisFolder_ButDontShipItWithYourGame

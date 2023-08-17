@@ -1,10 +1,20 @@
 # Changelog
 
+## v1.2.0 (2023-08-18)
+
+### Additions
+
+- Added support for MacOS builds. [#72](https://github.com/bugsnag/bugsnag-unity-performance/pull/72)
+
+### Bug Fixes
+
+- Fixed issue where the attribute os.version was incorrectly reported. [#72](https://github.com/bugsnag/bugsnag-unity-performance/pull/72)
+
 ## v1.1.0 (2023-08-03)
 
 ### Additions
 
-- Allow Network request span customization via callbacks. [#70](https://github.com/bugsnag/bugsnag-unity-performance/pull/70)
+- Allow Network request span customisation via callbacks. [#70](https://github.com/bugsnag/bugsnag-unity-performance/pull/70)
 
 ## v1.0.0 (2023-07-17)
 

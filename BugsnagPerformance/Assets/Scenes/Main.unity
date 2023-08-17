@@ -153,8 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ApiKey: 227df1042bc7772c321dbde3b31a03c2
-  Endpoint: https://webhook.site/27fc25ad-b5d7-4ced-bf81-5f6048f879a3
-  StartPerf: 1
+  Endpoint: https://webhook.site/673b32e6-a7f8-42bb-ba44-cfe03ef99f23
+  StartPerf: 0
 --- !u!4 &25483176
 Transform:
   m_ObjectHideFlags: 0

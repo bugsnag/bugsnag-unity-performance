@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SRC_DIR=../../BugsnagPerformance/Assets/BugsnagPerformance
-PKG_DIR=../package
+SRC_DIR=BugsnagPerformance/Assets/BugsnagPerformance
+PKG_DIR=upm/package
 
 # Check for unity version
 if [ -z "$1" ]
@@ -28,7 +28,7 @@ cp -a  "$SRC_DIR/Scripts.meta" "$PKG_DIR/Runtime"
 cp -a  "$SRC_DIR/Editor" "$PKG_DIR"
 cp -a  "$SRC_DIR/Editor.meta" "$PKG_DIR"
 
-cp -a "../upm-resources/." "$PKG_DIR"
+cp -a "upm/upm-resources/." "$PKG_DIR"
 
 
 echo "Setting the version $VERSION in the copied manifest and readme"
@@ -36,5 +36,12 @@ echo "Setting the version $VERSION in the copied manifest and readme"
 sed -i '' "s/VERSION_STRING/$VERSION/g" "$PKG_DIR/package.json"
 sed -i '' "s/VERSION_STRING/v$VERSION/g" "$PKG_DIR/README.md"
 
+cd upm
+
+zip -q -r "upm-package.zip" "package"
+
+cd ..
+
+mv "upm/upm-package.zip" .
 
 echo "complete, ready to deploy"

@@ -19,7 +19,7 @@ public class NetworkCallbackReturnNull : Scenario
     {
         if (_numChecked == 1)
         {
-            info.Url = "EDITEDNULL";
+            info.Url = "https://www.callback.com/";
         }
         else
         {

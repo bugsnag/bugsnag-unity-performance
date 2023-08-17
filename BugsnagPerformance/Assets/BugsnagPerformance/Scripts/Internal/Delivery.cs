@@ -151,6 +151,7 @@ namespace BugsnagUnityPerformance
                 req.method = UnityWebRequest.kHttpVerbPOST;
 
                 yield return req.SendWebRequest();
+
                 var newProbability = GetRequestResult(req) == RequestResult.Success ? ReadResponseProbability(req) : double.NaN;
                 onServerResponse(payload, req, newProbability);
             }

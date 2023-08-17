@@ -90,5 +90,13 @@ namespace BugsnagUnityPerformance
 
         }
 
+        public static string GetOsVersion()
+        {
+#if UNITY_ANDROID
+            return GetAndroidSDKInt().ToString();
+#endif
+            return string.Empty;
+        }
+
     }
 }

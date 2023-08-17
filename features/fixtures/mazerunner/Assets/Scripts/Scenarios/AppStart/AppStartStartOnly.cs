@@ -14,7 +14,7 @@ public class AppStartStartOnly : Scenario
 
     public override void Run()
     {
-        Invoke("ReportAppStart",8);
+        Invoke("ReportAppStart",10);
     }
 
     private void ReportAppStart()
