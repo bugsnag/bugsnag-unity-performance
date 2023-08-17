@@ -17,7 +17,7 @@ public class NetworkCallbackUrlEdit : Scenario
 
     private BugsnagNetworkRequestInfo NetworkCallback(BugsnagNetworkRequestInfo info)
     {
-        info.Url = "www.callback.com";
+        info.Url = "https://www.callback.com/";
         return info;
     }
 
