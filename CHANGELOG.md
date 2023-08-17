@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.0 (2023-08-18)
+
+### Additions
+
+- Added support for MacOS builds. [#72](https://github.com/bugsnag/bugsnag-unity-performance/pull/72)
+
+### Bug Fixes
+
+- Fixed issue where the attribute os.version was inccorectly reported. [#72](https://github.com/bugsnag/bugsnag-unity-performance/pull/72)
+
 ## v1.1.0 (2023-08-03)
 
 ### Additions
