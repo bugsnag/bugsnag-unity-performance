@@ -34,6 +34,7 @@ steps:
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
+          - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh

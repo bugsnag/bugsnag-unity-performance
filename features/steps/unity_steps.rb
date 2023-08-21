@@ -17,7 +17,7 @@ When('I clear the Bugsnag cache') do
   case Maze::Helper.get_current_platform
   when 'macos', 'webgl'
     # Call executable directly rather than use open, which flakes on CI
-    log = File.join(Dir.pwd, 'mazerunner.log')
+    log = File.join(Dir.pwd, 'clear_cache.log')
     command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args -logfile #{log} > /dev/null"
     Maze::Runner.run_command(command, blocking: false)
     execute_command('clear_cache')
