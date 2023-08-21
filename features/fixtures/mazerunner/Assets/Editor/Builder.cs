@@ -41,7 +41,9 @@ public class Builder : MonoBehaviour
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.bugsnag.fixtures.unity.performance.android");
         var opts = CommonOptions("mazerunner.apk");
         opts.target = BuildTarget.Android;
-
+#if UNITY_2022_1_OR_NEWER
+        PlayerSettings.insecureHttpOption = InsecureHttpOption.AlwaysAllowed;
+#endif
         var result = BuildPipeline.BuildPlayer(opts);
         Debug.Log("Result: " + result);
     }
