@@ -48,7 +48,7 @@ Feature: Configuration tests
     And I wait for 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BundleVersion"
-    * the trace payload field "resourceSpans.0.resource" string attribute "device.bundle_version" equals "1.2.3_BundleVersion"
+    * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" equals "1.2.3_BundleVersion"
 
   @android_only
   Scenario: Version Code
@@ -56,4 +56,4 @@ Feature: Configuration tests
     And I wait for 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "VersionCode"
-    * the trace payload field "resourceSpans.0.resource" string attribute "device.version_code" equals "123"
+    * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" equals "123"
