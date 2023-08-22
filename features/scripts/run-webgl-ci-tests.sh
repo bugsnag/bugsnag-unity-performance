@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 pushd features/fixtures/mazerunner
-  unzip mazerunner_$UNITY_VERSION.zip
+  unzip mazerunner_$UNITY_PERFORMANCE_VERSION.zip
 popd
 
 bundle install
