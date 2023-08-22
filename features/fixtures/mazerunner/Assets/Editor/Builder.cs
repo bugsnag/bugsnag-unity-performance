@@ -31,7 +31,7 @@ public class Builder : MonoBehaviour
 
     public static void WebGL()
     {
-        Build("build/WebGL/Mazerunner", BuildTarget.WebGL);
+        Build("build/WebGL/mazerunner", BuildTarget.WebGL);
     }
 
     // Generates the Mazerunner APK

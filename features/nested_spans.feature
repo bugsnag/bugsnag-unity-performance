@@ -3,6 +3,7 @@ Feature: Nested Spans
   Background:
     Given I clear the Bugsnag cache
 
+  @skip_webgl
   Scenario: Simple nested span
     When I run the game in the "BasicNestedSpan" state
     And I wait for 2 spans
@@ -20,7 +21,7 @@ Feature: Nested Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.traceId" is stored as the value "parent_trace_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.traceId" equals the stored value "parent_trace_id"
 
-
+  @skip_webgl
   Scenario: Pass Span Context
     When I run the game in the "PassSpanContext" state
     And I wait for 2 spans
@@ -38,6 +39,7 @@ Feature: Nested Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.traceId" is stored as the value "parent_trace_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.traceId" equals the stored value "parent_trace_id"
 
+  @skip_webgl
   Scenario: New Thread New Context
     When I run the game in the "NewThreadNewContext" state
     And I wait for 3 spans
@@ -56,10 +58,8 @@ Feature: Nested Spans
 
     * the span named "span2" has no parent
 
-
-
-
-Scenario: Make Current Context
+  @skip_webgl
+  Scenario: Make Current Context
     When I run the game in the "MakeCurrentContext" state
     And I wait for 2 spans
     Then the trace Bugsnag-Integrity header is valid

@@ -49,6 +49,8 @@ namespace BugsnagUnityPerformance
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.OSXEditor:
                     return "MacOS";
+                case RuntimePlatform.WebGLPlayer:
+                    return "WebGL";
             }
             return string.Empty;
         }
