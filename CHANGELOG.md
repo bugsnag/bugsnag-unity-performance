@@ -1,5 +1,16 @@
 # Changelog
 
+## TBD ()
+
+### Additions
+
+
+
+### Bug Fixes
+
+- Fixed issue where the android version code and coca bundle version were incorrectly labled. [#76](https://github.com/bugsnag/bugsnag-unity-performance/pull/76)
+
+
 ## v1.2.0 (2023-08-18)
 
 ### Additions
