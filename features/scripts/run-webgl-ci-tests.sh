@@ -1,5 +1,8 @@
 #!/bin/bash -e
-unzip mazerunner_webgl_$UNITY_PERFORMANCE_VERSION.zip
+
+pushd features/fixtures/mazerunner/
+  unzip mazerunner_webgl_$UNITY_PERFORMANCE_VERSION.zip
+popd
 
 bundle install
 
