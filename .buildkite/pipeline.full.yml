@@ -12,7 +12,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2020.3.48f1.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -30,7 +30,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2020.3.48f1.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -49,7 +49,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2022.3.2f1.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -67,7 +67,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2022.3.2f1.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'

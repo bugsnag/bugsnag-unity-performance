@@ -21,7 +21,7 @@ public class Builder : MonoBehaviour
 
     public static void MacOS()
     {
-        Build("mazerunner", BuildTarget.StandaloneOSX);
+        Build("mazerunner_macos", BuildTarget.StandaloneOSX);
     }
 
     public static void Win64()
@@ -31,7 +31,7 @@ public class Builder : MonoBehaviour
 
     public static void WebGL()
     {
-        Build("mazerunner", BuildTarget.WebGL);
+        Build("mazerunner_webgl", BuildTarget.WebGL);
     }
 
     // Generates the Mazerunner APK

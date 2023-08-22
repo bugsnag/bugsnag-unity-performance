@@ -26,6 +26,6 @@ $UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Bu
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-mv $project_path/mazerunner.app $project_path/mazerunner_$UNITY_PERFORMANCE_VERSION.app
+mv $project_path/mazerunner_macos.app $project_path/mazerunner_macos_$UNITY_PERFORMANCE_VERSION.app
 
-(cd $project_path && zip -q -r mazerunner_$UNITY_PERFORMANCE_VERSION.zip mazerunner_$UNITY_PERFORMANCE_VERSION.app)
+(cd $project_path && zip -q -r mazerunner_macos_$UNITY_PERFORMANCE_VERSION.zip mazerunner_macos_$UNITY_PERFORMANCE_VERSION.app)
