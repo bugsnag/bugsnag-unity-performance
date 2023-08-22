@@ -6,4 +6,4 @@ popd
 
 bundle install
 
-bundle exec maze-runner --farm=local --browser=firefox -e features
+bundle exec maze-runner --farm=local --browser=firefox features
