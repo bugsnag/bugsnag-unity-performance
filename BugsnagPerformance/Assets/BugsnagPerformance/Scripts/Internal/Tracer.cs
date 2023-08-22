@@ -128,23 +128,36 @@ namespace BugsnagUnityPerformance
 
         private void DeliverBatch()
         {
-            new Thread(() =>
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
                 List<Span> batch = null;
-                lock (_queueLock)
+                if (_spanQueue.Count == 0)
                 {
-                    if (_spanQueue.Count == 0)
-                    {
-                        return;
-                    }
-                    batch = _spanQueue;
-                    _spanQueue = new List<Span>();
+                    return;
                 }
-
+                batch = _spanQueue;
+                _spanQueue = new List<Span>();
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);
-
-            }).Start();
+            }
+            else
+            {
+                new Thread(() =>
+                {
+                    List<Span> batch = null;
+                    lock (_queueLock)
+                    {
+                        if (_spanQueue.Count == 0)
+                        {
+                            return;
+                        }
+                        batch = _spanQueue;
+                        _spanQueue = new List<Span>();
+                    }
+                    _lastBatchSendTime = DateTimeOffset.UtcNow;
+                    _delivery.Deliver(batch);
+                }).Start();
+            }
         }
 
         private bool BatchSizeLimitReached()
