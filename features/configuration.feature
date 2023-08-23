@@ -42,7 +42,7 @@ Feature: Configuration tests
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "AppVersion"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.2.3_AppVersion"
 
-  @ios_only
+  @cocoa_only
   Scenario: Bundle Version
     When I run the game in the "BundleVersion" state
     And I wait for 1 span

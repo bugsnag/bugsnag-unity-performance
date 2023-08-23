@@ -72,7 +72,7 @@ namespace BugsnagUnityPerformance
             {
                 return new AttributeModel("bugsnag.app.bundle_version",  config.BundleVersion);
             }
-            return new AttributeModel("bugsnag.app.bundle_version", iOSNative.GetBundleVersion());
+            return new AttributeModel("bugsnag.app.bundle_version", Application.platform == RuntimePlatform.IPhonePlayer ? iOSNative.GetBundleVersion() : MacOSNative.GetBundleVersion());
         }
 
         private AttributeModel GetAndroidVersionCode(PerformanceConfiguration config)

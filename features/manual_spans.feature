@@ -48,7 +48,7 @@ Feature: Manual creation of spans
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" exists
 
- @ios_only
+ @cocoa_only
   Scenario: iOS Specific Resource Attributes
     When I run the game in the "ManualSpan" state
     And I wait for 1 span
