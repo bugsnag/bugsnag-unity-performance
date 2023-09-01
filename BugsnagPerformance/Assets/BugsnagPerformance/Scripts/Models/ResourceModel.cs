@@ -81,18 +81,18 @@ namespace BugsnagUnityPerformance
         {
             if (!string.IsNullOrEmpty(config.BundleVersion))
             {
-                return new AttributeModel("device.bundle_version",  config.BundleVersion);
+                return new AttributeModel("bugsnag.app.bundle_version",  config.BundleVersion);
             }
-            return new AttributeModel("device.bundle_version", iOSNative.GetBundleVersion());
+            return new AttributeModel("bugsnag.app.bundle_version", Application.platform == RuntimePlatform.IPhonePlayer ? iOSNative.GetBundleVersion() : MacOSNative.GetBundleVersion());
         }
 
         private AttributeModel GetAndroidVersionCode(PerformanceConfiguration config)
         {
             if (config.VersionCode > -1)
             {
-                return new AttributeModel("device.version_code", config.VersionCode.ToString());
+                return new AttributeModel("bugsnag.app.version_code", config.VersionCode.ToString());
             }
-            return new AttributeModel("device.version_code", AndroidNative.GetVersionCode());
+            return new AttributeModel("bugsnag.app.version_code", AndroidNative.GetVersionCode());
         }
 
         private AttributeModel GetArch()
