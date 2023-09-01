@@ -3,7 +3,6 @@ Feature: Nested Spans
   Background:
     Given I clear the Bugsnag cache
 
-  @skip_webgl # threaded code not supported in webgl
   Scenario: Simple nested span
     When I run the game in the "BasicNestedSpan" state
     And I wait for 2 spans
