@@ -4,6 +4,7 @@
 
 ### Additions
 
+- Added support for WebGL builds. [#77](https://github.com/bugsnag/bugsnag-unity-performance/pull/77)
 
 
 ### Bug Fixes

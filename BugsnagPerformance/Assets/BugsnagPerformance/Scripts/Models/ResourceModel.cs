@@ -25,12 +25,21 @@ namespace BugsnagUnityPerformance
                 new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
                 new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
-                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
-                GetNativeVersionInfo(config),
-                GetManufacturer(),
-                GetArch(),
-                GetNativeOsVersion()
+                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion)
+               
             };
+            AddNonNullAttribute(GetNativeVersionInfo(config));
+            AddNonNullAttribute(GetManufacturer());
+            AddNonNullAttribute(GetArch());
+            AddNonNullAttribute(GetNativeOsVersion());
+        }
+
+        private void AddNonNullAttribute(AttributeModel attributeModel)
+        {
+            if (attributeModel != null)
+            {
+                attributes.Add(attributeModel);
+            }
         }
 
         public void Start()
@@ -49,6 +58,8 @@ namespace BugsnagUnityPerformance
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.OSXEditor:
                     return "MacOS";
+                case RuntimePlatform.WebGLPlayer:
+                    return "WebGL";
             }
             return string.Empty;
         }

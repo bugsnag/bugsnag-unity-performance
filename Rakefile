@@ -24,20 +24,6 @@ end
 
 
 ##
-# Get existing unity executable path or exit with error
-#
-# Returns pair containing unity path and executable
-def get_required_unity_paths
-  dir = unity_directory
-  exe = unity_executable(dir)
-  raise "No unity executable found in '#{dir}'" if exe.nil?
-  unless File.exists? exe
-    raise "Unity not found at path '#{exe}'"
-  end
-  [dir, exe]
-end
-
-##
 #
 # Run a command with the unity executable and the default command line parameters
 # that we apply
@@ -126,6 +112,23 @@ namespace :test do
       script = File.join("features", "scripts", "build_macos.sh")
       unless system script
         raise 'macos build failed'
+      end
+    end
+  end
+
+   namespace :webgl do
+    task :build do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the webgl App
+      script = File.join("features", "scripts", "build_webgl.sh")
+      unless system script
+        raise 'webgl build failed'
       end
     end
   end
