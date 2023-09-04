@@ -282,5 +282,15 @@ namespace BugsnagUnityPerformance
             AppStartHandler.ReportAppStarted();
         }
 
+        public static Span StartSceneSpan(string sceneName)
+        {
+            return _sharedInstance._spanFactory.CreateManualSceneLoadSpan(sceneName);
+        }
+
+        public static Span StartNetworkSpan(string url, HttpVerb httpVerb)
+        {
+            return _sharedInstance._spanFactory.CreateManualNetworkSpan(url, httpVerb);
+        }
+
     }
 }
