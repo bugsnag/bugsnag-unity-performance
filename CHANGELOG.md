@@ -11,6 +11,8 @@
 
 - Fixed issue where the Android version code and iOS bundle version were incorrectly labelled [#76](https://github.com/bugsnag/bugsnag-unity-performance/pull/76)
 
+- Fixed issue where some unity version required meta files within the macos bundle [#80](https://github.com/bugsnag/bugsnag-unity-performance/pull/80)
+
 
 ## v1.2.0 (2023-08-18)
 
