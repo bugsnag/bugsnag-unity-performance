@@ -49,4 +49,24 @@ Once the github release is confirmed a UPM release should be deployed
    git push origin v1.x.x
    ```
 
+## Known Issues
+
+### MacOS Native Bundle Meta Files
+
+This SDK contains a MacOS bundle as a native plugin. Some versions of Unity (There seems to be no pattern, we have seen different behaviour in different patch versions of 2019 2020 & 2021) import that bundle as a single file, others import it as a folder. 
+
+When importing as a single file it creates only 1 meta file, but when importing as a folder, it creates meta files for every file and folder within.
+
+This causes a problem because we distribute the SDK as a UPM package. When importing a UPM package, Unity cannot create meta files on the fly, so if we only distribute 1 meta file for the root of the bundle, assuming that it will be imported as a single file, and then Unity imports it as a folder, it will throw errors stating that it can’t find meta files for the contents of the directory and will not import the plugin.
+
+To solve this, whenever the native code for MacOS is rebuilt (currently only when changes have been made) then the resulting bundle should be manually imported into unity 2019 and then copied over to the plugins folder of the dev project along with all relevant meta files.
+
+
+
+
+
+
+
+
+
 
