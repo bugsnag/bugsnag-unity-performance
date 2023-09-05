@@ -23,6 +23,6 @@ public class ManualNetworkSpan : Scenario
 
     private void EndSpan()
     {
-        _span.EndNetworkSpan(202,123,321);
+        _span.EndNetworkSpan("202",123,321);
     }
 }

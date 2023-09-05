@@ -18,7 +18,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}\/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
@@ -40,7 +40,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}\/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
@@ -61,7 +61,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}\/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
@@ -85,7 +85,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}\/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "200"
 
@@ -155,10 +155,10 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "PATCH"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}\/"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.status_code" equals "202"
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" equals 123
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" equals 321
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0

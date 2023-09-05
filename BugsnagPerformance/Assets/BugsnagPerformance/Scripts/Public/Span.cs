@@ -107,7 +107,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        public void EndNetworkSpan(int statusCode = -1, int requestContentLength = -1, int responseContentLength = -1)
+        public void EndNetworkSpan(string statusCode = "", int requestContentLength = -1, int responseContentLength = -1)
         {
             lock (_endLock)
             {
@@ -120,7 +120,7 @@ namespace BugsnagUnityPerformance
 
             EndTime = DateTimeOffset.UtcNow;
 
-            if (statusCode > -1)
+            if (!string.IsNullOrEmpty( statusCode ))
             {
                 SetAttribute("http.status_code", statusCode);
             }
