@@ -107,12 +107,20 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        internal Span CreateManualNetworkSpan(string url, HttpVerb httpVerb)
+        internal Span CreateManualNetworkSpan(string url, HttpVerb httpVerb, SpanOptions spanOptions)
         {
             // as most code is running on the same thread and we want to avoid any spans
             // starting while the network call is inflight becoming children of the network span.
-            var spanOptions = new SpanOptions { MakeCurrentContext = false };
-            var span = CreateSpan("HTTP/" + httpVerb, SpanKind.SPAN_KIND_CLIENT, spanOptions);
+            SpanOptions options;
+            if (spanOptions != null)
+            {
+                options = spanOptions;
+            }
+            else
+            {
+                options = new SpanOptions { MakeCurrentContext = false };
+            }
+            var span = CreateSpan("HTTP/" + httpVerb, SpanKind.SPAN_KIND_CLIENT, options);
             span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", httpVerb.ToString());
@@ -143,10 +151,18 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        internal Span CreateManualSceneLoadSpan(string sceneName)
+        internal Span CreateManualSceneLoadSpan(string sceneName, SpanOptions spanOptions)
         {
-            var spanOptions = new SpanOptions { IsFirstClass = true };
-            var span = CreateSpan("[ViewLoad/UnityScene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
+            SpanOptions options;
+            if (spanOptions != null)
+            {
+                options = spanOptions;
+            }
+            else
+            {
+                options = new SpanOptions { IsFirstClass = true };
+            }
+            var span = CreateSpan("[ViewLoad/UnityScene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, options);
             span.SetAttribute("bugsnag.span.category", "view_load");
             span.SetAttribute("bugsnag.view.type", "UnityScene");
             span.SetAttribute("bugsnag.view.name", sceneName);            

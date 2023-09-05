@@ -80,6 +80,16 @@ namespace BugsnagUnityPerformance
             return _sharedInstance.StartSpanInternal(name, spanOptions);
         }
 
+        public static Span StartSceneSpan(string sceneName, SpanOptions spanOptions = null)
+        {
+            return _sharedInstance._spanFactory.CreateManualSceneLoadSpan(sceneName, spanOptions);
+        }
+
+        public static Span StartNetworkSpan(string url, HttpVerb httpVerb, SpanOptions spanOptions = null)
+        {
+            return _sharedInstance._spanFactory.CreateManualNetworkSpan(url, httpVerb, spanOptions);
+        }
+
         private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
 
         // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
@@ -280,16 +290,6 @@ namespace BugsnagUnityPerformance
         public static void ReportAppStarted()
         {
             AppStartHandler.ReportAppStarted();
-        }
-
-        public static Span StartSceneSpan(string sceneName)
-        {
-            return _sharedInstance._spanFactory.CreateManualSceneLoadSpan(sceneName);
-        }
-
-        public static Span StartNetworkSpan(string url, HttpVerb httpVerb)
-        {
-            return _sharedInstance._spanFactory.CreateManualNetworkSpan(url, httpVerb);
         }
 
     }
