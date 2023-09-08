@@ -6,6 +6,7 @@
 
 - Added support for WebGL builds. [#77](https://github.com/bugsnag/bugsnag-unity-performance/pull/77)
 
+- Added methods to enable manual creation of SceneLoad and Network spans. [#81](https://github.com/bugsnag/bugsnag-unity-performance/pull/81)
 
 ### Bug Fixes
 

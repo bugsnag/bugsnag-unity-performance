@@ -107,6 +107,37 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
+        public void EndNetworkSpan(string statusCode = "", int requestContentLength = -1, int responseContentLength = -1)
+        {
+            lock (_endLock)
+            {
+                if (Ended)
+                {
+                    return;
+                }
+                Ended = true;
+            }
+
+            EndTime = DateTimeOffset.UtcNow;
+
+            if (!string.IsNullOrEmpty( statusCode ))
+            {
+                SetAttribute("http.status_code", statusCode);
+            }
+
+            if (requestContentLength > -1)
+            {
+                SetAttribute("http.request_content_length", requestContentLength);
+            }
+
+            if (responseContentLength > -1)
+            {
+                SetAttribute("http.response_content_length", responseContentLength);
+            }
+
+            _onSpanEnd(this);
+        }
+
         internal void SetAttribute(string key, string value)
         {
             Attributes.Add(new AttributeModel(key, value));
