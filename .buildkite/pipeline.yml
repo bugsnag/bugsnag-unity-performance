@@ -20,6 +20,8 @@ steps:
   - label: ':android: Android size reporting'
     timeout_in_minutes: 10
     depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
     plugins:
       'artifacts#v1.9.0':
         download:
