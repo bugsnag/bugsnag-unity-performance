@@ -42,5 +42,7 @@ $UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Bu
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
+cd features/fixtures/minimalapp
+
 bundle install
 bundle exec danger
