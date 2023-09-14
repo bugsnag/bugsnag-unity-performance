@@ -27,6 +27,26 @@ public class Builder : MonoBehaviour
         BuildPipeline.BuildPlayer(opts);
     }
 
+    public static void BuildIosWithout()
+    {
+        IosBuild("without");
+    }
+
+     public static void BuildIosWith()
+    {
+        IosBuild("with");
+    }
+      
+    private static void IosBuild(string type)
+    {
+        PlayerSettings.iOS.appleDeveloperTeamID = "7W9PZ27Y5F";
+        PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+        PlayerSettings.iOS.allowHTTPDownload = true;
+        var opts = CommonOptions("minimal_" + type + "_xcode");
+        opts.target = BuildTarget.iOS;
+        var result = BuildPipeline.BuildPlayer(opts);
+    }
+
     private static BuildPlayerOptions CommonOptions(string outputFile)
     {
         BuildPlayerOptions opts = new BuildPlayerOptions

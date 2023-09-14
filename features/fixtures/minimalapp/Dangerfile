@@ -4,8 +4,13 @@ apk_size = `stat -f "%z" minimal_without_bugsnag.apk`.to_i
 
 apk_bugsnag_size = `stat -f "%z" minimal_with_bugsnag.apk`.to_i
 
+ipa_size `stat -f "%z" without_bugsnag`.to_i
+
+ipa_bugsnag_size `stat -f "%z" with_bugsnag`.to_i
+
 calculated_sizes = {
   :apk => apk_bugsnag_size - apk_size,
+  :ipa => ipa_bugsnag_size - ipa_size
 }
 
 def format_kbs(size)
@@ -13,9 +18,10 @@ def format_kbs(size)
 end
 
 markdown(%Q{
-  ### Android size
+  ### Android size impact
 
   | Format           | Size impact of Bugsnag (kB)                   |
   |------------------|-----------------------------------------------|
   | 64bit IL2CPP APK | #{format_kbs(calculated_sizes[:apk])}         |
+  | IL2CPP IPA       | #{format_kbs(calculated_sizes[:ipa])}         |
 })

@@ -17,7 +17,7 @@ steps:
           limit: 1
 
 
-  - label: ':android: Android size reporting'
+  - label: 'build size impact reporting'
     timeout_in_minutes: 10
     depends_on: build-artifacts
     env:
@@ -29,7 +29,7 @@ steps:
     agents:
       queue: macos-12-arm
     commands:
-      features/scripts/do_android_size_test.sh
+      features/scripts/do_size_test.sh
 
   - label: ':webgl: Build webgl test fixture for Unity 2021'
     timeout_in_minutes: 30
