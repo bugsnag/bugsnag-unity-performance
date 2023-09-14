@@ -18,7 +18,7 @@ def format_kbs(size)
 end
 
 markdown(%Q{
-  ### In build size impact
+  ### Build size impact
 
   | Format           | Size impact of Bugsnag (kB)                   |
   |------------------|-----------------------------------------------|
