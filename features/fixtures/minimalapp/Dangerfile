@@ -22,6 +22,6 @@ markdown(%Q{
 
   | Format           | Size impact of Bugsnag (kB)                   |
   |------------------|-----------------------------------------------|
-  | 64bit IL2CPP APK | #{format_kbs(calculated_sizes[:apk])}         |
+  | IL2CPP APK       | #{format_kbs(calculated_sizes[:apk])}         |
   | IL2CPP IPA       | #{format_kbs(calculated_sizes[:ipa])}         |
 })
