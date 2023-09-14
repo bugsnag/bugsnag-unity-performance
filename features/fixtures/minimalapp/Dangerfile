@@ -4,9 +4,9 @@ apk_size = `stat -f "%z" minimal_without_bugsnag.apk`.to_i
 
 apk_bugsnag_size = `stat -f "%z" minimal_with_bugsnag.apk`.to_i
 
-ipa_size `stat -f "%z" without_bugsnag`.to_i
+ipa_size `stat -f "%z" without_bugsnag.ipa`.to_i
 
-ipa_bugsnag_size `stat -f "%z" with_bugsnag`.to_i
+ipa_bugsnag_size `stat -f "%z" with_bugsnag.ipa`.to_i
 
 calculated_sizes = {
   :apk => apk_bugsnag_size - apk_size,
