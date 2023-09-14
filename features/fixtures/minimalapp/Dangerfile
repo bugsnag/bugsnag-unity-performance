@@ -18,7 +18,7 @@ def format_kbs(size)
 end
 
 markdown(%Q{
-  ### Android size impact
+  ### In build size impact
 
   | Format           | Size impact of Bugsnag (kB)                   |
   |------------------|-----------------------------------------------|
