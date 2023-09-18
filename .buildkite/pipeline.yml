@@ -83,7 +83,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_windows_2021.3.27f1.zip
           - features/fixtures/build_webgl.log
     commands:
-      - 'rake test:windows:build'
+      - './features/scripts/build_windows.sh wsl'
     retry:
       automatic:
         - exit_status: '*'
