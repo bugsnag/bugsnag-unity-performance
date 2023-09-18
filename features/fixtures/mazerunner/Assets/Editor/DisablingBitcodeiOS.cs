@@ -8,6 +8,7 @@ using UnityEditor.Callbacks;
 
 public class DisablingBitcodeiOS
 {
+#if UNITY_IOS
     [PostProcessBuild(1000)]
     public static void PostProcessBuildAttribute(BuildTarget target, string pathToBuildProject)
     {
@@ -33,5 +34,6 @@ public class DisablingBitcodeiOS
             File.WriteAllText(projectPath, projectInString);
         }
     }
+#endif
 }
 
