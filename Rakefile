@@ -133,6 +133,23 @@ namespace :test do
     end
   end
 
+  namespace :windows do
+    task :build do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the webgl App
+      script = File.join("features", "scripts", "build_windows.sh")
+      unless system script
+        raise 'windows build failed'
+      end
+    end
+  end
+
   namespace :ios do
     task :generate_xcode do
      
