@@ -69,10 +69,13 @@ steps:
     commands:
       - features/scripts/run-webgl-ci-tests.sh
 
+
   - label: ':windows: Build windows test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-windows-fixture-2021
     depends_on: build-artifacts
+    agents:
+      queue: windows-unity-wsl
     env:
       UNITY_PERFORMANCE_VERSION: 2021.3.27f1
     plugins:
@@ -83,11 +86,13 @@ steps:
           - features/fixtures/mazerunner/mazerunner_windows_2021.3.27f1.zip
           - features/fixtures/build_webgl.log
     commands:
-      - './features/scripts/build_windows.sh wsl'
+      - features/scripts/import_package.sh
+      - features/scripts/build_windows.sh
     retry:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: Run windows e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-windows-fixture-2021
