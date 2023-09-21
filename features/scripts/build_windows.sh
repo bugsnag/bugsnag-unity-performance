@@ -6,7 +6,7 @@ then
   exit 1
 fi
 
-UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
+UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity.exe"
 
 
 pushd "${0%/*}"
@@ -22,7 +22,7 @@ project_path=`pwd`/mazerunner
 
 # Build for Android
 
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.Windows
+$UNITY_PATH $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.Windows
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
