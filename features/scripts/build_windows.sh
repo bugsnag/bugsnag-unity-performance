@@ -6,7 +6,7 @@ then
   exit 1
 fi
 
-UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity.exe"
+UNITY_PATH="/mnt/c/PROGRA~1/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
 
 
 pushd "${0%/*}"
