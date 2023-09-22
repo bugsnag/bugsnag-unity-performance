@@ -83,8 +83,8 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_windows_2021.3.27f1.zip
-          - features/fixtures/build_webgl.log
+          - features/fixtures/mazerunner/build/Windows-2021.3.27f1.zip
+          - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
       - features/scripts/build_windows.sh
@@ -103,7 +103,7 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_windows_2021.3.27f1.zip
+          - features/fixtures/mazerunner/build/Windows-2021.3.27f1.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
