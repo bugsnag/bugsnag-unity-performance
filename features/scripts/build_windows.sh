@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-set -m UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
+set -m
 
 DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_windows.log"
 
@@ -17,7 +17,11 @@ pushd $SCRIPT_DIR
   popd
 popd
 
-"$UNITY_PATH" $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.Windows
+UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
+"$UNITY_PATH" $DEFAULT_CLI_ARGS \
+  -projectPath "$project_path" \
+  -executeMethod "Builder.Windows"
+
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
