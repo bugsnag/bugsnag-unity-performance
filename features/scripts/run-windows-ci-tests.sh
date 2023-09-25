@@ -1,7 +1,7 @@
 #!/bin/bash -e
-pushd features/fixtures/mazerunner/
-  unzip mazerunner_windows_$UNITY_PERFORMANCE_VERSION.zip
+pushd features/fixtures/mazerunner/build
+  unzip Windows-$UNITY_PERFORMANCE_VERSION.zip
 popd
 
 bundle install
-bundle exec maze-runner --app=features/fixtures/mazerunner/mazerunner_windows_$UNITY_PERFORMANCE_VERSION.app --os=windows features 
+bundle exec maze-runner --app=features/fixtures/maze_runner/build/Windows/Mazerunner.exe --os=windows features
