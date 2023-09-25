@@ -62,7 +62,7 @@ When('I run the game in the {string} state') do |state|
   when 'windows'
     win_log = File.join(Dir.pwd, "#{state}-mazerunner.log")
     puts win_log
-    command = "#{Maze.config.app} --args -logfile #{win_log}"
+    command = "#{Maze.config.app} --args -logfile $(wslpath -w #{win_log})"
     Maze::Runner.run_command(command, blocking: false)
 
     execute_command('run_scenario', state)
