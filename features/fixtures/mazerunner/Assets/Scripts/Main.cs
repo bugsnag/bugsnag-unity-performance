@@ -156,26 +156,8 @@ public class Main : MonoBehaviour
 
     private void CloseFixture()
     {
-        // Application Quit sometimes causes windows builds to freeze
-        if (Application.platform == RuntimePlatform.WindowsPlayer)
-        {
-            StartCoroutine(WindowsQuit());
-        }
-        else
-        {
-            Application.Quit();
-        }
-    }
-
-    
-
-    private IEnumerator WindowsQuit()
-    {
-        yield return new WaitForSeconds(1);
-        yield return new WaitForEndOfFrame();
         Application.Quit();
     }
-
 
     private void ClearUnityCache()
     {
