@@ -159,12 +159,21 @@ public class Main : MonoBehaviour
         // Application Quit sometimes causes windows builds to freeze
         if (Application.platform == RuntimePlatform.WindowsPlayer)
         {
-            System.Diagnostics.Process.GetCurrentProcess().Close();
+            StartCoroutine(WindowsQuit());
         }
         else
         {
             Application.Quit();
         }
+    }
+
+    
+
+    private IEnumerator WindowsQuit()
+    {
+        yield return new WaitForSeconds(1);
+        yield return new WaitForEndOfFrame();
+        Application.Quit();
     }
 
 
