@@ -156,7 +156,15 @@ public class Main : MonoBehaviour
 
     private void CloseFixture()
     {
-        Application.Quit();
+        // Application Quit sometimes causes windows builds to freeze
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
+        else
+        {
+            Application.Quit();
+        }
     }
 
 
