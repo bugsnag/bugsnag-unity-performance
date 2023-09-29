@@ -117,7 +117,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: ':android: Build Android test fixture for Unity 2022'
     timeout_in_minutes: 30
@@ -161,7 +161,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: ':ios: Generate Xcode project - Unity 2020'
     timeout_in_minutes: 30
@@ -226,7 +226,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: ':ios: Generate Xcode project - Unity 2022'
     timeout_in_minutes: 30
@@ -291,5 +291,5 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager

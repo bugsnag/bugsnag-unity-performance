@@ -149,7 +149,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: ':ios: Generate Xcode project - Unity 2021'
     timeout_in_minutes: 30
@@ -214,7 +214,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: Conditionally trigger full set of tests
     timeout_in_minutes: 30
