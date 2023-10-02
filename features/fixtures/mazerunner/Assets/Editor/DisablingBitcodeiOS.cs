@@ -8,10 +8,11 @@ using UnityEditor.Callbacks;
 
 public class DisablingBitcodeiOS
 {
-#if UNITY_IOS
     [PostProcessBuild(1000)]
     public static void PostProcessBuildAttribute(BuildTarget target, string pathToBuildProject)
     {
+#if UNITY_IOS
+
         if (target == BuildTarget.iOS)
         {
             string projectPath = UnityEditor.iOS.Xcode.PBXProject.GetPBXProjectPath(pathToBuildProject);
@@ -33,7 +34,7 @@ public class DisablingBitcodeiOS
                 $"ENABLE_BITCODE = NO;");
             File.WriteAllText(projectPath, projectInString);
         }
-    }
 #endif
+    }
 }
 
