@@ -76,7 +76,7 @@ steps:
     commands:
       - features/scripts/run-macos-ci-tests.sh
 
-  - label: ':windows: Build windows test fixture for Unity 2020'
+  - label: ':windows: Build Windows test fixture for Unity 2020'
     timeout_in_minutes: 30
     key: build-windows-fixture-2020
     depends_on: build-artifacts
@@ -99,7 +99,7 @@ steps:
         - exit_status: '*'
           limit: 1
 
-  - label: Run windows e2e tests for Unity 2020
+  - label: Run Windows e2e tests for Unity 2020
     timeout_in_minutes: 60
     depends_on: build-windows-fixture-2020
     agents:
@@ -118,7 +118,7 @@ steps:
     commands:
       - features/scripts/run-windows-ci-tests.sh
 
-  - label: ':windows: Build windows test fixture for Unity 2022'
+  - label: ':windows: Build Windows test fixture for Unity 2022'
     timeout_in_minutes: 30
     key: build-windows-fixture-2022
     depends_on: build-artifacts
@@ -141,7 +141,7 @@ steps:
         - exit_status: '*'
           limit: 1
 
-  - label: Run windows e2e tests for Unity 2022
+  - label: Run Windows e2e tests for Unity 2022
     timeout_in_minutes: 60
     depends_on: build-windows-fixture-2022
     agents:

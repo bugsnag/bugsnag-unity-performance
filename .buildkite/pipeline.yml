@@ -70,7 +70,7 @@ steps:
       - features/scripts/run-webgl-ci-tests.sh
 
 
-  - label: ':windows: Build windows test fixture for Unity 2021'
+  - label: ':windows: Build Windows test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-windows-fixture-2021
     depends_on: build-artifacts
