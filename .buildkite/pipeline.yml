@@ -47,7 +47,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.zip
           - features/fixtures/build_webgl.log
     commands:
       - 'rake test:webgl:build'
@@ -65,7 +65,7 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -88,7 +88,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/build/Windows-2021.3.27f1.zip
+          - features/fixtures/mazerunner/build/Windows-2021.zip
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
@@ -108,7 +108,7 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/build/Windows-2021.3.27f1.zip
+          - features/fixtures/mazerunner/build/Windows-2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -129,7 +129,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2021.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -147,7 +147,7 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -166,7 +166,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
+          - features/fixtures/mazerunner/mazerunner_2021.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
@@ -183,7 +183,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
+          - features/fixtures/mazerunner/mazerunner_2021.apk
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -191,7 +191,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
           - '--no-tunnel'
@@ -231,7 +231,7 @@ steps:
         download:
           - project_2021.tgz
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.ipa
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2021.tgz features/fixtures/mazerunner
@@ -248,7 +248,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.ipa
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -256,7 +256,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.ipa'
           - '--farm=bb'
           - '--device=IOS_15'
           - '--no-tunnel'
