@@ -1,6 +1,6 @@
 #!/bin/bash -e
 pushd features/fixtures/mazerunner/build
-  unzip Windows-$UNITY_PERFORMANCE_VERSION.zip
+  unzip Windows-${UNITY_PERFORMANCE_VERSION:0:4}.zip
 popd
 
 bundle install
