@@ -18,7 +18,7 @@ pushd $SCRIPT_DIR
   popd
 popd
 
-#remove ios bitcode editor tool as it causes compilation errors
+# remove post build job for iOS bitcode as namespace is not available and it doesn't seem possible to conditionally remove using preprocessor directives
 rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs"
 rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
 

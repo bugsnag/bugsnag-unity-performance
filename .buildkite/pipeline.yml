@@ -1,3 +1,8 @@
+aliases:
+  - &2020 "2020.3.48f1"
+  - &2021 "2021.3.27f1"
+  - &2022 "2022.3.2f1"
+
 agents:
   queue: macos-12-arm-unity
 steps:
@@ -5,7 +10,7 @@ steps:
     timeout_in_minutes: 30
     key: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     commands:
       - bundle install
       - 'bundle exec rake plugin:build:export'
@@ -21,7 +26,7 @@ steps:
     timeout_in_minutes: 10
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -36,7 +41,7 @@ steps:
     key: build-webgl-fixture-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -56,7 +61,7 @@ steps:
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.5.0':
         download:
@@ -77,7 +82,7 @@ steps:
     agents:
       queue: windows-unity-wsl
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -99,7 +104,7 @@ steps:
     agents:
       queue: windows-unity-wsl
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.5.0':
         download:
@@ -118,7 +123,7 @@ steps:
     key: build-macos-fixture-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -138,7 +143,7 @@ steps:
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.5.0':
         download:
@@ -155,7 +160,7 @@ steps:
     key: build-android-fixture-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -199,7 +204,7 @@ steps:
     key: generate-fixture-project-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -220,7 +225,7 @@ steps:
     depends_on: generate-fixture-project-2021
     env:
       DEVELOPER_DIR: /Applications/Xcode14.0.app
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
