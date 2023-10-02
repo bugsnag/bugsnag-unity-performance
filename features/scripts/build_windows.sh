@@ -19,8 +19,8 @@ pushd $SCRIPT_DIR
 popd
 
 #remove ios bitcode editor tool as it causes compilation errors
-rm "$win_project_path/Assets/Editor/DisablingBitcodeiOS.cs"
-rm "$win_project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
+#rm "$win_project_path/Assets/Editor/DisablingBitcodeiOS.cs"
+#rm "$win_project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
 
 UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
 "$UNITY_PATH" $DEFAULT_CLI_ARGS \
