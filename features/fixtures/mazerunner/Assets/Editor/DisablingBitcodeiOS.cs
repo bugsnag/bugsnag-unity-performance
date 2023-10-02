@@ -11,8 +11,6 @@ public class DisablingBitcodeiOS
     [PostProcessBuild(1000)]
     public static void PostProcessBuildAttribute(BuildTarget target, string pathToBuildProject)
     {
-        try
-        {
             if (target == BuildTarget.iOS)
             {
                 string projectPath = UnityEditor.iOS.Xcode.PBXProject.GetPBXProjectPath(pathToBuildProject);
@@ -34,8 +32,6 @@ public class DisablingBitcodeiOS
                     $"ENABLE_BITCODE = NO;");
                 File.WriteAllText(projectPath, projectInString);
             }
-        }
-        catch { }
     }
 }
 
