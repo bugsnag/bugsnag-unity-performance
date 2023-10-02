@@ -93,7 +93,7 @@ steps:
         - exit_status: '*'
           limit: 1
 
-  - label: Run windows e2e tests for Unity 2021
+  - label: Run Windows e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-windows-fixture-2021
     agents:
