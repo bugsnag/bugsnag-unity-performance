@@ -4,4 +4,4 @@ pushd features/fixtures/mazerunner/build
 popd
 
 bundle install
-bundle exec maze-runner --app=features/fixtures/mazerunner/build/Windows/mazerunner_windows.exe --os=windows features/scene_load_spans.feature
+bundle exec maze-runner --app=features/fixtures/mazerunner/build/Windows/mazerunner_windows.exe --os=windows features
