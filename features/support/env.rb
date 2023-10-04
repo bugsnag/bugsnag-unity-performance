@@ -118,8 +118,10 @@ After do |scenario|
   next if scenario.status == :skipped
 
   case Maze::Helper.get_current_platform
-  when 'macos','windows'
+  when 'macos'
     `killall Mazerunner`
+  when 'windows'
+    Maze::Runner.run_command(`/mnt/c/Windows/system32/taskkill.exe /IM Unity.exe || true`)
   when 'webgl'
     execute_command('close_application')
   when 'switch'
