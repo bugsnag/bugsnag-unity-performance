@@ -23,3 +23,6 @@ upm-package.zip
 mazerunner_*.zip
 features/fixtures/mazerunner/Packages/package
 features/fixtures/mazerunner/mazerunner_BackUpThisFolder_ButDontShipItWithYourGame
+features/fixtures/minimalapp/Packages
+features/fixtures/minimalapp/minimal_with_xcode
+features/fixtures/minimalapp/minimal_without_xcode

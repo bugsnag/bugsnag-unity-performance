@@ -556,6 +556,7 @@ GameObject:
   - component: {fileID: 480052160}
   - component: {fileID: 480052159}
   - component: {fileID: 480052161}
+  - component: {fileID: 480052162}
   m_Layer: 0
   m_Name: SceneLoad
   m_TagString: Untagged
@@ -611,6 +612,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0aa183120c39b4c66ab7937b70a90ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &480052162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480052157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48db60530992e48d190852f4c0b15ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &805103369
@@ -1210,6 +1223,7 @@ GameObject:
   - component: {fileID: 2146169739}
   - component: {fileID: 2146169743}
   - component: {fileID: 2146169742}
+  - component: {fileID: 2146169744}
   m_Layer: 0
   m_Name: Network
   m_TagString: Untagged
@@ -1301,5 +1315,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b393bd518aafd43bfb64a935f14e9e22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2146169744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146169736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0aee48a86330413b8e50403a8e28c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

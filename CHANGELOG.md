@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.3.0 (2023-10-05)
+
+### Additions
+
+- Added support for WebGL builds. [#77](https://github.com/bugsnag/bugsnag-unity-performance/pull/77)
+
+- Added methods to enable manual creation of SceneLoad and Network spans. [#81](https://github.com/bugsnag/bugsnag-unity-performance/pull/81)
+
+### Bug Fixes
+
+- Fixed issue where the Android version code and iOS bundle version were incorrectly labelled [#76](https://github.com/bugsnag/bugsnag-unity-performance/pull/76)
+
+- Fixed issue where some unity version required meta files within the macos bundle [#80](https://github.com/bugsnag/bugsnag-unity-performance/pull/80)
+
+
 ## v1.2.0 (2023-08-18)
 
 ### Additions

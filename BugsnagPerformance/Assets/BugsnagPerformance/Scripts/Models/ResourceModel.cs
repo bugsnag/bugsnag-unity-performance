@@ -25,12 +25,21 @@ namespace BugsnagUnityPerformance
                 new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
                 new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
-                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
-                GetNativeVersionInfo(config),
-                GetManufacturer(),
-                GetArch(),
-                GetNativeOsVersion()
+                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion)
+               
             };
+            AddNonNullAttribute(GetNativeVersionInfo(config));
+            AddNonNullAttribute(GetManufacturer());
+            AddNonNullAttribute(GetArch());
+            AddNonNullAttribute(GetNativeOsVersion());
+        }
+
+        private void AddNonNullAttribute(AttributeModel attributeModel)
+        {
+            if (attributeModel != null)
+            {
+                attributes.Add(attributeModel);
+            }
         }
 
         public void Start()
@@ -49,6 +58,8 @@ namespace BugsnagUnityPerformance
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.OSXEditor:
                     return "MacOS";
+                case RuntimePlatform.WebGLPlayer:
+                    return "WebGL";
             }
             return string.Empty;
         }
@@ -70,18 +81,18 @@ namespace BugsnagUnityPerformance
         {
             if (!string.IsNullOrEmpty(config.BundleVersion))
             {
-                return new AttributeModel("device.bundle_version",  config.BundleVersion);
+                return new AttributeModel("bugsnag.app.bundle_version",  config.BundleVersion);
             }
-            return new AttributeModel("device.bundle_version", iOSNative.GetBundleVersion());
+            return new AttributeModel("bugsnag.app.bundle_version", Application.platform == RuntimePlatform.IPhonePlayer ? iOSNative.GetBundleVersion() : MacOSNative.GetBundleVersion());
         }
 
         private AttributeModel GetAndroidVersionCode(PerformanceConfiguration config)
         {
             if (config.VersionCode > -1)
             {
-                return new AttributeModel("device.version_code", config.VersionCode.ToString());
+                return new AttributeModel("bugsnag.app.version_code", config.VersionCode.ToString());
             }
-            return new AttributeModel("device.version_code", AndroidNative.GetVersionCode());
+            return new AttributeModel("bugsnag.app.version_code", AndroidNative.GetVersionCode());
         }
 
         private AttributeModel GetArch()

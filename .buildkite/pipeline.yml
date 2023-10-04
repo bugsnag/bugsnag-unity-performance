@@ -15,6 +15,61 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
+
+  - label: 'build size impact reporting'
+    timeout_in_minutes: 10
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+    agents:
+      queue: macos-12-arm
+    commands:
+      features/scripts/do_size_test.sh
+
+  - label: ':webgl: Build webgl test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: build-webgl-fixture-2021
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+          - features/fixtures/build_webgl.log
+    commands:
+      - 'rake test:webgl:build'
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+  - label: Run WebGL e2e tests for Unity 2021
+    timeout_in_minutes: 60
+    depends_on: build-webgl-fixture-2021
+    agents:
+      queue: macos-12-arm-unity
+    env:
+      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+    plugins:
+      'artifacts#v1.5.0':
+        download:
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+        upload:
+          - maze_output/**/*
+          - '*-mazerunner.log'
+          - 'clear_cache.log'
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-webgl-ci-tests.sh
+
+
   - label: ':macos: Build macos test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-macos-fixture-2021
@@ -26,7 +81,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -44,10 +99,11 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
+          - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
@@ -93,7 +149,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: ':ios: Generate Xcode project - Unity 2021'
     timeout_in_minutes: 30
@@ -158,7 +214,7 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
     concurrency: 25
-    concurrency_group: bitbar-app
+    concurrency_group: bitbar
     concurrency_method: eager
   - label: Conditionally trigger full set of tests
     timeout_in_minutes: 30
