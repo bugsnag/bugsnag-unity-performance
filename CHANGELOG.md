@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD ()
+## v1.3.0 (2023-10-05)
 
 ### Additions
 
