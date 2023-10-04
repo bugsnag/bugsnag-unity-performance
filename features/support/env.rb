@@ -118,9 +118,9 @@ After do |scenario|
   next if scenario.status == :skipped
 
   case Maze::Helper.get_current_platform
-  when 'macos'
+  when 'macos','windows'
     `killall Mazerunner`
-  when 'webgl','windows'
+  when 'webgl'
     execute_command('close_application')
   when 'switch'
     # Terminate the app
