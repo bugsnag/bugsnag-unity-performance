@@ -121,7 +121,7 @@ After do |scenario|
   when 'macos'
     `killall Mazerunner`
   when 'windows'
-    Maze::Runner.run_command(`/mnt/c/Windows/system32/taskkill.exe /IM Unity.exe || true`)
+    Maze::Runner.run_command(`/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows.exe`)
   when 'webgl'
     execute_command('close_application')
   when 'switch'
