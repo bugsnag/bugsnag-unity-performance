@@ -20,8 +20,6 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
-
-
   Scenario: Load Scene By Index
     When I run the game in the "SceneLoadByIndex" state
     And I wait for 1 span

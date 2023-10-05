@@ -1,3 +1,8 @@
+aliases:
+  - &2020 "2020.3.48f1"
+  - &2021 "2021.3.27f1"
+  - &2022 "2022.3.2f1"
+
 agents:
   queue: macos-12-arm-unity
 steps:
@@ -5,7 +10,7 @@ steps:
     timeout_in_minutes: 30
     key: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     commands:
       - bundle install
       - 'bundle exec rake plugin:build:export'
@@ -21,7 +26,7 @@ steps:
     timeout_in_minutes: 10
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -36,13 +41,13 @@ steps:
     key: build-webgl-fixture-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.zip
           - features/fixtures/build_webgl.log
     commands:
       - 'rake test:webgl:build'
@@ -56,11 +61,11 @@ steps:
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_webgl_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_webgl_2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -70,18 +75,61 @@ steps:
       - features/scripts/run-webgl-ci-tests.sh
 
 
-  - label: ':macos: Build macos test fixture for Unity 2021'
+  - label: ':windows: Build Windows test fixture for Unity 2021'
     timeout_in_minutes: 30
-    key: build-macos-fixture-2021
+    key: build-windows-fixture-2021
     depends_on: build-artifacts
+    agents:
+      queue: windows-unity-wsl
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
+          - features/fixtures/mazerunner/build/Windows-2021.zip
+          - features/fixtures/build_windows.log
+    commands:
+      - features/scripts/import_package.sh
+      - features/scripts/build_windows.sh
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: Run Windows e2e tests for Unity 2021
+    timeout_in_minutes: 60
+    depends_on: build-windows-fixture-2021
+    agents:
+      queue: windows-unity-wsl
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.5.0':
+        download:
+          - features/fixtures/mazerunner/build/Windows-2021.zip
+        upload:
+          - maze_output/**/*
+          - '*-mazerunner.log'
+          - 'clear_cache.log'
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-windows-ci-tests.sh
+
+
+  - label: ':macos: Build macos test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: build-macos-fixture-2021
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/mazerunner_macos_2021.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -95,11 +143,11 @@ steps:
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_macos_2021.3.27f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -112,13 +160,13 @@ steps:
     key: build-android-fixture-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
+          - features/fixtures/mazerunner/mazerunner_2021.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
@@ -135,7 +183,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk
+          - features/fixtures/mazerunner/mazerunner_2021.apk
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -143,7 +191,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.apk'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
           - '--no-tunnel'
@@ -156,7 +204,7 @@ steps:
     key: generate-fixture-project-2021
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -177,13 +225,13 @@ steps:
     depends_on: generate-fixture-project-2021
     env:
       DEVELOPER_DIR: /Applications/Xcode14.0.app
-      UNITY_PERFORMANCE_VERSION: 2021.3.27f1
+      UNITY_PERFORMANCE_VERSION: *2021
     plugins:
       'artifacts#v1.9.0':
         download:
           - project_2021.tgz
         upload:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.ipa
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2021.tgz features/fixtures/mazerunner
@@ -200,7 +248,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2021.ipa
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -208,7 +256,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.3.27f1.ipa'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.ipa'
           - '--farm=bb'
           - '--device=IOS_15'
           - '--no-tunnel'

@@ -24,9 +24,9 @@ public class Builder : MonoBehaviour
         Build("mazerunner_macos", BuildTarget.StandaloneOSX);
     }
 
-    public static void Win64()
+    public static void Windows()
     {
-        Build("build/Windows/Mazerunner.exe", BuildTarget.StandaloneWindows64);
+        Build("build/Windows/mazerunner_windows.exe", BuildTarget.StandaloneWindows64);
     }
 
     public static void WebGL()

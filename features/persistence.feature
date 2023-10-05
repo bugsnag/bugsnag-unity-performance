@@ -34,6 +34,7 @@ Feature: Trace and state persistence
     And I should receive no trace
 
   @skip_webgl #Pending PLAT-8151
+  @skip_windows #Pending PLAT-10969
   Scenario: P value response 0.0
     Given I set the sampling probability for the next traces to "0"
     And I run the game in the "PValueUpdate" state

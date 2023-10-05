@@ -159,7 +159,6 @@ public class Main : MonoBehaviour
         Application.Quit();
     }
 
-
     private void ClearUnityCache()
     {
         if (Directory.Exists(Application.persistentDataPath + "/bugsnag-performance"))
