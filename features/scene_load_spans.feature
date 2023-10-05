@@ -3,7 +3,6 @@ Feature: Scene Load Spans
   Background:
     Given I clear the Bugsnag cache
 
-  @skip_windows #Pending PLAT-10967
   Scenario: Load Scene By Name
     When I run the game in the "SceneLoadByName" state
     And I wait for 1 span
@@ -21,8 +20,6 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
-
-  @skip_windows #Pending PLAT-10967
   Scenario: Load Scene By Index
     When I run the game in the "SceneLoadByIndex" state
     And I wait for 1 span
