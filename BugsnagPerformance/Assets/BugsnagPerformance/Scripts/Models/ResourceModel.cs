@@ -32,6 +32,7 @@ namespace BugsnagUnityPerformance
             AddNonNullAttribute(GetManufacturer());
             AddNonNullAttribute(GetArch());
             AddNonNullAttribute(GetNativeOsVersion());
+            AddNonNullAttribute(GetAndroidSdkInt());
         }
 
         private void AddNonNullAttribute(AttributeModel attributeModel)
@@ -152,6 +153,15 @@ namespace BugsnagUnityPerformance
                     break;
             }
             return new AttributeModel("os.version", osVersion);
+        }
+
+        private AttributeModel GetAndroidSdkInt()
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                return new AttributeModel("bugsnag.device.android_api_version", AndroidNative.GetAndroidSDKInt());
+            }
+            return null;
         }
     }
 }

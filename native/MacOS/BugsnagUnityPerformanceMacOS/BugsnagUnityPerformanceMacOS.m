@@ -86,7 +86,8 @@ char* bugsnag_unity_performance_get_arch ()
 char* bugsnag_unity_performance_get_os_version()
 {
     NSProcessInfo *pInfo = [NSProcessInfo processInfo];
-    NSString *version = [pInfo operatingSystemVersionString];
-    return convertNSStringToCString(version);
+    NSOperatingSystemVersion version =[pInfo operatingSystemVersion];
+    NSString *versionString = [NSString stringWithFormat:@"%d.%d.%d", (int)version.majorVersion, (int)version.minorVersion, (int)version.patchVersion];
+    return convertNSStringToCString(versionString);
 }
 

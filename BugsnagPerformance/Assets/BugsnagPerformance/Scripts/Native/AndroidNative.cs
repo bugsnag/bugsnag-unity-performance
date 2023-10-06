@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
             return null;
         }
 
-        private static int GetAndroidSDKInt()
+        public static int GetAndroidSDKInt()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
 
@@ -64,7 +64,6 @@ namespace BugsnagUnityPerformance
 
             var build = new AndroidJavaClass("android.os.Build");
             return build.GetStatic<string>("MANUFACTURER");
-
 #endif
             return null;
         }
@@ -93,7 +92,10 @@ namespace BugsnagUnityPerformance
         public static string GetOsVersion()
         {
 #if UNITY_ANDROID
-            return GetAndroidSDKInt().ToString();
+            using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
+            {
+                return version.GetStatic<string>("RELEASE");
+            }
 #endif
             return string.Empty;
         }
