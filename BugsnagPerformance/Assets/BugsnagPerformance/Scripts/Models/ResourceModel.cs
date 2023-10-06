@@ -159,7 +159,7 @@ namespace BugsnagUnityPerformance
         {
             if (Application.platform == RuntimePlatform.Android)
             {
-                return new AttributeModel("bugsnag.device.android_api_version",AndroidNative.GetAndroidSDKInt());
+                return new AttributeModel("bugsnag.device.android_api_version", AndroidNative.GetAndroidSDKInt());
             }
             return null;
         }
