@@ -137,6 +137,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: Run MacOS e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2021
@@ -155,6 +156,7 @@ steps:
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
+
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-android-fixture-2021
@@ -175,6 +177,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run Android e2e tests for Unity 2021'
     timeout_in_minutes: 60
     depends_on: build-android-fixture-2021
@@ -196,9 +199,11 @@ steps:
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
   - label: ':ios: Generate Xcode project - Unity 2021'
     timeout_in_minutes: 30
     key: generate-fixture-project-2021
@@ -219,6 +224,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':ios: Build iOS test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-ios-fixture-2021
@@ -240,6 +246,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run iOS e2e tests for Unity 2021'
     timeout_in_minutes: 60
     depends_on: build-ios-fixture-2021
@@ -261,6 +268,7 @@ steps:
           - '--device=IOS_15'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
