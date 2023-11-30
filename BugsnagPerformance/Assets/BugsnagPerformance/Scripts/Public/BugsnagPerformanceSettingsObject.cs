@@ -26,6 +26,8 @@ namespace BugsnagUnityPerformance
         public int VersionCode = -1;
         public string BundleVersion;
 
+        public bool GenerateAnonymousId = true;
+
         public static PerformanceConfiguration LoadConfiguration()
         {
             var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
@@ -56,6 +58,8 @@ namespace BugsnagUnityPerformance
             config.AutoInstrumentAppStart = AutoInstrumentAppStart;
 
             config.Endpoint = Endpoint;
+
+            config.GenerateAnonymousId = GenerateAnonymousId;
             
             return config;
         }
@@ -78,6 +82,7 @@ namespace BugsnagUnityPerformance
             config.AppVersion = AppVersion;
             config.BundleVersion = BundleVersion;
             config.VersionCode = VersionCode;
+            config.GenerateAnonymousId = GenerateAnonymousId;
 
             return config;
         }
