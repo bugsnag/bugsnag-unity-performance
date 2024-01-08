@@ -92,7 +92,7 @@ namespace BugsnagUnityPerformance
 
             EndTime = DateTimeOffset.UtcNow;
 
-            SetAttribute("http.status_code", request.responseCode.ToString());
+            SetAttribute("http.status_code", (int)request.responseCode);
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
