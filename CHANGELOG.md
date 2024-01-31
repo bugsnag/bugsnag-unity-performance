@@ -1,12 +1,10 @@
 # Changelog
 
-## TBD
+## v1.3.1 (2024-31-01)
 
 ### Additions
 
 - Added Apple privacy manifest due to IO api usage. Please see the [Unity documentation](https://docs.unity3d.com/2023.3/Documentation/Manual/apple-privacy-manifest-policy.html#CSharpDotNetAPIs) for more information. [#94](https://github.com/bugsnag/bugsnag-unity-performance/pull/94)
-
-## v1.3.1 (2024-08-01)
 
 ### Bug Fixes
 
