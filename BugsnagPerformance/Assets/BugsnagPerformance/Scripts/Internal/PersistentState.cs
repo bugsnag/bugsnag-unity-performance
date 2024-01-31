@@ -69,6 +69,9 @@ namespace BugsnagUnityPerformance
             {
                 _fileStreamMutex.ReleaseMutex();
             }
+#if BUGSNAG_DEBUG
+            Logger.I("Persistence loaded with probability: " + Probability);
+#endif
         }
 
         private void Save()

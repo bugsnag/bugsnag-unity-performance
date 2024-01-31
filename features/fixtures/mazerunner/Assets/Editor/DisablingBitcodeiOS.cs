@@ -1,24 +1,25 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditor.iOS.Xcode;
 
 public class DisablingBitcodeiOS
 {
+
     [PostProcessBuild(1000)]
     public static void PostProcessBuildAttribute(BuildTarget target, string pathToBuildProject)
     {
         if (target == BuildTarget.iOS)
         {
-            string projectPath = UnityEditor.iOS.Xcode.PBXProject.GetPBXProjectPath(pathToBuildProject);
+            string projectPath = PBXProject.GetPBXProjectPath(pathToBuildProject);
 
-            var pbxProject = new UnityEditor.iOS.Xcode.PBXProject();
+            PBXProject pbxProject = new PBXProject();
             pbxProject.ReadFromFile(projectPath);
 #if UNITY_2019_3_OR_NEWER
-                var targetGuid = pbxProject.GetUnityMainTargetGuid();
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
 #else
             var targetName = PBXProject.GetUnityTargetName();
             var targetGuid = pbxProject.TargetGuidByName(targetName);
@@ -33,5 +34,6 @@ public class DisablingBitcodeiOS
             File.WriteAllText(projectPath, projectInString);
         }
     }
+
 }
 

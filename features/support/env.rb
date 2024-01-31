@@ -75,7 +75,7 @@ BeforeAll do
     ENV['WSLENV'] = 'BUGSNAG_SCENARIO:BUGSNAG_APIKEY:MAZE_ENDPOINT'
   elsif Maze.config.browser != nil # WebGL
     unity_version = ENV['UNITY_PERFORMANCE_VERSION']
-    Maze.config.document_server_root = "features/fixtures/mazerunner/mazerunner_webgl_#{unity_version}"
+    Maze.config.document_server_root = "features/fixtures/mazerunner/mazerunner_webgl_#{unity_version[0, 4]}"
   elsif Maze.config.os&.downcase == 'switch'
     maze_ip = ENV['SWITCH_MAZE_IP']
     raise 'SWITCH_MAZE_IP must be set' unless maze_ip
@@ -120,7 +120,10 @@ After do |scenario|
   case Maze::Helper.get_current_platform
   when 'macos'
     `killall Mazerunner`
-  when 'webgl','windows'
+  when 'windows'
+    #kill the windows fixture instead of gracefully closing it because it sometimes hangs when quitting, this is a unity bug.
+    Maze::Runner.run_command(`/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows.exe`)
+  when 'webgl'
     execute_command('close_application')
   when 'switch'
     # Terminate the app

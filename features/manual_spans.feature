@@ -31,6 +31,7 @@ Feature: Manual creation of spans
       | iOS |
       | MacOS |
       | WebGL |
+      | Windows |
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.runtime_versions.unity" exists
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 

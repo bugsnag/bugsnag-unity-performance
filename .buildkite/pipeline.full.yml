@@ -1,18 +1,24 @@
+aliases:
+  - &2020 "2020.3.48f1"
+  - &2021 "2021.3.27f1"
+  - &2022 "2022.3.2f1"
+
 agents:
   queue: macos-12-arm-unity
+
 steps:
   - label: ':macos: Build macos test fixture for Unity 2020'
     timeout_in_minutes: 30
     key: build-macos-fixture-2020
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_macos_2020.3.48f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2020.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -20,17 +26,18 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: Run MacOS e2e tests for Unity 2020
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2020
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_macos_2020.3.48f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2020.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -38,18 +45,19 @@ steps:
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
+
   - label: ':macos: Build macos test fixture for Unity 2022'
     timeout_in_minutes: 30
     key: build-macos-fixture-2022
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2022.3.2f1
+      UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_macos_2022.3.2f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2022.zip
           - features/fixtures/build_macos.log
     commands:
       - 'rake test:macos:build'
@@ -57,17 +65,18 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: Run MacOS e2e tests for Unity 2022
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2022
     agents:
       queue: macos-12-arm-unity
     env:
-      UNITY_PERFORMANCE_VERSION: 2022.3.2f1
+      UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_macos_2022.3.2f1.zip
+          - features/fixtures/mazerunner/mazerunner_macos_2022.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
@@ -75,18 +84,103 @@ steps:
           - maze_output/metrics.csv
     commands:
       - features/scripts/run-macos-ci-tests.sh
-  - label: ':android: Build Android test fixture for Unity 2020'
+
+  - label: ':windows: Build Windows test fixture for Unity 2020'
     timeout_in_minutes: 30
-    key: build-android-fixture-2020
+    key: build-windows-fixture-2020
     depends_on: build-artifacts
+    agents:
+      queue: windows-unity-wsl
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
+          - features/fixtures/mazerunner/build/Windows-2020.zip
+          - features/fixtures/build_windows.log
+    commands:
+      - features/scripts/import_package.sh
+      - features/scripts/build_windows.sh
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: Run Windows e2e tests for Unity 2020
+    timeout_in_minutes: 60
+    depends_on: build-windows-fixture-2020
+    agents:
+      queue: windows-unity-wsl
+    env:
+      UNITY_PERFORMANCE_VERSION: *2020
+    plugins:
+      'artifacts#v1.5.0':
+        download:
+          - features/fixtures/mazerunner/build/Windows-2020.zip
+        upload:
+          - maze_output/**/*
+          - '*-mazerunner.log'
+          - 'clear_cache.log'
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-windows-ci-tests.sh
+
+  - label: ':windows: Build Windows test fixture for Unity 2022'
+    timeout_in_minutes: 30
+    key: build-windows-fixture-2022
+    depends_on: build-artifacts
+    agents:
+      queue: windows-unity-wsl
+    env:
+      UNITY_PERFORMANCE_VERSION: *2022
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/build/Windows-2022.zip
+          - features/fixtures/build_windows.log
+    commands:
+      - features/scripts/import_package.sh
+      - features/scripts/build_windows.sh
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: Run Windows e2e tests for Unity 2022
+    timeout_in_minutes: 60
+    depends_on: build-windows-fixture-2022
+    agents:
+      queue: windows-unity-wsl
+    env:
+      UNITY_PERFORMANCE_VERSION: *2022
+    plugins:
+      'artifacts#v1.5.0':
+        download:
+          - features/fixtures/mazerunner/build/Windows-2022.zip
+        upload:
+          - maze_output/**/*
+          - '*-mazerunner.log'
+          - 'clear_cache.log'
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-windows-ci-tests.sh
+
+  - label: ':android: Build Android test fixture for Unity 2020'
+    timeout_in_minutes: 30
+    key: build-android-fixture-2020
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2020
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/mazerunner_2020.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
@@ -95,6 +189,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run Android e2e tests for Unity 2020'
     timeout_in_minutes: 60
     depends_on: build-android-fixture-2020
@@ -103,7 +198,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk
+          - features/fixtures/mazerunner/mazerunner_2020.apk
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -111,26 +206,28 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.apk'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
   - label: ':android: Build Android test fixture for Unity 2022'
     timeout_in_minutes: 30
     key: build-android-fixture-2022
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2022.3.2f1
+      UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.apk
+          - features/fixtures/mazerunner/mazerunner_2022.apk
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
@@ -139,6 +236,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run Android e2e tests for Unity 2022'
     timeout_in_minutes: 60
     depends_on: build-android-fixture-2022
@@ -147,7 +245,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.apk
+          - features/fixtures/mazerunner/mazerunner_2022.apk
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -155,20 +253,22 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2022.3.2f1.apk'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2022.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
   - label: ':ios: Generate Xcode project - Unity 2020'
     timeout_in_minutes: 30
     key: generate-fixture-project-2020
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -183,19 +283,20 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':ios: Build iOS test fixture for Unity 2020'
     timeout_in_minutes: 30
     key: build-ios-fixture-2020
     depends_on: generate-fixture-project-2020
     env:
       DEVELOPER_DIR: /Applications/Xcode14.0.app
-      UNITY_PERFORMANCE_VERSION: 2020.3.48f1
+      UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
         download:
           - project_2020.tgz
         upload:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2020.ipa
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2020.tgz features/fixtures/mazerunner
@@ -204,6 +305,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run iOS e2e tests for Unity 2020'
     timeout_in_minutes: 60
     depends_on: build-ios-fixture-2020
@@ -212,7 +314,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2020.ipa
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -220,20 +322,22 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.3.48f1.ipa'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2020.ipa'
           - '--farm=bb'
           - '--device=IOS_15'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
   - label: ':ios: Generate Xcode project - Unity 2022'
     timeout_in_minutes: 30
     key: generate-fixture-project-2022
     depends_on: build-artifacts
     env:
-      UNITY_PERFORMANCE_VERSION: 2022.3.2f1
+      UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
         download:
@@ -248,19 +352,20 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':ios: Build iOS test fixture for Unity 2022'
     timeout_in_minutes: 30
     key: build-ios-fixture-2022
     depends_on: generate-fixture-project-2022
     env:
       DEVELOPER_DIR: /Applications/Xcode14.0.app
-      UNITY_PERFORMANCE_VERSION: 2022.3.2f1
+      UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
         download:
           - project_2022.tgz
         upload:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2022.ipa
           - features/fixtures/unity.log
     commands:
       - tar -zxf project_2022.tgz features/fixtures/mazerunner
@@ -269,6 +374,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: ':bitbar: Run iOS e2e tests for Unity 2022'
     timeout_in_minutes: 60
     depends_on: build-ios-fixture-2022
@@ -277,7 +383,7 @@ steps:
     plugins:
       'artifacts#v1.9.0':
         download:
-          - features/fixtures/mazerunner/mazerunner_2022.3.2f1.ipa
+          - features/fixtures/mazerunner/mazerunner_2022.ipa
         upload:
           - maze_output/**/*
       'docker-compose#v4.8.0':
@@ -285,11 +391,12 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - '--app=/app/features/fixtures/mazerunner/mazerunner_2022.3.2f1.ipa'
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_2022.ipa'
           - '--farm=bb'
           - '--device=IOS_15'
           - '--no-tunnel'
           - '--aws-public-ip'
+          - '--fail-fast'
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager

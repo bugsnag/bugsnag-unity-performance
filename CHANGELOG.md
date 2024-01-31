@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.3.1 (2024-31-01)
+
+### Additions
+
+- Added Apple privacy manifest due to IO api usage. Please see the [Unity documentation](https://docs.unity3d.com/2023.3/Documentation/Manual/apple-privacy-manifest-policy.html#CSharpDotNetAPIs) for more information. [#94](https://github.com/bugsnag/bugsnag-unity-performance/pull/94)
+
+### Bug Fixes
+
+- Fixed issue where http status code was reported as a string attribute instead of an int attribute [#93](https://github.com/bugsnag/bugsnag-unity-performance/pull/93)
+
 ## v1.3.0 (2023-10-05)
 
 ### Additions

@@ -32,6 +32,7 @@ namespace BugsnagUnityPerformance
             AddNonNullAttribute(GetManufacturer());
             AddNonNullAttribute(GetArch());
             AddNonNullAttribute(GetNativeOsVersion());
+            AddNonNullAttribute(GetAndroidSdkInt());
         }
 
         private void AddNonNullAttribute(AttributeModel attributeModel)
@@ -60,6 +61,9 @@ namespace BugsnagUnityPerformance
                     return "MacOS";
                 case RuntimePlatform.WebGLPlayer:
                     return "WebGL";
+                case RuntimePlatform.WindowsPlayer:
+                case RuntimePlatform.WindowsEditor:
+                    return "Windows";
             }
             return string.Empty;
         }
@@ -99,7 +103,6 @@ namespace BugsnagUnityPerformance
         {
             switch (Application.platform)
             {
-                
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.OSXEditor:
                     return new AttributeModel("host.arch", MacOSNative.GetArch());
@@ -107,6 +110,9 @@ namespace BugsnagUnityPerformance
                     return new AttributeModel("host.arch", iOSNative.GetArch());
                 case RuntimePlatform.Android:
                     return new AttributeModel("host.arch", AndroidNative.GetArch());
+                case RuntimePlatform.WindowsPlayer:
+                case RuntimePlatform.WindowsEditor:
+                    return new AttributeModel("host.arch", WindowsNative.GetArch());
             }
             return null;
         }
@@ -121,6 +127,9 @@ namespace BugsnagUnityPerformance
                     return new AttributeModel("device.manufacturer", "Apple");
                 case RuntimePlatform.Android:
                     return new AttributeModel("device.manufacturer", AndroidNative.GetManufacturer());
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                    return new AttributeModel("device.manufacturer", "PC");
             }
             return null;
         }
@@ -139,8 +148,20 @@ namespace BugsnagUnityPerformance
                 case RuntimePlatform.Android:
                     osVersion = AndroidNative.GetOsVersion();
                     break;
+                case RuntimePlatform.WindowsPlayer:
+                    osVersion = WindowsNative.GetOsVersion();
+                    break;
             }
             return new AttributeModel("os.version", osVersion);
+        }
+
+        private AttributeModel GetAndroidSdkInt()
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                return new AttributeModel("bugsnag.device.android_api_version", AndroidNative.GetAndroidSDKInt());
+            }
+            return null;
         }
     }
 }
