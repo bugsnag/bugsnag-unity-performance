@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD ()
+## v1.3.2 (2024-14-02)
 
 ### Bug Fixes
 
