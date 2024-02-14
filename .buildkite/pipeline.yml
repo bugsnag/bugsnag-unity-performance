@@ -50,6 +50,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_webgl_2021.zip
           - features/fixtures/build_webgl.log
     commands:
+      - bundle install
       - 'rake test:webgl:build'
     retry:
       automatic:
@@ -132,6 +133,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_macos_2021.zip
           - features/fixtures/build_macos.log
     commands:
+      - bundle install
       - 'rake test:macos:build'
     retry:
       automatic:
@@ -172,6 +174,7 @@ steps:
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
+      - bundle install
       - 'rake test:android:build'
     retry:
       automatic:
@@ -218,6 +221,7 @@ steps:
           - features/fixtures/generateXcodeProject.log
           - project_2021.tgz
     commands:
+      - bundle install
       - 'rake test:ios:generate_xcode'
       - tar -zvcf project_2021.tgz features/fixtures/mazerunner/mazerunner_xcode
     retry:
@@ -240,6 +244,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_2021.ipa
           - features/fixtures/unity.log
     commands:
+      - bundle install
       - tar -zxf project_2021.tgz features/fixtures/mazerunner
       - 'rake test:ios:build_xcode'
     retry:
