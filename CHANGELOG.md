@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.2 (2024-14-02)
+
+### Bug Fixes
+
+- Fixed issue where the span attribute android_api_version was sent as a int attribute instead of a string [#99](https://github.com/bugsnag/bugsnag-unity-performance/pull/99)
+
 ## v1.3.1 (2024-31-01)
 
 ### Additions
