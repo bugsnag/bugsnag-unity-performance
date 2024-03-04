@@ -38,6 +38,7 @@ namespace BugsnagUnityPerformance
             ApiKey = apiKey;
         }
 
+        public bool GenerateAnonymousId = true;
       
     }
 }
