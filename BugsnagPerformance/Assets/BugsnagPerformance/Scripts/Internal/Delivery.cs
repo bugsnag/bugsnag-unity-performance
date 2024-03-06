@@ -173,7 +173,7 @@ namespace BugsnagUnityPerformance
                 var probabilityStr = req.GetResponseHeader("Bugsnag-Sampling-Probability");
                 if (probabilityStr != null)
                 {
-                    return Convert.ToDouble(probabilityStr);
+                    return double.Parse(probabilityStr, CultureInfo.InvariantCulture);
                 }
             }
             catch
