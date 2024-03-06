@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD ()
+
+### Bug Fixes
+
+- Fixed issue where the p value header was being parsed without specific formatting instructions, meaning that when running in different locals, it could be parsed incorrectly. [#101](https://github.com/bugsnag/bugsnag-unity-performance/pull/101)
+
 ## v1.3.2 (2024-14-02)
 
 ### Bug Fixes
