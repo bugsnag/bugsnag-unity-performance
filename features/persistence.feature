@@ -127,3 +127,11 @@ Feature: Trace and state persistence
     # And I wait to receive a sampling request
     # And I discard the oldest sampling request
     # And I wait to receive a sampling request
+
+  @skip_webgl #Pending PLAT-8151
+  Scenario: P value response parsing
+    Given I set the sampling probability for the next traces to "0.9999999"
+    And I run the game in the "PValueUpdate" state
+    And I wait to receive a sampling request
+    And I wait for 1 span
+    And the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.2.value.doubleValue" equals 0.9999999

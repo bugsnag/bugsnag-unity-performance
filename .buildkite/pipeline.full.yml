@@ -21,6 +21,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_macos_2020.zip
           - features/fixtures/build_macos.log
     commands:
+      - bundle install
       - 'rake test:macos:build'
     retry:
       automatic:
@@ -60,6 +61,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_macos_2022.zip
           - features/fixtures/build_macos.log
     commands:
+      - bundle install
       - 'rake test:macos:build'
     retry:
       automatic:
@@ -184,6 +186,7 @@ steps:
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
+      - bundle install
       - 'rake test:android:build'
     retry:
       automatic:
@@ -231,6 +234,7 @@ steps:
           - features/fixtures/import_package.log
           - features/fixtures/build_android.log
     commands:
+      - bundle install
       - 'rake test:android:build'
     retry:
       automatic:
@@ -277,6 +281,7 @@ steps:
           - features/fixtures/generateXcodeProject.log
           - project_2020.tgz
     commands:
+      - bundle install
       - 'rake test:ios:generate_xcode'
       - tar -zvcf project_2020.tgz features/fixtures/mazerunner/mazerunner_xcode
     retry:
@@ -299,6 +304,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_2020.ipa
           - features/fixtures/unity.log
     commands:
+      - bundle install
       - tar -zxf project_2020.tgz features/fixtures/mazerunner
       - 'rake test:ios:build_xcode'
     retry:
@@ -346,6 +352,7 @@ steps:
           - features/fixtures/generateXcodeProject.log
           - project_2022.tgz
     commands:
+      - bundle install
       - 'rake test:ios:generate_xcode'
       - tar -zvcf project_2022.tgz features/fixtures/mazerunner/mazerunner_xcode
     retry:
@@ -368,6 +375,7 @@ steps:
           - features/fixtures/mazerunner/mazerunner_2022.ipa
           - features/fixtures/unity.log
     commands:
+      - bundle install
       - tar -zxf project_2022.tgz features/fixtures/mazerunner
       - 'rake test:ios:build_xcode'
     retry:

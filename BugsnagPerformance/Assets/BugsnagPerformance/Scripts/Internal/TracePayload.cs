@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Globalization;
 
 namespace BugsnagUnityPerformance
 {
@@ -136,9 +137,9 @@ namespace BugsnagUnityPerformance
 
             foreach (KeyValuePair<double, int> pair in payload.SamplingHistogram)
             {
-                builder.Append(pair.Key);
+                builder.Append(pair.Key.ToString(CultureInfo.InvariantCulture));
                 builder.Append(':');
-                builder.Append(pair.Value);
+                builder.Append(pair.Value.ToString(CultureInfo.InvariantCulture));
                 builder.Append(';');
             }
             builder.Remove(builder.Length - 1, 1);
