@@ -1,10 +1,11 @@
 aliases:
   - &2020 "2020.3.48f1"
-  - &2021 "2021.3.27f1"
-  - &2022 "2022.3.2f1"
+  - &2021 "2021.3.36f1"
+  - &2022 "2022.3.22f1"
 
 agents:
-  queue: macos-12-arm-unity
+  queue: macos-14
+
 steps:
   - label: Build released library artifact
     timeout_in_minutes: 30
@@ -31,8 +32,6 @@ steps:
       'artifacts#v1.9.0':
         download:
           - upm-package.zip
-    agents:
-      queue: macos-12-arm
     commands:
       features/scripts/do_size_test.sh
 
@@ -59,8 +58,6 @@ steps:
   - label: Run WebGL e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-webgl-fixture-2021
-    agents:
-      queue: macos-12-arm-unity
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     plugins:
@@ -143,8 +140,6 @@ steps:
   - label: Run MacOS e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2021
-    agents:
-      queue: macos-12-arm-unity
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     plugins:
