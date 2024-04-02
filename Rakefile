@@ -18,7 +18,7 @@ end
 def unity_executable dir=unity_directory
   [File.join(dir, "Unity.app", "Contents", "MacOS", "Unity"),
    File.join(dir, "Editor", "Unity")].find do |unity|
-    File.exists? unity
+    File.exist? unity
   end
 end
 
@@ -41,7 +41,7 @@ def unity(*cmd, force_free: true, no_graphics: true)
   cmd = cmd.unshift(*cmd_prepend)
   sh *cmd do |ok, res|
     if !ok
-      puts File.read("unity.log") if File.exists?("unity.log")
+      puts File.read("unity.log") if File.exist?("unity.log")
 
       raise "unity error: #{res}"
     end
@@ -135,7 +135,7 @@ namespace :test do
 
   namespace :ios do
     task :generate_xcode do
-     
+
       # Prepare the test fixture project by importing the plugins
       script = File.join("features", "scripts", "import_package.sh")
       unless system script
