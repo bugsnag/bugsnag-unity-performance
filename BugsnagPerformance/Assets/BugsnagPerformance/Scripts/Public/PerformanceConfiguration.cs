@@ -24,6 +24,7 @@ namespace BugsnagUnityPerformance
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
+        public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
 
@@ -37,8 +38,6 @@ namespace BugsnagUnityPerformance
         {
             ApiKey = apiKey;
         }
-
-        public bool GenerateAnonymousId = true;
       
     }
 }
