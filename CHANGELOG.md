@@ -1,5 +1,9 @@
 # Changelog
 
+### TBD
+
+- Added methods to generate anonymous id value [#92](https://github.com/bugsnag/bugsnag-unity-performance/pull/92)
+
 ## v1.3.3 (2024-03-07)
 
 ### Bug Fixes
