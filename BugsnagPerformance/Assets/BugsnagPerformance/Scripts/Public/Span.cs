@@ -22,6 +22,7 @@ namespace BugsnagUnityPerformance
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
         internal bool IsAppStartSpan;
+        internal bool WasAborted;
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -75,7 +76,9 @@ namespace BugsnagUnityPerformance
                 {
                     return;
                 }
+                WasAborted = true;
                 Ended = true;
+                _onSpanEnd(this);
             }
         }
 
