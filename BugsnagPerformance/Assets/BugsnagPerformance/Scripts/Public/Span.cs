@@ -40,21 +40,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd = onSpanEnd;
         }
 
-        public void End()
-        {
-            lock (_endLock)
-            {
-                if (Ended)
-                {
-                    return;
-                }
-                Ended = true;
-            }
-            EndTime = DateTimeOffset.UtcNow;
-            _onSpanEnd(this);
-        }
-
-        public void End(DateTimeOffset? endTime)
+        public void End(DateTimeOffset? endTime = null)
         {
             lock (_endLock)
             {
@@ -110,7 +96,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        public void EndNetworkSpan(int statusCode = -1, int requestContentLength = -1, int responseContentLength = -1)
+        public void EndNetworkSpan(int statusCode = -1, int requestContentLength = -1, int responseContentLength = -1, DateTimeOffset? endTime = null)
         {
             lock (_endLock)
             {
@@ -121,7 +107,7 @@ namespace BugsnagUnityPerformance
                 Ended = true;
             }
 
-            EndTime = DateTimeOffset.UtcNow;
+            EndTime = endTime == null ? DateTimeOffset.UtcNow : endTime.Value;
 
             if (statusCode > -1)
             {
