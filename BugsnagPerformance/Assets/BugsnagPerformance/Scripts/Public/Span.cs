@@ -54,7 +54,7 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void End(DateTimeOffset? endTime)
+        public void End(DateTimeOffset? endTime)
         {
             lock (_endLock)
             {
