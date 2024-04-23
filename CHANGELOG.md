@@ -1,5 +1,12 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fixed issue where spans could not be ended with a custom end time. [#106](https://github.com/bugsnag/bugsnag-unity-performance/pull/106)
+
+
 ## v1.3.3 (2024-03-07)
 
 ### Bug Fixes
