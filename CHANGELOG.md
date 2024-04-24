@@ -4,6 +4,8 @@
 
 ### Bug Fixes
 
+- Fixed issue where spans could not be ended with a custom end time. [#106](https://github.com/bugsnag/bugsnag-unity-performance/pull/106)
+
 - Fixed issue where custom spans with the SpanOption IsFirstClass set to false still had it reported as true. [#107](https://github.com/bugsnag/bugsnag-unity-performance/pull/107)
 
 
