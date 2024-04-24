@@ -1037,6 +1037,7 @@ GameObject:
   - component: {fileID: 1609554507}
   - component: {fileID: 1609554508}
   - component: {fileID: 1609554509}
+  - component: {fileID: 1609554510}
   m_Layer: 0
   m_Name: NestedSpans
   m_TagString: Untagged
@@ -1105,6 +1106,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7dd649800dec840e9976f9e905c3c236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1609554510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609554504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b054c11fc1404cd6ad894798aa074cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2053587485
