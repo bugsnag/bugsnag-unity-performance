@@ -1,5 +1,12 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fixed issue where custom spans with the SpanOption IsFirstClass set to false still had it reported as true. [#107](https://github.com/bugsnag/bugsnag-unity-performance/pull/107)
+
+
 ## v1.3.3 (2024-03-07)
 
 ### Bug Fixes
