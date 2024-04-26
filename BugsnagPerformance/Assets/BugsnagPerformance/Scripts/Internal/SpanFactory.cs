@@ -171,7 +171,7 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        private ISpanContext GetCurrentContext()
+        internal ISpanContext GetCurrentContext()
         {
             if (_contextStack == null || _contextStack.Count == 0)
             {

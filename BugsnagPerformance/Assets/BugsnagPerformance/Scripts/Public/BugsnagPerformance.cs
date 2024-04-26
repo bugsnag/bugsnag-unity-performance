@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,6 +28,7 @@ namespace BugsnagUnityPerformance
         private PValueUpdater _pValueUpdater;
         private static List<Span> _potentiallyOpenSpans = new List<Span>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
+        private static string[] _tracePropagationUrls;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -41,6 +43,10 @@ namespace BugsnagUnityPerformance
                     return;
                 }
                 IsStarted = true;
+            }
+            if (configuration.TracePropagationUrls != null)
+            {
+                _tracePropagationUrls = configuration.TracePropagationUrls.ToArray();
             }
             ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
@@ -241,24 +247,80 @@ namespace BugsnagUnityPerformance
         private void OnRequestSend(BugsnagUnityWebRequest request)
         {
             var url = request.url;
+            bool createSpan = true;
             if (_networkRequestCallback != null)
             {
                 var callbackResult = _networkRequestCallback.Invoke(new BugsnagNetworkRequestInfo(url));
                 if (callbackResult == null || string.IsNullOrEmpty(callbackResult.Url))
                 {
-                    return;
+                    createSpan = false;
                 }
 
                 url = callbackResult.Url;
             }
-            var span = _spanFactory.CreateAutomaticNetworkSpan(request, url);
-            lock (_networkSpansLock)
+
+            Span networkSpan = null;
+
+            if (createSpan)
             {
-                _networkSpans[request] = span;
+                networkSpan = _spanFactory.CreateAutomaticNetworkSpan(request, url);
+                lock (_networkSpansLock)
+                {
+                    _networkSpans[request] = networkSpan;
+                }
+            }
+
+            if (ShouldAddTraceParentHeader(request.url))
+            {
+                string parentId = "";
+                string traceId = "";
+                bool sampled = false;
+
+                if (networkSpan != null)
+                {
+                    parentId = networkSpan.SpanId;
+                    traceId = networkSpan.TraceId;
+                    sampled = _sampler.Sampled(networkSpan,false);
+                }
+                else
+                {
+                    ISpanContext currentContext = _spanFactory.GetCurrentContext();
+                    if (currentContext != null)
+                    {
+                        parentId = currentContext.SpanId;
+                        traceId = currentContext.TraceId;
+                    }
+                }
+                if (string.IsNullOrEmpty(parentId))
+                {
+                    return;
+                }
+                request.SetRequestHeader("traceparent", BuildTraceparentHeader(traceId,parentId,sampled));
             }
         }
 
-       
+        private static bool ShouldAddTraceParentHeader(string url)
+        {
+            if (_tracePropagationUrls == null || _tracePropagationUrls.Length == 0)
+            {
+                return true;
+            }
+            foreach (var pattern in _tracePropagationUrls)
+            {
+                if (Regex.IsMatch(url, pattern))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static string BuildTraceparentHeader(string traceId, string parentSpanId, bool sampled)
+        {
+            return $"00-{traceId}-{parentSpanId}-{(sampled ? "01" : "00")}";
+        }
+
+
 
         private void OnRequestAbort(BugsnagUnityWebRequest request)
         {
