@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD 
+
+### Additions
+
+- Added the trace parent header to requests made via the Bugsnag request wrapper and allow configuration via new TracePropagationUrls property. [#109](https://github.com/bugsnag/bugsnag-unity-performance/pull/109)
+
 ## v1.3.4 (2024-04-29)
 
 ### Bug Fixes
