@@ -9,7 +9,7 @@ public class TraceParentConfig : Scenario
     {
         base.PrepareConfig(apiKey, host);
         SetMaxBatchSize(1);
-        Configuration.TracePropagationUrls = new string[]{ "dosend" };
+        Configuration.TracePropagationUrlMatchPatterns = new string[]{ "dosend" };
     }
 
     public override void Run()
