@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -135,7 +136,7 @@ namespace BugsnagUnityPerformance
                 {
                     return;
                 }
-                batch = _spanQueue;
+                batch = _spanQueue.Where(span => !span.WasAborted).ToList();
                 _spanQueue = new List<Span>();
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);

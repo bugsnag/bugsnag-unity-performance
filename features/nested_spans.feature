@@ -67,4 +67,22 @@ Feature: Nested Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.parentSpanId" is null
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.parentSpanId" is null
 
+  Scenario: IsFirstClass
+    When I run the game in the "IsFirstClass" state
+    And I wait for 2 spans
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:3"
+   
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "FirstClass not set"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
+   
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "FirstClass true"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" bool attribute "bugsnag.span.first_class" is true
+   
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.name" equals "FirstClass false"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2" bool attribute "bugsnag.span.first_class" is false
+
+
 

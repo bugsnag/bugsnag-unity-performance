@@ -57,3 +57,10 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" exists
+
+ Scenario: Custom timings
+    When I run the game in the "CustomStartAndEndTime" state
+    And I wait for 1 span
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "CustomStartAndEndTime"
+    * every span field "startTimeUnixNano" equals "473389261000000000"
+    * every span field "endTimeUnixNano" equals "504925261000000000"

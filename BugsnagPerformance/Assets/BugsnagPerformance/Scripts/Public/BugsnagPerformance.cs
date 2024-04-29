@@ -25,6 +25,7 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
+        private static List<Span> _potentiallyOpenSpans = new List<Span>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
         public static void Start(PerformanceConfiguration configuration)
@@ -44,14 +45,19 @@ namespace BugsnagUnityPerformance
             ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
             {
-                // init main thread dispatcher on main thread
-                MainThreadDispatchBehaviour.Instance();
+                // init main thread dispatcher and create app lifecycle listener on main thread
+                MainThreadDispatchBehaviour.Instance().Enqueue(()=> { CreateAppLifecycleListener(); });
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
 #if BUGSNAG_DEBUG
                 Logger.I("Start Complete");
 #endif
             }
+        }
+
+        private static void CreateAppLifecycleListener()
+        {
+            new GameObject("Bugsnag performance app lifecycle listener").AddComponent<BugsnagPerformanceAppLifecycleListener>();
         }
 
         private static void ValidateApiKey(string apiKey)
@@ -152,7 +158,11 @@ namespace BugsnagUnityPerformance
 
         private void OnSpanEnd(Span span)
         {
-            _tracer.OnSpanEnd(span);
+            _potentiallyOpenSpans.Remove(span);
+            if (!span.WasAborted)
+            {
+                _tracer.OnSpanEnd(span);
+            }
         }
 
         private void OnProbabilityChanged(double newProbability)
@@ -283,13 +293,31 @@ namespace BugsnagUnityPerformance
         {
             lock (_startSpanLock)
             {
-                return _spanFactory.StartCustomSpan(name, spanOptions);
+                var span = _spanFactory.StartCustomSpan(name, spanOptions);
+                _potentiallyOpenSpans.Add(span);
+                return span;
             }
         }
 
         public static void ReportAppStarted()
         {
             AppStartHandler.ReportAppStarted();
+        }
+
+        internal static void AppBackgrounded()
+        {
+            CancelAllOpenSpans();
+        }
+
+        private static void CancelAllOpenSpans()
+        {
+            foreach (var span in _potentiallyOpenSpans.ToArray())
+            {
+                if (!span.Ended)
+                {
+                    span.Abort();
+                }
+            }
         }
 
     }
