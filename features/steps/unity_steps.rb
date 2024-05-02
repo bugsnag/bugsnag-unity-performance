@@ -71,7 +71,7 @@ When('I run the game in the {string} state') do |state|
 
   when 'browser'
     # WebGL in a browser
-    url = "http://localhost:#{Maze.config.document_server_port}/index.html"
+    url = "http://localhost:#{Maze.config.port}/docs/index.html"
     $logger.debug "Navigating to URL: #{url}"
     step("I navigate to the URL \"#{url}\"")
     execute_command('run_scenario', state)
@@ -124,7 +124,7 @@ Then("the span named {string} has a minimum duration of {int}") do |span_name,du
 
   spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
   raise Test::Unit::AssertionFailedError.new "No spans were found with the name #{span_name}" if spans_with_name.empty?
-  
+
   span = spans_with_name.first
 
   start_time = Integer(span["startTimeUnixNano"])
@@ -145,7 +145,7 @@ Then("the span named {string} has a maximum duration of {int}") do |span_name,du
 
   spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
   raise Test::Unit::AssertionFailedError.new "No spans were found with the name #{span_name}" if spans_with_name.empty?
-  
+
   span = spans_with_name.first
 
   start_time = Integer(span["startTimeUnixNano"])
@@ -169,7 +169,7 @@ Then('the span named {string} exists') do |span_name|
 end
 
 Then('the span named {string} is the parent of the span named {string}') do |span1name, span2name|
-  
+
   spans = spans_from_request_list(Maze::Server.list_for("traces"))
 
   span1 = spans.find_all { |span| span['name'].eql?(span1name) }.first
