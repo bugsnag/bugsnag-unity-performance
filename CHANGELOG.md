@@ -2,6 +2,10 @@
 
 ## v1.3.4 (2024-04-29)
 
+### Additions
+
+- Discard open spans when app is backgrounded [#105](https://github.com/bugsnag/bugsnag-unity-performance/pull/105)
+
 ### Bug Fixes
 
 - Fixed issue where spans could not be ended with a custom end time. [#106](https://github.com/bugsnag/bugsnag-unity-performance/pull/106)
