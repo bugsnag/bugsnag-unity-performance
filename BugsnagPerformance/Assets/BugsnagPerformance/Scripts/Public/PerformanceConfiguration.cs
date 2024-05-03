@@ -33,6 +33,8 @@ namespace BugsnagUnityPerformance
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
 
+        public String[] TracePropagationUrlMatchPatterns;
+
         public PerformanceConfiguration(string apiKey)
         {
             ApiKey = apiKey;

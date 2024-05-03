@@ -162,3 +162,23 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" is greater than 0
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+
+  Scenario: Trace parent header smoke test
+    When I run the game in the "TraceParentHeaderSmokeTest" state
+    
+    And I wait for 1 span
+    And I wait to receive a reflection
+
+    Then the reflection request method equals "GET"
+    * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
+
+   Scenario: Trace parent header config test
+    When I run the game in the "TraceParentConfig" state
+    
+    And I wait to receive 2 reflections
+    * the reflection "traceparent" header is not present
+    * I discard the oldest reflection
+    * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
+
+
