@@ -3,9 +3,9 @@ Feature: Scene Load Spans
   Background:
     Given I clear the Bugsnag cache
 
+  @skip_webgl #Pending PLAT-12103
   Scenario: Load Scene By Name
     When I run the game in the "SceneLoadByName" state
-    And I wait for 5 seconds
     And I wait for 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
