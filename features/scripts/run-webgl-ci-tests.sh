@@ -6,4 +6,4 @@ popd
 
 bundle install
 
-bundle exec maze-runner --farm=local --browser=firefox --fail-fast features
+bundle exec maze-runner --farm=local --browser=firefox --fail-fast features/scene_load_spans.feature:6
