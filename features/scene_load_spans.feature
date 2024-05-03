@@ -21,6 +21,7 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
+  @skip_webgl #Pending PLAT-12103
   Scenario: Load Scene By Index
     When I run the game in the "SceneLoadByIndex" state
     And I wait for 1 span
@@ -38,8 +39,8 @@ Feature: Scene Load Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
-
-Scenario: Load Scene Async
+  @skip_webgl #Pending PLAT-12103
+  Scenario: Load Scene Async
     When I run the game in the "SceneLoadAsync" state
     And I wait for 3 spans
     Then the trace Bugsnag-Integrity header is valid
@@ -60,6 +61,7 @@ Scenario: Load Scene Async
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2" string attribute "bugsnag.view.name" equals "Scene3"
 
+  @skip_webgl #Pending PLAT-12103
   Scenario: Manual Scene Span
     When I run the game in the "ManualSceneSpan" state
     And I wait for 1 span
