@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,7 +26,9 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
+        private static List<Span> _potentiallyOpenSpans = new List<Span>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
+        private static string[] _tracePropagationUrlMatchPatterns;
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -41,17 +44,26 @@ namespace BugsnagUnityPerformance
                 }
                 IsStarted = true;
             }
+            if (configuration.TracePropagationUrlMatchPatterns != null)
+            {
+                _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrlMatchPatterns.ToArray();
+            }
             ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
             {
-                // init main thread dispatcher on main thread
-                MainThreadDispatchBehaviour.Instance();
+                // init main thread dispatcher and create app lifecycle listener on main thread
+                MainThreadDispatchBehaviour.Instance().Enqueue(()=> { CreateAppLifecycleListener(); });
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
 #if BUGSNAG_DEBUG
                 Logger.I("Start Complete");
 #endif
             }
+        }
+
+        private static void CreateAppLifecycleListener()
+        {
+            new GameObject("Bugsnag performance app lifecycle listener").AddComponent<BugsnagPerformanceAppLifecycleListener>();
         }
 
         private static void ValidateApiKey(string apiKey)
@@ -152,7 +164,11 @@ namespace BugsnagUnityPerformance
 
         private void OnSpanEnd(Span span)
         {
-            _tracer.OnSpanEnd(span);
+            _potentiallyOpenSpans.Remove(span);
+            if (!span.WasAborted)
+            {
+                _tracer.OnSpanEnd(span);
+            }
         }
 
         private void OnProbabilityChanged(double newProbability)
@@ -231,24 +247,80 @@ namespace BugsnagUnityPerformance
         private void OnRequestSend(BugsnagUnityWebRequest request)
         {
             var url = request.url;
+            bool shouldCreateSpan = true;
             if (_networkRequestCallback != null)
             {
                 var callbackResult = _networkRequestCallback.Invoke(new BugsnagNetworkRequestInfo(url));
                 if (callbackResult == null || string.IsNullOrEmpty(callbackResult.Url))
                 {
-                    return;
+                    shouldCreateSpan = false;
                 }
 
                 url = callbackResult.Url;
             }
-            var span = _spanFactory.CreateAutomaticNetworkSpan(request, url);
-            lock (_networkSpansLock)
+
+            Span networkSpan = null;
+
+            if (shouldCreateSpan)
             {
-                _networkSpans[request] = span;
+                networkSpan = _spanFactory.CreateAutomaticNetworkSpan(request, url);
+                lock (_networkSpansLock)
+                {
+                    _networkSpans[request] = networkSpan;
+                }
+            }
+
+            if (ShouldAddTraceParentHeader(request.url))
+            {
+                string parentId = "";
+                string traceId = "";
+                bool sampled = false;
+
+                if (networkSpan != null)
+                {
+                    parentId = networkSpan.SpanId;
+                    traceId = networkSpan.TraceId;
+                    sampled = _sampler.Sampled(networkSpan,false);
+                }
+                else
+                {
+                    ISpanContext currentContext = _spanFactory.GetCurrentContext();
+                    if (currentContext != null)
+                    {
+                        parentId = currentContext.SpanId;
+                        traceId = currentContext.TraceId;
+                    }
+                }
+                if (string.IsNullOrEmpty(parentId))
+                {
+                    return;
+                }
+                request.SetRequestHeader("traceparent", BuildTraceParentHeader(traceId,parentId,sampled));
             }
         }
 
-       
+        private static bool ShouldAddTraceParentHeader(string url)
+        {
+            if (_tracePropagationUrlMatchPatterns == null || _tracePropagationUrlMatchPatterns.Length == 0)
+            {
+                return true;
+            }
+            foreach (var pattern in _tracePropagationUrlMatchPatterns)
+            {
+                if (Regex.IsMatch(url, pattern))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static string BuildTraceParentHeader(string traceId, string parentSpanId, bool sampled)
+        {
+            return $"00-{traceId}-{parentSpanId}-{(sampled ? "01" : "00")}";
+        }
+
+
 
         private void OnRequestAbort(BugsnagUnityWebRequest request)
         {
@@ -283,13 +355,31 @@ namespace BugsnagUnityPerformance
         {
             lock (_startSpanLock)
             {
-                return _spanFactory.StartCustomSpan(name, spanOptions);
+                var span = _spanFactory.StartCustomSpan(name, spanOptions);
+                _potentiallyOpenSpans.Add(span);
+                return span;
             }
         }
 
         public static void ReportAppStarted()
         {
             AppStartHandler.ReportAppStarted();
+        }
+
+        internal static void AppBackgrounded()
+        {
+            CancelAllOpenSpans();
+        }
+
+        private static void CancelAllOpenSpans()
+        {
+            foreach (var span in _potentiallyOpenSpans.ToArray())
+            {
+                if (!span.Ended)
+                {
+                    span.Abort();
+                }
+            }
         }
 
     }
