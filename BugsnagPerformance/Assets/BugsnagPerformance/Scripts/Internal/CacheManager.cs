@@ -8,6 +8,7 @@ namespace BugsnagUnityPerformance
     public class CacheManager : IPhasedStartup
     {
         private int _maxPersistedBatchAgeSeconds;
+        private bool _deviceAutoGenerateId;
         private string _cacheDirectory;
         private string _deviceidFilePath;
         private string _persistentStateFilePath;
@@ -32,6 +33,8 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
+            _deviceAutoGenerateId = config.GenerateAnonymousId;
+
         }
 
         public void Start()
@@ -46,16 +49,24 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                if (File.Exists(_deviceidFilePath))
+                //if generateAnonymousId is true then store/report/generate else don't 
+                if (_deviceAutoGenerateId)
                 {
-                    // return existing cached device id
-                    return File.ReadAllText(_deviceidFilePath);
-                }
+                    if (File.Exists(_deviceidFilePath))
+                    {
+                        // return existing cached device id
+                        return File.ReadAllText(_deviceidFilePath);
+                    }
 
-                // create and cache new random device id
-                var newDeviceId = Guid.NewGuid().ToString();
-                WriteFile(_deviceidFilePath, _deviceidFilePath);
-                return newDeviceId;
+                    // create and cache new random device id
+                    var newDeviceId = Guid.NewGuid().ToString();
+                    WriteFile(_deviceidFilePath, _deviceidFilePath);
+                    return newDeviceId;
+                }
+                else
+                {
+                    return string.Empty;
+                }
             }
             catch
             {
