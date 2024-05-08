@@ -4,7 +4,7 @@ aliases:
   - &2022 "2022.3.22f1"
 
 agents:
-  queue: macos-12-arm-unity
+  queue: macos-14
 
 steps:
   - label: ':macos: Build macos test fixture for Unity 2020'
@@ -31,8 +31,6 @@ steps:
   - label: Run MacOS e2e tests for Unity 2020
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2020
-    agents:
-      queue: macos-12-arm-unity
     env:
       UNITY_PERFORMANCE_VERSION: *2020
     plugins:
@@ -71,8 +69,6 @@ steps:
   - label: Run MacOS e2e tests for Unity 2022
     timeout_in_minutes: 60
     depends_on: build-macos-fixture-2022
-    agents:
-      queue: macos-12-arm-unity
     env:
       UNITY_PERFORMANCE_VERSION: *2022
     plugins:
