@@ -290,7 +290,7 @@ steps:
     key: build-ios-fixture-2020
     depends_on: generate-fixture-project-2020
     env:
-      DEVELOPER_DIR: /Applications/Xcode14.0.app
+      XCODE_VERSION: 15.3.0
       UNITY_PERFORMANCE_VERSION: *2020
     plugins:
       'artifacts#v1.9.0':
@@ -361,7 +361,7 @@ steps:
     key: build-ios-fixture-2022
     depends_on: generate-fixture-project-2022
     env:
-      DEVELOPER_DIR: /Applications/Xcode14.0.app
+      XCODE_VERSION: 15.3.0
       UNITY_PERFORMANCE_VERSION: *2022
     plugins:
       'artifacts#v1.9.0':
