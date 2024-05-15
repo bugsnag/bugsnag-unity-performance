@@ -382,5 +382,34 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        [Serializable]
+        private class SpanContextTransfer
+        {
+            public string spanId;
+            public string traceId;
+            public SpanContextTransfer(string spanId, string traceId)
+            {
+                this.spanId = spanId;
+                this.traceId = traceId;
+            }
+        } 
+
+        internal static string GetCurrentContextInternal()
+        {
+            var context = GetCurrentSpanContext();
+            if (context != null)
+            {
+                var transferClass = new SpanContextTransfer(context.SpanId, context.TraceId);
+                var json = JsonUtility.ToJson(transferClass);
+                return json;
+            }
+            return null;
+        }
+
+        public static ISpanContext GetCurrentSpanContext()
+        {
+            return _sharedInstance._spanFactory.GetCurrentContext();
+        }
+
     }
 }
