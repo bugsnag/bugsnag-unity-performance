@@ -135,4 +135,4 @@ Feature: Trace and state persistence
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
     And I wait for 1 span
-    And the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.2.value.doubleValue" equals 0.9999999
+    And the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.value.doubleValue" equals 0.9999999
