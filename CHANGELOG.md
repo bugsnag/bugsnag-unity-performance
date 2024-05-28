@@ -7,6 +7,10 @@
 - Added the trace parent header to requests made via the Bugsnag request wrapper and allow configuration via new TracePropagationUrls property. [#109](https://github.com/bugsnag/bugsnag-unity-performance/pull/109)
 - Added methods to generate anonymous id value [#92](https://github.com/bugsnag/bugsnag-unity-performance/pull/92)
 
+### Bug Fixes
+
+- Fixed issue where the net.host.connection.type span attribute was not present in all spans [#114](https://github.com/bugsnag/bugsnag-unity-performance/pull/114)
+
 ## v1.3.4 (2024-04-29)
 
 ### Additions
