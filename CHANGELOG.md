@@ -1,10 +1,11 @@
 # Changelog
 
-## TBD 
+## v1.4.0 (2024-29-05)
 
 ### Additions
 
 - Added the trace parent header to requests made via the Bugsnag request wrapper and allow configuration via new TracePropagationUrls property. [#109](https://github.com/bugsnag/bugsnag-unity-performance/pull/109)
+
 - Added methods to generate anonymous id value [#92](https://github.com/bugsnag/bugsnag-unity-performance/pull/92)
 
 ### Bug Fixes
