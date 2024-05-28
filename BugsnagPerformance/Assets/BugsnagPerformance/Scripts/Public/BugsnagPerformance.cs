@@ -361,6 +361,11 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        public static ISpanContext GetCurrentSpanContext()
+        {
+            return _sharedInstance._spanFactory.GetCurrentContext();
+        }
+
         public static void ReportAppStarted()
         {
             AppStartHandler.ReportAppStarted();
@@ -381,6 +386,32 @@ namespace BugsnagUnityPerformance
                 }
             }
         }
+
+        [Serializable]
+        private class PerformanceState
+        {
+            public string currentContextSpanId;
+            public string currentContextTraceId;
+            public PerformanceState(string currentContextSpanId, string currentContextTraceId)
+            {
+                this.currentContextSpanId = currentContextSpanId;
+                this.currentContextTraceId = currentContextTraceId;
+            }
+        } 
+
+        internal static string GetPerformanceState()
+        {
+            var context = GetCurrentSpanContext();
+            if (context != null)
+            {
+                var performanceState = new PerformanceState(context.SpanId, context.TraceId);
+                var json = JsonUtility.ToJson(performanceState);
+                return json;
+            }
+            return null;
+        }
+
+
 
     }
 }
