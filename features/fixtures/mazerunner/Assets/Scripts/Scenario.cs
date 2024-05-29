@@ -30,6 +30,10 @@ public class Scenario : MonoBehaviour
         {
             Endpoints = new EndpointConfiguration(host + "/notify", host + "/sessions")
         };
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            NotifierConfiguration.EnabledErrorTypes.OOMs = false;
+        }
     }
 
     public const string FAIL_URL = "https://localhost:994";
