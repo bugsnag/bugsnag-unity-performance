@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class AppVersion : Scenario
 {
-    public override void PrepareConfig(string apiKey, string host)
+    public override void PreparePerformanceConfig(string apiKey, string host)
     {
-        base.PrepareConfig(apiKey, host);
+        base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(1);
         Configuration.AppVersion = "1.2.3_AppVersion";
     }

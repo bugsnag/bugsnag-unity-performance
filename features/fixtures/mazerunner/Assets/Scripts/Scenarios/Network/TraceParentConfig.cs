@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class TraceParentConfig : Scenario
 {
-    public override void PrepareConfig(string apiKey, string host)
+    public override void PreparePerformanceConfig(string apiKey, string host)
     {
-        base.PrepareConfig(apiKey, host);
+        base.PreparePerformanceConfig(apiKey, host);
         Configuration.TracePropagationUrlMatchPatterns = new string[]{ "dosend" };
     }
 

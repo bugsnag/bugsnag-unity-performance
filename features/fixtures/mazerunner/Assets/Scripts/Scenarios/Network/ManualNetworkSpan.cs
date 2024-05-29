@@ -8,9 +8,9 @@ public class ManualNetworkSpan : Scenario
 
     private Span _span;
 
-    public override void PrepareConfig(string apiKey, string host)
+    public override void PreparePerformanceConfig(string apiKey, string host)
     {
-        base.PrepareConfig(apiKey, host);
+        base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchAgeSeconds(1);
     }
 
