@@ -34,6 +34,10 @@ public class Scenario : MonoBehaviour
         {
             NotifierConfiguration.EnabledErrorTypes.OOMs = false;
         }
+         if (Application.platform == RuntimePlatform.Android)
+        {
+            NotifierConfiguration.EnabledErrorTypes.Crashes = false;
+        }
     }
 
     public const string FAIL_URL = "https://localhost:994";
