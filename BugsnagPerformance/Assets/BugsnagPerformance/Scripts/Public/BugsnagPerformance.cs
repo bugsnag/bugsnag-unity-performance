@@ -410,7 +410,7 @@ namespace BugsnagUnityPerformance
                 var json = JsonUtility.ToJson(performanceState);
                 return json;
             }
-            return null;
+            return string.Empty;
         }
 
 
