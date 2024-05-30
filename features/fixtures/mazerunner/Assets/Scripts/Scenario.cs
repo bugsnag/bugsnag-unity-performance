@@ -44,7 +44,8 @@ public class Scenario : MonoBehaviour
 
     public virtual void StartBugsnag()
     {
-        if(ShouldStartNotifier){
+        if(ShouldStartNotifier)
+        {
             Bugsnag.Start(NotifierConfiguration);
         }
         BugsnagPerformance.Start(Configuration);
