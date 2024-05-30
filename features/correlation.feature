@@ -41,6 +41,7 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.spanId" is stored as the value "main_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.traceId" is stored as the value "main_trace_id"
 
+    * I sort the errors by the payload field "events.0.exceptions.0.message"
 
     * the exception "message" equals "Event From Main Thread"
     * the error payload field "events.0.correlation.spanid" equals the stored value "main_span_id"
