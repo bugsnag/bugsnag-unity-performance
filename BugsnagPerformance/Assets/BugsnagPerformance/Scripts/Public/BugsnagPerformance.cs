@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using BugsnagNetworking;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 
 namespace BugsnagUnityPerformance
 {
@@ -399,6 +400,7 @@ namespace BugsnagUnityPerformance
             }
         } 
 
+        [Preserve]
         internal static string GetPerformanceState()
         {
             var context = GetCurrentSpanContext();
@@ -408,7 +410,7 @@ namespace BugsnagUnityPerformance
                 var json = JsonUtility.ToJson(performanceState);
                 return json;
             }
-            return null;
+            return string.Empty;
         }
 
 

@@ -1,8 +1,10 @@
 # Changelog
 
-## v1.4.0 (2024-29-05)
+## v1.4.0 (2024-30-05)
 
 ### Additions
+
+- Added error correlation functionality so that when a compatible version of the [Bugsnag Unity Error Notifier](https://github.com/bugsnag/bugsnag-unity) is used, it can get the current SpanContext and attach it to error reports. [#112](https://github.com/bugsnag/bugsnag-unity-performance/pull/112)
 
 - Added the trace parent header to requests made via the Bugsnag request wrapper and allow configuration via new TracePropagationUrls property. [#109](https://github.com/bugsnag/bugsnag-unity-performance/pull/109)
 

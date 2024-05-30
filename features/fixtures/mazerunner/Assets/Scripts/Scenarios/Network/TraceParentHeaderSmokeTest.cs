@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class TraceParentHeaderSmokeTest : Scenario
 {
-    public override void PrepareConfig(string apiKey, string host)
+    public override void PreparePerformanceConfig(string apiKey, string host)
     {
-        base.PrepareConfig(apiKey, host);
+        base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(1);
     }
 

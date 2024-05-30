@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class AppStartFull : Scenario
 {
-    public override void PrepareConfig(string apiKey, string host)
+    public override void PreparePerformanceConfig(string apiKey, string host)
     {
-        base.PrepareConfig(apiKey, host);
+        base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchAgeSeconds(5);
         Configuration.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
     }
