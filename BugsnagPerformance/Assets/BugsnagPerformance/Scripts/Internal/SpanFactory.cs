@@ -89,7 +89,7 @@ namespace BugsnagUnityPerformance
             {
                 AddToContextStack(newSpan);
             }
-
+            newSpan.SetAttribute("net.host.connection.type", GetConnectionType());
             return newSpan;
         }
 
@@ -105,7 +105,6 @@ namespace BugsnagUnityPerformance
             span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", verb);
-            span.SetAttribute("net.host.connection.type", GetConnectionType());
             return span;
         }
 
@@ -126,7 +125,6 @@ namespace BugsnagUnityPerformance
             span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", httpVerb.ToString());
-            span.SetAttribute("net.host.connection.type", GetConnectionType());
             return span;
         }
 
@@ -171,7 +169,7 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        private ISpanContext GetCurrentContext()
+        internal ISpanContext GetCurrentContext()
         {
             if (_contextStack == null || _contextStack.Count == 0)
             {

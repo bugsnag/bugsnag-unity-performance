@@ -24,6 +24,8 @@ namespace BugsnagUnityPerformance
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
+      
+        public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
 
@@ -32,6 +34,8 @@ namespace BugsnagUnityPerformance
         public Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> NetworkRequestCallback;
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
+
+        public String[] TracePropagationUrlMatchPatterns;
 
         public PerformanceConfiguration(string apiKey)
         {

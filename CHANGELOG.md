@@ -1,13 +1,30 @@
 # Changelog
 
+## v1.4.0 (2024-30-05)
+
+### Additions
+
+- Added error correlation functionality so that when a compatible version of the [Bugsnag Unity Error Notifier](https://github.com/bugsnag/bugsnag-unity) is used, it can get the current SpanContext and attach it to error reports. [#112](https://github.com/bugsnag/bugsnag-unity-performance/pull/112)
+
+- Added the trace parent header to requests made via the Bugsnag request wrapper and allow configuration via new TracePropagationUrls property. [#109](https://github.com/bugsnag/bugsnag-unity-performance/pull/109)
+
+- Added methods to generate anonymous id value [#92](https://github.com/bugsnag/bugsnag-unity-performance/pull/92)
+
+### Bug Fixes
+
+- Fixed issue where the net.host.connection.type span attribute was not present in all spans [#114](https://github.com/bugsnag/bugsnag-unity-performance/pull/114)
+
 ## v1.3.4 (2024-04-29)
+
+### Additions
+
+- Discard open spans when app is backgrounded [#105](https://github.com/bugsnag/bugsnag-unity-performance/pull/105)
 
 ### Bug Fixes
 
 - Fixed issue where spans could not be ended with a custom end time. [#106](https://github.com/bugsnag/bugsnag-unity-performance/pull/106)
 
 - Fixed issue where custom spans with the SpanOption IsFirstClass set to false still had it reported as true. [#107](https://github.com/bugsnag/bugsnag-unity-performance/pull/107)
-
 
 ## v1.3.3 (2024-03-07)
 

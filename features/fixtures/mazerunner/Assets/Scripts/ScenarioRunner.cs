@@ -9,7 +9,8 @@ public class ScenarioRunner : MonoBehaviour
     public void RunScenario(string scenarioName, string apiKey, string host)
     {
         var scenario = GetScenario(scenarioName);
-        scenario.PrepareConfig(apiKey, host);
+        scenario.PreparePerformanceConfig(apiKey, host);
+        scenario.PrepareNotifierConfig(apiKey, host);
         scenario.StartBugsnag();
         scenario.Run();
     }

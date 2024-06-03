@@ -1,15 +1,14 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using BugsnagNetworking;
 using UnityEngine;
 
-public class NetworkPostFail : Scenario
+public class TraceParentConfig : Scenario
 {
-
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchSize(1);
+        Configuration.TracePropagationUrlMatchPatterns = new string[]{ "dosend" };
     }
 
     public override void Run()
@@ -19,9 +18,8 @@ public class NetworkPostFail : Scenario
 
     private IEnumerator DoRun()
     {
-        yield return BugsnagUnityWebRequest.Post(FAIL_URL, "1234567890").SendWebRequest();
+        yield return BugsnagUnityWebRequest.Get(Main.MazeHost + "/reflect?dontSend").SendWebRequest();
         yield return new WaitForSeconds(1);
-        BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
+        yield return BugsnagUnityWebRequest.Get(Main.MazeHost + "/reflect?dosend").SendWebRequest();
     }
-
 }

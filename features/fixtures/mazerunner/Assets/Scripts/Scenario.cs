@@ -4,14 +4,18 @@ using UnityEngine;
 using System;
 using BugsnagUnityPerformance;
 using System.Reflection;
-using static System.Net.WebRequestMethods;
+using BugsnagUnity;
 
 public class Scenario : MonoBehaviour
 {
 
     public PerformanceConfiguration Configuration;
 
-    public virtual void PrepareConfig(string apiKey, string host)
+    public Configuration NotifierConfiguration;
+
+    public bool ShouldStartNotifier;
+
+    public virtual void PreparePerformanceConfig(string apiKey, string host)
     {
         Configuration = new PerformanceConfiguration(apiKey)
         {
@@ -20,10 +24,30 @@ public class Scenario : MonoBehaviour
         };
     }
 
+    public virtual void PrepareNotifierConfig(string apiKey, string host)
+    {
+        NotifierConfiguration = new Configuration(apiKey)
+        {
+            Endpoints = new EndpointConfiguration(host + "/notify", host + "/sessions")
+        };
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            NotifierConfiguration.EnabledErrorTypes.OOMs = false;
+        }
+         if (Application.platform == RuntimePlatform.Android)
+        {
+            NotifierConfiguration.EnabledErrorTypes.Crashes = false;
+        }
+    }
+
     public const string FAIL_URL = "https://localhost:994";
 
     public virtual void StartBugsnag()
     {
+        if(ShouldStartNotifier)
+        {
+            Bugsnag.Start(NotifierConfiguration);
+        }
         BugsnagPerformance.Start(Configuration);
     }
 

@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+using BugsnagNetworking;
 using BugsnagUnityPerformance;
 using UnityEngine;
 
-public class SceneLoadByIndex : Scenario
+public class TraceParentHeaderSmokeTest : Scenario
 {
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
@@ -13,6 +14,7 @@ public class SceneLoadByIndex : Scenario
 
     public override void Run()
     {
-        BugsnagSceneManager.LoadScene(1);
+        BugsnagUnityWebRequest.Get(Main.MazeHost + "/reflect").SendWebRequest();
     }
+
 }
