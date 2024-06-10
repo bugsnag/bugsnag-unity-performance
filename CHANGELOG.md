@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fixed issue where creating a span in a background thread caused an exception (mono or IL2CPP Dev builds only) [#117](https://github.com/bugsnag/bugsnag-unity-performance/pull/117)
+
 ## v1.4.0 (2024-30-05)
 
 ### Additions

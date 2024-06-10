@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using BugsnagNetworking;
@@ -16,9 +17,18 @@ namespace BugsnagUnityPerformance
 
         private OnSpanEnd _onSpanEnd;
 
+        private const string CONNECTION_TYPE_UNAVAILABLE = "unavailable";
+        private const string CONNECTION_TYPE_CELL = "cell";
+        private const string CONNECTION_TYPE_WIFI = "wifi";
+    
+        private string _currentConnectionType = CONNECTION_TYPE_UNAVAILABLE;
+
+        private WaitForSeconds _connectionPollRate = new WaitForSeconds(1);
+
         public SpanFactory(OnSpanEnd onSpanEnd)
         {
             _onSpanEnd = onSpanEnd;
+            MainThreadDispatchBehaviour.Instance().StartCoroutine(GetConnectionType());
         }
 
         private string GetNewTraceId()
@@ -89,7 +99,7 @@ namespace BugsnagUnityPerformance
             {
                 AddToContextStack(newSpan);
             }
-            newSpan.SetAttribute("net.host.connection.type", GetConnectionType());
+            newSpan.SetAttribute("net.host.connection.type",_currentConnectionType);
             return newSpan;
         }
 
@@ -128,18 +138,24 @@ namespace BugsnagUnityPerformance
             return span;
         }
 
-        private string GetConnectionType()
+        private IEnumerator GetConnectionType()
         {
-            switch (Application.internetReachability)
+            while(true)
             {
-                case NetworkReachability.NotReachable:
-                    return "unavailable";
-                case NetworkReachability.ReachableViaCarrierDataNetwork:
-                    return "cell";
-                case NetworkReachability.ReachableViaLocalAreaNetwork:
-                    return "wifi";
-                default:
-                    return string.Empty;
+                switch (Application.internetReachability)
+                {
+                    case NetworkReachability.NotReachable:
+                        _currentConnectionType = CONNECTION_TYPE_UNAVAILABLE;
+                        break;
+                    case NetworkReachability.ReachableViaCarrierDataNetwork:
+                        _currentConnectionType = CONNECTION_TYPE_CELL;
+                        break;
+                    case NetworkReachability.ReachableViaLocalAreaNetwork:
+                        _currentConnectionType = CONNECTION_TYPE_WIFI;
+                        break;
+
+                }
+                yield return _connectionPollRate;
             }
         }
 
