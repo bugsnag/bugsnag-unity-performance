@@ -16,14 +16,16 @@ popd
 pushd "$script_path/../fixtures"
 
 # Run unity and immediately exit afterwards, log all output
-DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_android.log"
+DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_android_dev.log"
 
 project_path=`pwd`/mazerunner
 
 # Build for Android
 
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.AndroidBuildRelease
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.AndroidBuildDev
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-mv $project_path/mazerunner.apk $project_path/mazerunner_${UNITY_PERFORMANCE_VERSION:0:4}.apk
+mv $project_path/mazerunner-dev.apk $project_path/mazerunner-dev_${UNITY_PERFORMANCE_VERSION:0:4}.apk
+
+

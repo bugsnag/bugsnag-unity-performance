@@ -97,6 +97,19 @@ namespace :test do
         raise 'Android APK build failed'
       end
     end
+     task :build_dev do
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the Android APK
+      script = File.join("features", "scripts", "build_android_dev.sh")
+      unless system script
+        raise 'Android Dev APK build failed'
+      end
+    end
   end
 
   namespace :macos do

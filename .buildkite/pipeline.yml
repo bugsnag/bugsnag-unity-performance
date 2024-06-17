@@ -176,6 +176,28 @@ steps:
         - exit_status: '*'
           limit: 1
 
+  - label: ':android: Build Android Dev test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: build-android-dev-fixture-2021
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/mazerunner-dev_2021.apk
+          - features/fixtures/import_package.log
+          - features/fixtures/build_android_dev.log
+    commands:
+      - bundle install
+      - 'rake test:android:build_dev'
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
   - label: ':bitbar: Run Android e2e tests for Unity 2021'
     timeout_in_minutes: 60
     depends_on: build-android-fixture-2021
