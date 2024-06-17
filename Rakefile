@@ -159,6 +159,21 @@ namespace :test do
         raise 'webgl build failed'
       end
     end
+
+    task :build_dev do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the webgl App
+      script = File.join("features", "scripts", "build_webgl_dev.sh")
+      unless system script
+        raise 'webgl build failed'
+      end
+    end
   end
 
   namespace :ios do
