@@ -22,7 +22,7 @@ project_path=`pwd`/mazerunner
 
 # Build for Android
 
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.AndroidBuildDev
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.AndroidDev
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 

@@ -20,7 +20,7 @@ DEFAULT_CLI_ARGS="-quit -nographics -batchmode -logFile generateXcodeProject.log
 project_path=`pwd`/mazerunner
 
 # Generate the Xcode project for iOS
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.IosBuildRelease
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.IosRelease
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 

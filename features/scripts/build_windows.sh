@@ -25,7 +25,7 @@ rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
 UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
 "$UNITY_PATH" $DEFAULT_CLI_ARGS \
   -projectPath "$win_project_path" \
-  -executeMethod "Builder.Windows"
+  -executeMethod "Builder.WindowsRelease"
 
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi

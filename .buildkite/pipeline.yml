@@ -154,6 +154,44 @@ steps:
     commands:
       - features/scripts/run-macos-ci-tests.sh
 
+  - label: ':macos: Build macos DEV test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: build-macos-dev-fixture-2021
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/mazerunner/mazerunner_macos_dev_2021.zip
+          - features/fixtures/build_macos.log
+    commands:
+      - bundle install
+      - 'rake test:macos:build_dev'
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: Run MacOS e2e tests for Unity 2021
+    timeout_in_minutes: 60
+    depends_on: build-macos-dev-fixture-2021
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.5.0':
+        download:
+          - features/fixtures/mazerunner/mazerunner_macos_dev_2021.zip
+        upload:
+          - maze_output/**/*
+          - '*-mazerunner.log'
+          - 'clear_cache.log'
+          - maze_output/metrics.csv
+    commands:
+      - features/scripts/run-macos-ci-tests-dev.sh
+
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-android-fixture-2021

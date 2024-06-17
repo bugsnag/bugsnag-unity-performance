@@ -31,12 +31,12 @@ fi
 DEFAULT_CLI_ARGS="-quit -batchmode -nographics -logFile build_macos.log"
 
 # Build for MacOS
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.MacOSRelease
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.MacOSDev
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-mv $project_path/mazerunner_macos.app $project_path/mazerunner_macos_${UNITY_PERFORMANCE_VERSION:0:4}.app
+mv $project_path/mazerunner_macos_dev.app $project_path/mazerunner_macos_dev_${UNITY_PERFORMANCE_VERSION:0:4}.app
 
-(cd $project_path && zip -q -r mazerunner_macos_${UNITY_PERFORMANCE_VERSION:0:4}.zip mazerunner_macos_${UNITY_PERFORMANCE_VERSION:0:4}.app)
+(cd $project_path && zip -q -r mazerunner_macos_dev_${UNITY_PERFORMANCE_VERSION:0:4}.zip mazerunner_macos_dev_${UNITY_PERFORMANCE_VERSION:0:4}.app)
 
 popd

@@ -8,7 +8,7 @@ using UnityEditor.Callbacks;
 public class Builder : MonoBehaviour
 {
 
-    static void BuildStandalone(string folder, BuildTarget target, bool dev = false)
+    static void BuildStandalone(string folder, BuildTarget target, bool dev)
     {
         BuildPlayerOptions opts = new BuildPlayerOptions();
         var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
@@ -19,32 +19,60 @@ public class Builder : MonoBehaviour
         BuildPipeline.BuildPlayer(opts);
     }
 
-    public static void MacOS()
+    public static void MacOSRelease()
     {
-        BuildStandalone("mazerunner_macos", BuildTarget.StandaloneOSX);
+        BuildMacOS(false);
     }
 
-    public static void Windows()
+    public static void MacOSDev()
     {
-        BuildStandalone("build/Windows/mazerunner_windows.exe", BuildTarget.StandaloneWindows64);
+        BuildMacOS(true);
+    }
+    static void BuildMacOS(bool dev)
+    {
+        BuildStandalone(dev ? "mazerunner_macos_dev" : "mazerunner_macos", BuildTarget.StandaloneOSX, dev);
     }
 
-    public static void WebGL()
+    public static void WindowsRelease()
     {
-        BuildStandalone("mazerunner_webgl", BuildTarget.WebGL);
+        BuildWindows(false);
+    }
+
+    public static void WindowsDev()
+    {
+        BuildWindows(false);
+    }
+    static void BuildWindows(bool dev)
+    {
+        BuildStandalone(dev ? "build/Windows/mazerunner_windows_dev.exe" : "build/Windows/mazerunner_windows.exe", BuildTarget.StandaloneWindows64, dev);
+    }
+
+    public static void WebGLRelease()
+    {
+        BuildWebGL(false);
+    }
+
+    public static void WebGLDev()
+    {
+        BuildWebGL(true);
+    }
+
+    static void BuildWebGL(bool dev)
+    {
+        BuildStandalone(dev ? "mazerunner_webgl_dev" : "mazerunner_webgl", BuildTarget.WebGL,dev);
     }
 
     // Generates the Mazerunner APK
-    public static void AndroidBuildRelease()
+    public static void AndroidRelease()
     {
-        AndroidBuild(false);
+        BuildAndroid(false);
     }
 
-    public static void AndroidBuildDev()
+    public static void AndroidDev()
     {
-        AndroidBuild(true);
+        BuildAndroid(true);
     }
-    static void AndroidBuild(bool dev)
+    static void BuildAndroid(bool dev)
     {
         Debug.Log("Building Android app...");
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.bugsnag.fixtures.unity.performance.android");
@@ -61,13 +89,13 @@ public class Builder : MonoBehaviour
 
     // Generates the Mazerunner IPA
     
-    public static void IosBuildRelease(){
-        IosBuild(false);
+    public static void IosRelease(){
+        BuildIos(false);
     }
-    public static void IosBuildDev(){
-        IosBuild(true);
+    public static void IosDev(){
+        BuildIos(true);
     }
-    static void IosBuild(bool dev)
+    static void BuildIos(bool dev)
     {
         Debug.Log("Building iOS app...");
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.bugsnag.fixtures.unity.performance.ios");
