@@ -332,7 +332,7 @@ steps:
           - upm-package.zip
         upload:
           - features/fixtures/generateXcodeProject.log
-          - project_2021.tgz
+          - dev_project_2021.tgz
     commands:
       - bundle install
       - 'rake test:ios:generate_xcode_dev'

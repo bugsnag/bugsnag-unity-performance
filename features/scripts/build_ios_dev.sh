@@ -10,7 +10,7 @@ project_path=`pwd`/mazerunner
 find $project_path/output/ -name "*.ipa" -exec rm '{}' \;
 
 # Archive and export the project
-xcrun xcodebuild -project $project_path/mazerunner_xcode/Unity-iPhone.xcodeproj \
+xcrun xcodebuild -project $project_path/mazerunner_dev_xcode/Unity-iPhone.xcodeproj \
                  -scheme Unity-iPhone \
                  -configuration Debug \
                  -archivePath $project_path/archive/Unity-iPhone.xcarchive \
