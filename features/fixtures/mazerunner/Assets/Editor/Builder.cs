@@ -57,8 +57,17 @@ public class Builder : MonoBehaviour
         Debug.Log("Result: " + result);
     }
 
+
+
     // Generates the Mazerunner IPA
-    public static void IosBuild()
+    
+    public static void IosBuildRelease(){
+        IosBuild(false);
+    }
+    public static void IosBuildDev(){
+        IosBuild(true);
+    }
+    static void IosBuild(bool dev)
     {
         Debug.Log("Building iOS app...");
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.bugsnag.fixtures.unity.performance.ios");
@@ -66,7 +75,7 @@ public class Builder : MonoBehaviour
         PlayerSettings.iOS.appleEnableAutomaticSigning = true;
         PlayerSettings.iOS.allowHTTPDownload = true;
 
-        var opts = CommonMobileBuildOptions("mazerunner_xcode", false);
+        var opts = CommonMobileBuildOptions(dev ? "mazerunner_dev_xcode" : "mazerunner_xcode", dev);
         opts.target = BuildTarget.iOS;
 
         var result = BuildPipeline.BuildPlayer(opts);

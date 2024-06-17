@@ -164,10 +164,37 @@ namespace :test do
       end
     end
 
+    task :generate_xcode_dev do
+
+      # Prepare the test fixture project by importing the plugins
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import_package failed'
+      end
+
+      # Generate the Xcode project
+      cd "features" do
+        script = File.join("scripts", "generate_xcode_project_dev.sh")
+        unless system script
+          raise 'generate_xcode_project_dev failed'
+        end
+      end
+    end
+
     task :build_xcode do
       # Build and archive from the Xcode project
       cd "features" do
         script = File.join("scripts", "build_ios.sh")
+        unless system script
+          raise 'IPA build failed'
+        end
+      end
+    end
+
+     task :build_xcode_dev do
+      # Build and archive from the Xcode project
+      cd "features" do
+        script = File.join("scripts", "build_ios_dev.sh")
         unless system script
           raise 'IPA build failed'
         end

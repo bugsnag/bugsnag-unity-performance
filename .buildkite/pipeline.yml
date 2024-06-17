@@ -319,6 +319,77 @@ steps:
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
+  - label: ':ios: Generate Xcode DEV project - Unity 2021'
+    timeout_in_minutes: 30
+    key: generate-dev-fixture-project-2021
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+        upload:
+          - features/fixtures/generateXcodeProject.log
+          - project_2021.tgz
+    commands:
+      - bundle install
+      - 'rake test:ios:generate_xcode_dev'
+      - tar -zvcf dev_project_2021.tgz features/fixtures/mazerunner/mazerunner_dev_xcode
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: ':ios: Build iOS DEV test fixture for Unity 2021'
+    timeout_in_minutes: 30
+    key: build-ios-dev-fixture-2021
+    depends_on: generate-dev-fixture-project-2021
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - dev_project_2021.tgz
+        upload:
+          - features/fixtures/mazerunner/mazerunner_dev_2021.ipa
+          - features/fixtures/unity.log
+    commands:
+      - bundle install
+      - tar -zxf dev_project_2021.tgz features/fixtures/mazerunner
+      - 'rake test:ios:build_xcode_dev'
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: ':bitbar: Run iOS DEV e2e tests for Unity 2021'
+    timeout_in_minutes: 60
+    depends_on: build-ios-dev-fixture-2021
+    agents:
+      queue: opensource
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - features/fixtures/mazerunner/mazerunner_dev_2021.ipa
+        upload:
+          - maze_output/**/*
+      'docker-compose#v4.8.0':
+        pull: maze-runner
+        run: maze-runner
+        service-ports: true
+        command:
+          - '--app=/app/features/fixtures/mazerunner/mazerunner_dev_2021.ipa'
+          - '--farm=bb'
+          - '--device=IOS_15'
+          - '--no-tunnel'
+          - '--aws-public-ip'
+          - '--fail-fast'
+    concurrency: 25
+    concurrency_group: bitbar
+    concurrency_method: eager
+
   - label: Conditionally trigger full set of tests
     timeout_in_minutes: 30
     command: sh -c .buildkite/pipeline_trigger.sh
