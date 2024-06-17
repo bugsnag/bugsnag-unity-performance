@@ -175,7 +175,7 @@ steps:
         - exit_status: '*'
           limit: 1
 
-  - label: Run MacOS e2e tests for Unity 2021
+  - label: Run MacOS DEV e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-macos-dev-fixture-2021
     env:
