@@ -32,5 +32,5 @@ if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
 # Zip up the built artifacts
 cd features/fixtures/mazerunner/build
-zip -r Windows-${UNITY_PERFORMANCE_VERSION:0:4}.zip Windows
+zip -r Windows-dev-${UNITY_PERFORMANCE_VERSION:0:4}.zip Windows
 

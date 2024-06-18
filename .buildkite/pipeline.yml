@@ -167,7 +167,7 @@ steps:
         download:
           - upm-package.zip
         upload:
-          - features/fixtures/mazerunner/build/Windows-2021.zip
+          - features/fixtures/mazerunner/build/Windows-dev-2021.zip
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
@@ -187,7 +187,7 @@ steps:
     plugins:
       'artifacts#v1.5.0':
         download:
-          - features/fixtures/mazerunner/build/Windows-2021.zip
+          - features/fixtures/mazerunner/build/Windows-dev-2021.zip
         upload:
           - maze_output/**/*
           - '*-mazerunner.log'
