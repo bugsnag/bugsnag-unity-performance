@@ -171,7 +171,7 @@ steps:
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
-      - features/scripts/build_windows.sh
+      - features/scripts/build_windows_dev.sh
     retry:
       automatic:
         - exit_status: '*'
