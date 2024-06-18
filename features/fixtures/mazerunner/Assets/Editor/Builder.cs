@@ -40,7 +40,7 @@ public class Builder : MonoBehaviour
 
     public static void WindowsDev()
     {
-        BuildWindows(false);
+        BuildWindows(true);
     }
     static void BuildWindows(bool dev)
     {
