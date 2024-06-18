@@ -133,8 +133,15 @@ After do |scenario|
   when 'macos'
     `killall Mazerunner`
   when 'windows'
-    #kill the windows fixture instead of gracefully closing it because it sometimes hangs when quitting, this is a unity bug.
-    Maze::Runner.run_command(`/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows.exe`)
+    executables = ['mazerunner_windows.exe', 'mazerunner_windows_dev.exe']
+
+    existing_executable = executables.find { |exe| File.exist?(exe) }
+
+    if existing_executable
+      Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /IM #{existing_executable}")
+    else
+      raise "Neither mazerunner_windows.exe nor mazerunner_windows_dev.exe was found."
+    end
   when 'webgl'
     execute_command('close_application')
   when 'switch'
