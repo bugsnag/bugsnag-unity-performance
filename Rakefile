@@ -187,7 +187,7 @@ namespace :test do
 
       # Generate the Xcode project
       cd "features" do
-        script = File.join("scripts", "generate_xcode_project.sh")
+        script = File.join("scripts", "generate_xcode_project.sh release")
         unless system script
           raise 'generate_xcode_project failed'
         end
@@ -204,7 +204,7 @@ namespace :test do
 
       # Generate the Xcode project
       cd "features" do
-        script = File.join("scripts", "generate_xcode_project_dev.sh")
+        script = File.join("scripts", "generate_xcode_project.sh dev")
         unless system script
           raise 'generate_xcode_project_dev failed'
         end
@@ -214,7 +214,7 @@ namespace :test do
     task :build_xcode do
       # Build and archive from the Xcode project
       cd "features" do
-        script = File.join("scripts", "build_ios.sh")
+        script = File.join("scripts", "build_ios.sh release")
         unless system script
           raise 'IPA build failed'
         end
@@ -224,7 +224,7 @@ namespace :test do
      task :build_xcode_dev do
       # Build and archive from the Xcode project
       cd "features" do
-        script = File.join("scripts", "build_ios_dev.sh")
+        script = File.join("scripts", "build_ios.sh dev")
         unless system script
           raise 'IPA build failed'
         end

@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+if [ -z "$1" ]
+then
+  echo "Build type must be specified (dev or release)"
+  exit 1
+fi
+
+BUILD_TYPE=$1
+
+if [ "$BUILD_TYPE" != "dev" ] && [ "$BUILD_TYPE" != "release" ]
+then
+  echo "Invalid build type specified. Use 'dev' or 'release'."
+  exit 1
+fi
+
 pushd "${0%/*}"
   script_path=`pwd`
 popd
@@ -9,8 +23,17 @@ project_path=`pwd`/mazerunner
 # Clean any previous builds
 find $project_path/output/ -name "*.ipa" -exec rm '{}' \;
 
+# Determine project path based on build type
+if [ "$BUILD_TYPE" == "dev" ]; then
+  PROJECT_DIR="$project_path/mazerunner_dev_xcode"
+  IPA_NAME="mazerunner_dev"
+else
+  PROJECT_DIR="$project_path/mazerunner_xcode"
+  IPA_NAME="mazerunner"
+fi
+
 # Archive and export the project
-xcrun xcodebuild -project $project_path/mazerunner_xcode/Unity-iPhone.xcodeproj \
+xcrun xcodebuild -project $PROJECT_DIR/Unity-iPhone.xcodeproj \
                  -scheme Unity-iPhone \
                  -configuration Debug \
                  -archivePath $project_path/archive/Unity-iPhone.xcarchive \
@@ -38,4 +61,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Move to known location for running (note - the name of the .ipa differs between Xcode versions)
-find $project_path/output/ -name "*.ipa" -exec mv '{}' $project_path/mazerunner_${UNITY_PERFORMANCE_VERSION:0:4}.ipa \;
+find $project_path/output/ -name "*.ipa" -exec mv '{}' $project_path/${IPA_NAME}_${UNITY_PERFORMANCE_VERSION:0:4}.ipa \;
+
+popd
