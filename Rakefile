@@ -92,7 +92,7 @@ namespace :test do
       end
 
       # Build the Android APK
-      script = File.join("features", "scripts", "build_android.sh")
+      script = File.join("features", "scripts", "build_android.sh release")
       unless system script
         raise 'Android APK build failed'
       end
@@ -105,7 +105,7 @@ namespace :test do
       end
 
       # Build the Android APK
-      script = File.join("features", "scripts", "build_android_dev.sh")
+      script = File.join("features", "scripts", "build_android.sh dev")
       unless system script
         raise 'Android Dev APK build failed'
       end
