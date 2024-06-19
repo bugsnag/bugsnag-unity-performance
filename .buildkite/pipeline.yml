@@ -71,7 +71,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-webgl-ci-tests.sh
+      - features/scripts/run-webgl-ci-tests.sh release
 
   - label: ':webgl: Build webgl DEV test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -109,7 +109,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-webgl-ci-tests-dev.sh
+      - features/scripts/run-webgl-ci-tests.sh dev
 
 
   - label: ':windows: Build Windows test fixture for Unity 2021'

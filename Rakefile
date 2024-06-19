@@ -154,7 +154,7 @@ namespace :test do
       end
 
       # Build the webgl App
-      script = File.join("features", "scripts", "build_webgl.sh")
+      script = File.join("features", "scripts", "build_webgl.sh release")
       unless system script
         raise 'webgl build failed'
       end
@@ -169,7 +169,7 @@ namespace :test do
       end
 
       # Build the webgl App
-      script = File.join("features", "scripts", "build_webgl_dev.sh")
+      script = File.join("features", "scripts", "build_webgl.sh dev")
       unless system script
         raise 'webgl build failed'
       end
