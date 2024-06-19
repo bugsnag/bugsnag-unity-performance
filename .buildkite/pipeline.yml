@@ -233,7 +233,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-macos-ci-tests.sh
+      - features/scripts/run-macos-ci-tests.sh release
 
   - label: ':macos: Build macos DEV test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -271,7 +271,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-macos-ci-tests-dev.sh
+      - features/scripts/run-macos-ci-tests.sh dev
 
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30

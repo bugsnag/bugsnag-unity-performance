@@ -122,7 +122,7 @@ namespace :test do
       end
 
       # Build the Mac App
-      script = File.join("features", "scripts", "build_macos.sh")
+      script = File.join("features", "scripts", "build_macos.sh release")
       unless system script
         raise 'macos build failed'
       end
@@ -137,7 +137,7 @@ namespace :test do
       end
 
       # Build the Mac App
-      script = File.join("features", "scripts", "build_macos_dev.sh")
+      script = File.join("features", "scripts", "build_macos.sh dev")
       unless system script
         raise 'macos build failed'
       end
