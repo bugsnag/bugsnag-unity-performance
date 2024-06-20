@@ -100,7 +100,7 @@ steps:
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
-      - features/scripts/build_windows.sh
+      - features/scripts/build_windows.sh release
     retry:
       automatic:
         - exit_status: '*'
@@ -123,7 +123,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-windows-ci-tests.sh
+      - features/scripts/run-windows-ci-tests.sh release
 
   - label: ':windows: Build Windows test fixture for Unity 2022'
     timeout_in_minutes: 30
@@ -142,7 +142,7 @@ steps:
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
-      - features/scripts/build_windows.sh
+      - features/scripts/build_windows.sh release
     retry:
       automatic:
         - exit_status: '*'
@@ -165,7 +165,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-windows-ci-tests.sh
+      - features/scripts/run-windows-ci-tests.sh release
 
   - label: ':android: Build Android test fixture for Unity 2020'
     timeout_in_minutes: 30
