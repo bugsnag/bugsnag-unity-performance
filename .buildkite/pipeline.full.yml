@@ -43,7 +43,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-macos-ci-tests.sh
+      - features/scripts/run-macos-ci-tests.sh release
 
   - label: ':macos: Build macos test fixture for Unity 2022'
     timeout_in_minutes: 30
@@ -81,7 +81,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-macos-ci-tests.sh
+      - features/scripts/run-macos-ci-tests.sh release
 
   - label: ':windows: Build Windows test fixture for Unity 2020'
     timeout_in_minutes: 30
