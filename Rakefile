@@ -92,9 +92,22 @@ namespace :test do
       end
 
       # Build the Android APK
-      script = File.join("features", "scripts", "build_android.sh")
+      script = File.join("features", "scripts", "build_android.sh release")
       unless system script
         raise 'Android APK build failed'
+      end
+    end
+     task :build_dev do
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the Android APK
+      script = File.join("features", "scripts", "build_android.sh dev")
+      unless system script
+        raise 'Android Dev APK build failed'
       end
     end
   end
@@ -109,7 +122,22 @@ namespace :test do
       end
 
       # Build the Mac App
-      script = File.join("features", "scripts", "build_macos.sh")
+      script = File.join("features", "scripts", "build_macos.sh release")
+      unless system script
+        raise 'macos build failed'
+      end
+    end
+
+    task :build_dev do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the Mac App
+      script = File.join("features", "scripts", "build_macos.sh dev")
       unless system script
         raise 'macos build failed'
       end
@@ -126,7 +154,22 @@ namespace :test do
       end
 
       # Build the webgl App
-      script = File.join("features", "scripts", "build_webgl.sh")
+      script = File.join("features", "scripts", "build_webgl.sh release")
+      unless system script
+        raise 'webgl build failed'
+      end
+    end
+
+    task :build_dev do
+
+      # Prepare the test fixture project by importing the upm package
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import package failed'
+      end
+
+      # Build the webgl App
+      script = File.join("features", "scripts", "build_webgl.sh dev")
       unless system script
         raise 'webgl build failed'
       end
@@ -144,9 +187,26 @@ namespace :test do
 
       # Generate the Xcode project
       cd "features" do
-        script = File.join("scripts", "generate_xcode_project.sh")
+        script = File.join("scripts", "generate_xcode_project.sh release")
         unless system script
           raise 'generate_xcode_project failed'
+        end
+      end
+    end
+
+    task :generate_xcode_dev do
+
+      # Prepare the test fixture project by importing the plugins
+      script = File.join("features", "scripts", "import_package.sh")
+      unless system script
+        raise 'import_package failed'
+      end
+
+      # Generate the Xcode project
+      cd "features" do
+        script = File.join("scripts", "generate_xcode_project.sh dev")
+        unless system script
+          raise 'generate_xcode_project_dev failed'
         end
       end
     end
@@ -154,7 +214,17 @@ namespace :test do
     task :build_xcode do
       # Build and archive from the Xcode project
       cd "features" do
-        script = File.join("scripts", "build_ios.sh")
+        script = File.join("scripts", "build_ios.sh release")
+        unless system script
+          raise 'IPA build failed'
+        end
+      end
+    end
+
+     task :build_xcode_dev do
+      # Build and archive from the Xcode project
+      cd "features" do
+        script = File.join("scripts", "build_ios.sh dev")
         unless system script
           raise 'IPA build failed'
         end
