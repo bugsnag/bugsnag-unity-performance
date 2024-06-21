@@ -80,7 +80,9 @@ BeforeAll do
     release_path = "features/fixtures/mazerunner/mazerunner_webgl_#{unity_version[0, 4]}"
     dev_path = "features/fixtures/mazerunner/mazerunner_webgl_dev_#{unity_version[0, 4]}"
 
-    if File.exist?(release_path)
+    if File.exist?(release_path) && File.exist?(dev_path)
+      raise "Both webgl builds exist: #{release_path} and #{dev_path}"
+    elsif File.exist?(release_path)
       Maze.config.document_server_root = release_path
     elsif File.exist?(dev_path)
       Maze.config.document_server_root = dev_path
