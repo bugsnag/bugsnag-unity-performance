@@ -85,4 +85,21 @@ Feature: Nested Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2" bool attribute "bugsnag.span.first_class" is false
 
 
+  Scenario: Pass Context With Make Context False
+    When I run the game in the "PassContextWithMakeContextFalse" state
+    And I wait for 3 spans
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:3"
+
+    * the span named "span1" exists
+    * the span named "span2" exists
+    * the span named "span3" exists
+
+    * the span named "span1" has no parent
+
+    * the span named "span1" is the parent of the span named "span2"
+
+    * the span named "span3" has no parent
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.2 (2024-06-27)
+
+### Bug Fixes
+
+- Fix an issue where spans with MakeCurrentContext set to false and passed as a parent would be added to the context stack. [#122](https://github.com/bugsnag/bugsnag-unity-performance/pull/122)
+
 ## v1.4.1 (2024-11-06)
 
 ### Bug Fixes
