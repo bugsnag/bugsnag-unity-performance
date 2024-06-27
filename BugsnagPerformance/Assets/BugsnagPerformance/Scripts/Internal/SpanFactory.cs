@@ -72,27 +72,29 @@ namespace BugsnagUnityPerformance
 
         private Span CreateSpan(string name, SpanKind kind, SpanOptions spanOptions)
         {
-                        
-            if (spanOptions.ParentContext != null)
-            {
-                AddToContextStack(spanOptions.ParentContext);
-            }
-
-            string traceId = string.Empty;
             string parentSpanId = null;
+            string traceId;
             string spanId = GetNewSpanId();
 
-            var existingContext = GetCurrentContext();
-            if (existingContext != null)
+            if (spanOptions.ParentContext != null)
             {
-                traceId = existingContext.TraceId;
-                parentSpanId = existingContext.SpanId;
+                traceId = spanOptions.ParentContext.TraceId;
+                parentSpanId = spanOptions.ParentContext.SpanId;
             }
             else
             {
-                traceId = GetNewTraceId();
+                var existingContext = GetCurrentContext();
+                if (existingContext != null)
+                {
+                    traceId = existingContext.TraceId;
+                    parentSpanId = existingContext.SpanId;
+                }
+                else
+                {
+                    traceId = GetNewTraceId();
+                }
             }
-
+           
             var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd);
 
             if (spanOptions.MakeCurrentContext)
