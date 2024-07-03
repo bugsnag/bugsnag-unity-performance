@@ -59,6 +59,14 @@ public class Main : MonoBehaviour
     private IEnumerator SpanRoutine()
     {
         var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
+        span.AddAttribute("my string attribute", "some value");
+        span.AddAttribute("my string[] attribute", new string[]{"a","b","c"});
+        span.AddAttribute("my int attribute", 42);
+        span.AddAttribute("my int[] attribute", new int[]{1, 2, 3});
+        span.AddAttribute("my bool attribute", true);
+        span.AddAttribute("my bool[] attribute", new bool[]{true, false, true});
+        span.AddAttribute("my double attribute", 3.14);
+        span.AddAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
         yield return new WaitForSeconds(0.1f);
         span.End();
     }

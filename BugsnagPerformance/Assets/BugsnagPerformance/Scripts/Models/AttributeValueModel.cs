@@ -1,8 +1,10 @@
 ﻿
+using System.Collections.Generic;
+
 namespace BugsnagUnityPerformance
 {
 
-    public class AttributeValueModel{}
+    public class AttributeValueModel { }
 
     public class AttributeStringValueModel : AttributeValueModel
     {
@@ -46,41 +48,82 @@ namespace BugsnagUnityPerformance
 
     public class AttributeStringArrayValueModel : AttributeValueModel
     {
-        public string[] stringArrayValue;
+        public ArrayValueModel arrayValue;
 
-        public AttributeStringArrayValueModel(string[] theValue)
+        public AttributeStringArrayValueModel(string[] values)
         {
-            stringArrayValue = theValue;
+            arrayValue = new ArrayValueModel(values);
         }
     }
 
     public class AttributeIntArrayValueModel : AttributeValueModel
     {
-        public int[] intArrayValue;
+        public ArrayValueModel arrayValue;
 
-        public AttributeIntArrayValueModel(int[] theValue)
+        public AttributeIntArrayValueModel(int[] values)
         {
-            intArrayValue = theValue;
+            arrayValue = new ArrayValueModel(values);
         }
     }
 
     public class AttributeBoolArrayValueModel : AttributeValueModel
     {
-        public bool[] boolArrayValue;
+        public ArrayValueModel arrayValue;
 
-        public AttributeBoolArrayValueModel(bool[] theValue)
+        public AttributeBoolArrayValueModel(bool[] values)
         {
-            boolArrayValue = theValue;
+            arrayValue = new ArrayValueModel(values);
         }
     }
 
     public class AttributeDoubleArrayValueModel : AttributeValueModel
     {
-        public double[] doubleArrayValue;
+        public ArrayValueModel arrayValue;
 
-        public AttributeDoubleArrayValueModel(double[] theValue)
+        public AttributeDoubleArrayValueModel(double[] values)
         {
-            doubleArrayValue = theValue;
+            arrayValue = new ArrayValueModel(values);
+        }
+    }
+
+    public class ArrayValueModel
+    {
+        public List<AttributeValueModel> values;
+
+        public ArrayValueModel(string[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeStringValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(int[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeIntValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(bool[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeBoolValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(double[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeDoubleValueModel(value));
+            }
         }
     }
 }
