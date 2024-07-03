@@ -8,7 +8,7 @@ namespace BugsnagUnityPerformance
 
     public class Span : ISpanContext
     {
-        
+
         public string Name { get; internal set; }
         public SpanKind Kind { get; }
         public string SpanId { get; }
@@ -23,6 +23,7 @@ namespace BugsnagUnityPerformance
         private OnSpanEnd _onSpanEnd;
         internal bool IsAppStartSpan;
         internal bool WasAborted;
+        private bool _processed;
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -35,7 +36,7 @@ namespace BugsnagUnityPerformance
             samplingProbability = 1;
             if (isFirstClass != null)
             {
-                SetAttribute("bugsnag.span.first_class",isFirstClass.Value);
+                SetAttribute("bugsnag.span.first_class", isFirstClass.Value);
             }
             _onSpanEnd = onSpanEnd;
         }
@@ -127,26 +128,6 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void SetAttribute(string key, string value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
-        }
-
-        internal void SetAttribute(string key, bool value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
-        }
-
-        internal void SetAttribute(string key, int value)
-        {
-            Attributes.Add(new AttributeModel(key,value));
-        }
-
-        internal void SetAttribute(string key, double value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
-        }
-
         internal void EndSceneLoadSpan(string sceneName)
         {
             // no need for thread safe checks as all scene load events happen on the main thread.
@@ -165,6 +146,158 @@ namespace BugsnagUnityPerformance
             {
                 samplingProbability = value;
             }
+        }
+
+        public void AddAttribute(string key, string value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, int value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, bool value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, double value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, string[] value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, int[] value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, bool[] value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        public void AddAttribute(string key, double[] value)
+        {
+            if (_processed)
+            {
+                return;
+            }
+            SetAttribute(key, value);
+        }
+
+        internal void SetAttribute(string key, string value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, int value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, bool value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, double value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, string[] value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, int[] value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, bool[] value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetAttribute(string key, double[] value)
+        {
+            var existing = Attributes.Find(a => a.key == key);
+            if (existing != null)
+            {
+                Attributes.Remove(existing);
+            }
+            Attributes.Add(new AttributeModel(key, value));
         }
 
     }

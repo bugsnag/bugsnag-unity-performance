@@ -43,4 +43,44 @@ namespace BugsnagUnityPerformance
             doubleValue = theValue;
         }
     }
+
+    public class AttributeStringArrayValueModel : AttributeValueModel
+    {
+        public string[] stringArrayValue;
+
+        public AttributeStringArrayValueModel(string[] theValue)
+        {
+            stringArrayValue = theValue;
+        }
+    }
+
+    public class AttributeIntArrayValueModel : AttributeValueModel
+    {
+        public int[] intArrayValue;
+
+        public AttributeIntArrayValueModel(int[] theValue)
+        {
+            intArrayValue = theValue;
+        }
+    }
+
+    public class AttributeBoolArrayValueModel : AttributeValueModel
+    {
+        public bool[] boolArrayValue;
+
+        public AttributeBoolArrayValueModel(bool[] theValue)
+        {
+            boolArrayValue = theValue;
+        }
+    }
+
+    public class AttributeDoubleArrayValueModel : AttributeValueModel
+    {
+        public double[] doubleArrayValue;
+
+        public AttributeDoubleArrayValueModel(double[] theValue)
+        {
+            doubleArrayValue = theValue;
+        }
+    }
 }
