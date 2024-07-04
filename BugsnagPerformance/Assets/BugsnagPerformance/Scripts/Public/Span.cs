@@ -21,9 +21,9 @@ namespace BugsnagUnityPerformance
         internal bool Ended;
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
-        internal bool IsAppStartSpan;
         internal bool WasAborted;
-        private bool _processed;
+        private bool _callbackComplete;
+        public BugsnagSpanCatagory SpanCatagory { get; internal set; }
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -59,11 +59,11 @@ namespace BugsnagUnityPerformance
         {
             lock (_endLock)
             {
+                WasAborted = true;
                 if (Ended)
                 {
                     return;
                 }
-                WasAborted = true;
                 Ended = true;
                 _onSpanEnd(this);
             }
@@ -93,7 +93,6 @@ namespace BugsnagUnityPerformance
             {
                 SetAttribute("http.response_content_length", request.downloadHandler.data.Length);
             }
-
             _onSpanEnd(this);
         }
 
@@ -124,7 +123,6 @@ namespace BugsnagUnityPerformance
             {
                 SetAttribute("http.response_content_length", responseContentLength);
             }
-
             _onSpanEnd(this);
         }
 
@@ -150,7 +148,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, string value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -159,7 +157,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, int value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -168,7 +166,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, bool value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -177,7 +175,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, double value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -186,7 +184,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, string[] value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -195,7 +193,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, int[] value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -204,7 +202,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, bool[] value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -213,7 +211,7 @@ namespace BugsnagUnityPerformance
 
         public void AddAttribute(string key, double[] value)
         {
-            if (_processed)
+            if (_callbackComplete)
             {
                 return;
             }
@@ -298,6 +296,11 @@ namespace BugsnagUnityPerformance
                 Attributes.Remove(existing);
             }
             Attributes.Add(new AttributeModel(key, value));
+        }
+
+        internal void SetCallbackComplete()
+        {
+            _callbackComplete = true;
         }
 
     }

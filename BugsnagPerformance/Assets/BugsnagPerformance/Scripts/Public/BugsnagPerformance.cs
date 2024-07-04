@@ -31,6 +31,7 @@ namespace BugsnagUnityPerformance
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
         private static string[] _tracePropagationUrlMatchPatterns;
 
+
         public static void Start(PerformanceConfiguration configuration)
         {
 #if BUGSNAG_DEBUG
@@ -53,7 +54,7 @@ namespace BugsnagUnityPerformance
             if (ReleaseStageEnabled(configuration))
             {
                 // init main thread dispatcher and create app lifecycle listener on main thread
-                MainThreadDispatchBehaviour.Instance().Enqueue(()=> { CreateAppLifecycleListener(); });
+                MainThreadDispatchBehaviour.Instance().Enqueue(() => { CreateAppLifecycleListener(); });
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
 #if BUGSNAG_DEBUG
@@ -159,17 +160,13 @@ namespace BugsnagUnityPerformance
             _appStartHandler.Start();
             SetupNetworkListener();
             SetupSceneLoadListeners();
-            
             IsStarted = true;
         }
 
         private void OnSpanEnd(Span span)
         {
             _potentiallyOpenSpans.Remove(span);
-            if (!span.WasAborted)
-            {
-                _tracer.OnSpanEnd(span);
-            }
+            _tracer.OnSpanEnd(span);
         }
 
         private void OnProbabilityChanged(double newProbability)
@@ -281,7 +278,7 @@ namespace BugsnagUnityPerformance
                 {
                     parentId = networkSpan.SpanId;
                     traceId = networkSpan.TraceId;
-                    sampled = _sampler.Sampled(networkSpan,false);
+                    sampled = _sampler.Sampled(networkSpan, false);
                 }
                 else
                 {
@@ -296,7 +293,7 @@ namespace BugsnagUnityPerformance
                 {
                     return;
                 }
-                request.SetRequestHeader("traceparent", BuildTraceParentHeader(traceId,parentId,sampled));
+                request.SetRequestHeader("traceparent", BuildTraceParentHeader(traceId, parentId, sampled));
             }
         }
 
@@ -398,7 +395,7 @@ namespace BugsnagUnityPerformance
                 this.currentContextSpanId = currentContextSpanId;
                 this.currentContextTraceId = currentContextTraceId;
             }
-        } 
+        }
 
         [Preserve]
         internal static string GetPerformanceState()

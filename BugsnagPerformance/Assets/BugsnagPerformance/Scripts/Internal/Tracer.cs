@@ -33,6 +33,7 @@ namespace BugsnagUnityPerformance
 
         private static AutoInstrumentAppStartSetting _appStartSetting;
 
+        private List<Func<Span, bool>> _onSpanEndCallbacks = new List<Func<Span, bool>>();
 
 
         public Tracer(Sampler sampler, Delivery delivery)
@@ -43,6 +44,11 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
+            var onEndCallbacks = config.GetOnSpanEndCallbacks();
+            if (onEndCallbacks != null)
+            {
+                _onSpanEndCallbacks.AddRange(onEndCallbacks);
+            }
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
             _appStartSetting = config.AutoInstrumentAppStart;
@@ -53,7 +59,16 @@ namespace BugsnagUnityPerformance
             StartTracerWorker();
             _started = true;
             // Flush after setting _started so that no new spans are added to the prestart list during or after flushing
+            RunCallbacksOnPrestartSpans();
             FlushPreStartSpans();
+        }
+
+        private void RunCallbacksOnPrestartSpans()
+        {
+            foreach (var span in _preStartSpans)
+            {
+               RunOnEndCallbacks(span);
+            }
         }
 
         private void StartTracerWorker()
@@ -72,7 +87,7 @@ namespace BugsnagUnityPerformance
         {
             foreach (var span in _preStartSpans)
             {
-                if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                if (span.SpanCatagory == BugsnagSpanCatagory.APP_START && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
                 {
                     continue;
                 }
@@ -102,7 +117,26 @@ namespace BugsnagUnityPerformance
                 }
                 return;
             }
-            Sample(span);
+            else
+            {
+                RunOnEndCallbacks(span);
+            }
+            if (!span.WasAborted)
+            {
+                Sample(span);
+            }
+        }
+
+        public void RunOnEndCallbacks(Span span)
+        {
+            foreach (var callback in _onSpanEndCallbacks)
+            {
+                if (!callback.Invoke(span))
+                {
+                    span.Abort();
+                }
+            }
+            span.SetCallbackComplete();
         }
 
         private void Sample(Span span)

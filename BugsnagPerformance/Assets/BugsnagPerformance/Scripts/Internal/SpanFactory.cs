@@ -67,6 +67,7 @@ namespace BugsnagUnityPerformance
             }
             var span = CreateSpan(name, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
             span.SetAttribute("bugsnag.span.category", "custom");
+            span.SpanCatagory = BugsnagSpanCatagory.CUSTOM;
             return span;
         }
 
@@ -117,6 +118,7 @@ namespace BugsnagUnityPerformance
             span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", verb);
+            span.SpanCatagory = BugsnagSpanCatagory.NETWORK;
             return span;
         }
 
@@ -137,6 +139,7 @@ namespace BugsnagUnityPerformance
             span.SetAttribute("bugsnag.span.category", "network");
             span.SetAttribute("http.url", url);
             span.SetAttribute("http.method", httpVerb.ToString());
+            span.SpanCatagory = BugsnagSpanCatagory.NETWORK;
             return span;
         }
 
@@ -166,6 +169,7 @@ namespace BugsnagUnityPerformance
             // Scene load spans are always first class
             var spanOptions = new SpanOptions { IsFirstClass = true };
             var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
+            span.SpanCatagory = BugsnagSpanCatagory.NAVIGATION;         
             return span;
         }
 
@@ -183,7 +187,8 @@ namespace BugsnagUnityPerformance
             var span = CreateSpan("[ViewLoad/UnityScene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, options);
             span.SetAttribute("bugsnag.span.category", "view_load");
             span.SetAttribute("bugsnag.view.type", "UnityScene");
-            span.SetAttribute("bugsnag.view.name", sceneName);            
+            span.SetAttribute("bugsnag.view.name", sceneName);   
+            span.SpanCatagory = BugsnagSpanCatagory.NAVIGATION;         
             return span;
         }
 
@@ -224,7 +229,7 @@ namespace BugsnagUnityPerformance
             var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT,new SpanOptions());
             span.SetAttribute("bugsnag.span.category", category);
             span.SetAttribute("bugsnag.app_start.type", "UnityRuntime");
-            span.IsAppStartSpan = true;
+            span.SpanCatagory = BugsnagSpanCatagory.APP_START;
             return span;
         }
     }

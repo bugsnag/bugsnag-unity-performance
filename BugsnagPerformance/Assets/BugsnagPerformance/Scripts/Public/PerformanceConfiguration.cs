@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -36,6 +37,24 @@ namespace BugsnagUnityPerformance
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
 
         public String[] TracePropagationUrlMatchPatterns;
+
+
+        public void AddOnSpanEndCallback(Func<Span, bool> callback)
+        {
+            _onSpanEndCallbacks.Add(callback);
+        }
+
+        public void RemoveOnSpanEndCallback(Func<Span, bool> callback)
+        {
+            _onSpanEndCallbacks.Remove(callback);
+        }
+
+        internal List<Func<Span, bool>> GetOnSpanEndCallbacks()
+        {
+            return _onSpanEndCallbacks;
+        }
+        
+        private List<Func<Span, bool>> _onSpanEndCallbacks = new List<Func<Span, bool>>();
 
         public PerformanceConfiguration(string apiKey)
         {
