@@ -67,7 +67,7 @@ namespace BugsnagUnityPerformance
         {
             foreach (var span in _preStartSpans)
             {
-               RunOnEndCallbacks(span);
+                RunOnEndCallbacks(span);
             }
         }
 
@@ -203,6 +203,16 @@ namespace BugsnagUnityPerformance
         private bool BatchDue()
         {
             return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
+        }
+
+        public void AddOnSpanEndCallback(Func<Span, bool> callback)
+        {
+            _onSpanEndCallbacks.Add(callback);
+        }
+
+        public void RemoveOnSpanEndCallback(Func<Span, bool> callback)
+        {
+            _onSpanEndCallbacks.Remove(callback);
         }
     }
 }
