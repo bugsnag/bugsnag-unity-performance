@@ -9,41 +9,6 @@ using System.Threading;
 
 public class Main : MonoBehaviour
 {
-    public string ApiKey;
-    public string Endpoint;
-    public bool StartPerf;
-    void Start()
-    {
-        var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        config.AddOnSpanEndCallback((span) => {
-            if(span.SpanCatagory == BugsnagSpanCatagory.APP_START)
-            {
-                span.AddAttribute("my_app)start_attribute", "my_app_start_value");
-            }
-            else
-            {
-                return false;
-            }
-            Debug.Log("Span ended: " + span.Name);
-            return true;
-        });
-
-        if (StartPerf)
-        {
-            BugsnagPerformance.Start(config);
-        }
-    }
-
-    private BugsnagNetworkRequestInfo NetworkCallback(BugsnagNetworkRequestInfo info)
-    {
-        info.Url = "SANITISED";
-        return info;
-    }
-
-    private void ReportAppStart()
-    {
-        BugsnagPerformance.ReportAppStarted();
-    }
 
     public void DoSpan()
     {
@@ -67,14 +32,14 @@ public class Main : MonoBehaviour
     private IEnumerator SpanRoutine()
     {
         var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
-        // span.AddAttribute("my string attribute", "some value");
-        // span.AddAttribute("my string[] attribute", new string[]{"a","b","c"});
-        // span.AddAttribute("my int attribute", 42);
-        // span.AddAttribute("my int[] attribute", new int[]{1, 2, 3});
-        // span.AddAttribute("my bool attribute", true);
-        // span.AddAttribute("my bool[] attribute", new bool[]{true, false, true});
-        // span.AddAttribute("my double attribute", 3.14);
-        // span.AddAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
+        span.AddAttribute("my string attribute", "some value");
+        span.AddAttribute("my string[] attribute", new string[]{"a","b","c"});
+        span.AddAttribute("my int attribute", 42);
+        span.AddAttribute("my int[] attribute", new int[]{1, 2, 3});
+        span.AddAttribute("my bool attribute", true);
+        span.AddAttribute("my bool[] attribute", new bool[]{true, false, true});
+        span.AddAttribute("my double attribute", 3.14);
+        span.AddAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
         yield return new WaitForSeconds(0.1f);
         span.End();
     }

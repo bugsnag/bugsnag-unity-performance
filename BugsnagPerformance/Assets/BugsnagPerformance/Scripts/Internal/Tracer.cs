@@ -87,7 +87,7 @@ namespace BugsnagUnityPerformance
         {
             foreach (var span in _preStartSpans)
             {
-                if (span.SpanCatagory == BugsnagSpanCatagory.APP_START && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
                 {
                     continue;
                 }
@@ -129,11 +129,22 @@ namespace BugsnagUnityPerformance
 
         public void RunOnEndCallbacks(Span span)
         {
-            foreach (var callback in _onSpanEndCallbacks)
+            if (!span.WasAborted)
             {
-                if (!callback.Invoke(span))
+                foreach (var callback in _onSpanEndCallbacks)
                 {
-                    span.Abort();
+                    try
+                    {
+                        if (!callback.Invoke(span))
+                        {
+                            span.Abort();
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                    }
                 }
             }
             span.SetCallbackComplete();

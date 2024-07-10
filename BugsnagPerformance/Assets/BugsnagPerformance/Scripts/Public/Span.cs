@@ -21,9 +21,9 @@ namespace BugsnagUnityPerformance
         internal bool Ended;
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
+        internal bool IsAppStartSpan;
         internal bool WasAborted;
         private bool _callbackComplete;
-        public BugsnagSpanCatagory SpanCatagory { get; internal set; }
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
