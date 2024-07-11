@@ -15,29 +15,29 @@ public class BasicAttributes : Scenario
     {
         base.Run();
         var span = BugsnagPerformance.StartSpan("BasicAttributes");
-        span.AddAttribute("string", "value1");
-        span.AddAttribute("string", "value2"); // This should overwrite the previous value
+        span.SetAttribute("string", "value1");
+        span.SetAttribute("string", "value2"); // This should overwrite the previous value
 
-        span.AddAttribute("string array", new string[] { "value1", "value2" });
-        span.AddAttribute("string array", new string[] { "value3", "value4" });
+        span.SetAttribute("string array", new string[] { "value1", "value2" });
+        span.SetAttribute("string array", new string[] { "value3", "value4" });
         
-        span.AddAttribute("int", 1);
-        span.AddAttribute("int", 2); 
+        span.SetAttribute("int", 1);
+        span.SetAttribute("int", 2); 
 
-        span.AddAttribute("int array", new int[] { 1, 2 });
-        span.AddAttribute("int array", new int[] { 3, 4 });
+        span.SetAttribute("int array", new int[] { 1, 2 });
+        span.SetAttribute("int array", new int[] { 3, 4 });
 
-        span.AddAttribute("double", 1.0);
-        span.AddAttribute("double", 2.0);
+        span.SetAttribute("double", 1.0);
+        span.SetAttribute("double", 2.0);
 
-        span.AddAttribute("double array", new double[] { 1.0, 2.0 });
-        span.AddAttribute("double array", new double[] { 3.0, 4.0 });
+        span.SetAttribute("double array", new double[] { 1.0, 2.0 });
+        span.SetAttribute("double array", new double[] { 3.0, 4.0 });
 
-        span.AddAttribute("bool", true);
-        span.AddAttribute("bool", false);
+        span.SetAttribute("bool", true);
+        span.SetAttribute("bool", false);
 
-        span.AddAttribute("bool array", new bool[] { true, false });
-        span.AddAttribute("bool array", new bool[] { false, true });
+        span.SetAttribute("bool array", new bool[] { true, false });
+        span.SetAttribute("bool array", new bool[] { false, true });
 
         span.End();
     }

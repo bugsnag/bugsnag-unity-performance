@@ -410,15 +410,5 @@ namespace BugsnagUnityPerformance
             return string.Empty;
         }
 
-        public static void AddOnSpanEndCallback(Func<Span, bool> callback)
-        {
-            _sharedInstance._tracer.AddOnSpanEndCallback(callback);
-        }
-
-        public static void RemoveOnSpanEndCallback(Func<Span, bool> callback)
-        {
-            _sharedInstance._tracer.RemoveOnSpanEndCallback(callback);
-        }
-
     }
 }

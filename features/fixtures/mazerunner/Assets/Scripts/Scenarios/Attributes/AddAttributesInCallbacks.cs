@@ -15,20 +15,13 @@ public class AddAttributesInCallbacks : Scenario
 
     private bool MyConfigCallback(Span span)
     {
-        span.AddAttribute("config-callback", true);
-        return true;
-    }
-
-    private bool MyAfterStartCallback(Span span)
-    {
-        span.AddAttribute("after-start-callback", true);
+        span.SetAttribute("config-callback", true);
         return true;
     }
 
     public override void Run()
     {
         base.Run();
-        BugsnagPerformance.AddOnSpanEndCallback(MyAfterStartCallback);
         var span = BugsnagPerformance.StartSpan("AddAttributesInCallbacks");
         span.End();
     }

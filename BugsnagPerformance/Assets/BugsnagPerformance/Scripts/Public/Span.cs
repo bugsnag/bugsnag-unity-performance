@@ -9,7 +9,7 @@ namespace BugsnagUnityPerformance
     public class Span : ISpanContext
     {
         public string Name { get; internal set; }
-        public SpanKind Kind { get; }
+        internal SpanKind Kind { get; }
         public string SpanId { get; }
         public string TraceId { get; }
         internal string ParentSpanId { get; }
@@ -35,7 +35,7 @@ namespace BugsnagUnityPerformance
             samplingProbability = 1;
             if (isFirstClass != null)
             {
-                AddAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
+                SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
             }
             _onSpanEnd = onSpanEnd;
         }
@@ -81,16 +81,16 @@ namespace BugsnagUnityPerformance
 
             EndTime = DateTimeOffset.UtcNow;
 
-            AddAttributeInternal("http.status_code", (int)request.responseCode);
+            SetAttributeInternal("http.status_code", (int)request.responseCode);
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
-                AddAttributeInternal("http.request_content_length", request.uploadHandler.data.Length);
+                SetAttributeInternal("http.request_content_length", request.uploadHandler.data.Length);
             }
 
             if (request.downloadHandler != null && request.downloadHandler.data != null)
             {
-                AddAttributeInternal("http.response_content_length", request.downloadHandler.data.Length);
+                SetAttributeInternal("http.response_content_length", request.downloadHandler.data.Length);
             }
             _onSpanEnd(this);
         }
@@ -110,17 +110,17 @@ namespace BugsnagUnityPerformance
 
             if (statusCode > -1)
             {
-                AddAttributeInternal("http.status_code", statusCode);
+                SetAttributeInternal("http.status_code", statusCode);
             }
 
             if (requestContentLength > -1)
             {
-                AddAttributeInternal("http.request_content_length", requestContentLength);
+                SetAttributeInternal("http.request_content_length", requestContentLength);
             }
 
             if (responseContentLength > -1)
             {
-                AddAttributeInternal("http.response_content_length", responseContentLength);
+                SetAttributeInternal("http.response_content_length", responseContentLength);
             }
             _onSpanEnd(this);
         }
@@ -131,9 +131,9 @@ namespace BugsnagUnityPerformance
             Ended = true;
             EndTime = DateTimeOffset.UtcNow;
             Name = "[ViewLoad/UnityScene]" + sceneName;
-            AddAttributeInternal("bugsnag.span.category", "view_load");
-            AddAttributeInternal("bugsnag.view.type", "UnityScene");
-            AddAttributeInternal("bugsnag.view.name", sceneName);
+            SetAttributeInternal("bugsnag.span.category", "view_load");
+            SetAttributeInternal("bugsnag.view.type", "UnityScene");
+            SetAttributeInternal("bugsnag.view.name", sceneName);
             _onSpanEnd(this);
         }
 
@@ -146,29 +146,45 @@ namespace BugsnagUnityPerformance
         }
 
 
-        internal void AddAttributeInternal(string key, int value) => AddAttributeWithoutChecks(key, value);
-        internal void AddAttributeInternal(string key, string value) => AddAttributeWithoutChecks(key, value);
-        internal void AddAttributeInternal(string key, double value) => AddAttributeWithoutChecks(key, value);
-        internal void AddAttributeInternal(string key, bool value) => AddAttributeWithoutChecks(key, value);
-        private void AddAttributeWithoutChecks(string key, object value)
+        internal void SetAttributeInternal(string key, int value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, string value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, double value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, bool value) => SetAttributeWithoutChecks(key, value);
+        private void SetAttributeWithoutChecks(string key, object value)
         {
+            if (value == null)
+            {
+                if (_attributes.ContainsKey(key))
+                {
+                    _attributes.Remove(key);
+                }
+                return;
+            }
             _attributes[key] = value;
         }
 
 
-        public void AddAttribute(string key, int value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, string value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, double value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, bool value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, string[] value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, int[] value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, bool[] value) => AddAttributeWithChecks(key, value);
-        public void AddAttribute(string key, double[] value) => AddAttributeWithChecks(key, value);
+        public void SetAttribute(string key, int value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, string value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, double value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, bool value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, string[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, int[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, bool[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, double[] value) => SetAttributeWithChecks(key, value);
 
-        private void AddAttributeWithChecks(string key, object value)
+        private void SetAttributeWithChecks(string key, object value)
         {
             if (_callbackComplete)
             {
+                return;
+            }
+            if (value == null || (value is Array array && array.Length == 0))
+            {
+                if (_attributes.ContainsKey(key))
+                {
+                    _attributes.Remove(key);
+                }
                 return;
             }
             _attributes[key] = value;

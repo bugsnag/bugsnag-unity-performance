@@ -33,7 +33,7 @@ namespace BugsnagUnityPerformance
 
         private static AutoInstrumentAppStartSetting _appStartSetting;
 
-        private List<Func<Span, bool>> _onSpanEndCallbacks = new List<Func<Span, bool>>();
+        private List<Func<Span, bool>> _onSpanEndCallbacks;
 
 
         public Tracer(Sampler sampler, Delivery delivery)
@@ -44,11 +44,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            var onEndCallbacks = config.GetOnSpanEndCallbacks();
-            if (onEndCallbacks != null)
-            {
-                _onSpanEndCallbacks.AddRange(onEndCallbacks);
-            }
+            _onSpanEndCallbacks = config.GetOnSpanEndCallbacks();
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
             _appStartSetting = config.AutoInstrumentAppStart;
@@ -129,7 +125,7 @@ namespace BugsnagUnityPerformance
 
         public void RunOnEndCallbacks(Span span)
         {
-            if (!span.WasAborted)
+            if (!span.WasAborted && _onSpanEndCallbacks != null)
             {
                 foreach (var callback in _onSpanEndCallbacks)
                 {
@@ -216,15 +212,6 @@ namespace BugsnagUnityPerformance
             return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
         }
 
-        public void AddOnSpanEndCallback(Func<Span, bool> callback)
-        {
-            _onSpanEndCallbacks.Add(callback);
-        }
-
-        public void RemoveOnSpanEndCallback(Func<Span, bool> callback)
-        {
-            _onSpanEndCallbacks.Remove(callback);
-        }
     }
 }
 

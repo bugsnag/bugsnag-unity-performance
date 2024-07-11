@@ -91,7 +91,7 @@ namespace BugsnagUnityPerformance
         {
             _rootSpan = CreateAppStartSpan("[AppStart/UnityRuntime]", "app_start");
             _loadAssembliesSpan = CreateAppStartSpan("[AppStartPhase/LoadAssemblies]", "app_start_phase");
-            _loadAssembliesSpan.AddAttributeInternal("bugsnag.phase", "LoadAssemblies");
+            _loadAssembliesSpan.SetAttributeInternal("bugsnag.phase", "LoadAssemblies");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -104,14 +104,14 @@ namespace BugsnagUnityPerformance
         private static void BeforeSplashScreen()
         {
             _splashScreenSpan = CreateAppStartSpan("[AppStartPhase/SplashScreen]", "app_start_phase");
-            _splashScreenSpan.AddAttributeInternal("bugsnag.phase", "SplashScreen");
+            _splashScreenSpan.SetAttributeInternal("bugsnag.phase", "SplashScreen");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BeforeSceneLoad()
         {
             _firstSceneSpan = CreateAppStartSpan("[AppStartPhase/LoadFirstScene]", "app_start_phase");
-            _firstSceneSpan.AddAttributeInternal("bugsnag.phase", "LoadFirstScene");
+            _firstSceneSpan.SetAttributeInternal("bugsnag.phase", "LoadFirstScene");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

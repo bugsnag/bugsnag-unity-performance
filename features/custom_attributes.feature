@@ -42,4 +42,3 @@ Feature: Custom Attributes
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "AddAttributesInCallbacks"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "config-callback" is true
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "after-start-callback" is true
