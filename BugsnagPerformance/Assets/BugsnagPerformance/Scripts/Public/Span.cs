@@ -40,12 +40,17 @@ namespace BugsnagUnityPerformance
             _onSpanEnd = onSpanEnd;
         }
 
+        void LogSpanEndingWarning()
+        {
+            UnityEngine.Debug.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+        }
         public void End(DateTimeOffset? endTime = null)
         {
             lock (_endLock)
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
@@ -74,6 +79,7 @@ namespace BugsnagUnityPerformance
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
@@ -177,6 +183,7 @@ namespace BugsnagUnityPerformance
         {
             if (_callbackComplete)
             {
+                UnityEngine.Debug.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
             if (value == null || (value is Array array && array.Length == 0))
