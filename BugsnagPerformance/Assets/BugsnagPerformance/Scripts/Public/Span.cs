@@ -107,6 +107,7 @@ namespace BugsnagUnityPerformance
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
