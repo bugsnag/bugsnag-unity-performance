@@ -19,6 +19,7 @@ public class CallbackSmokeTests : Scenario
         {
             return false;
         }
+        Debug.Log("In Callbacks");
         return true;
     }
 

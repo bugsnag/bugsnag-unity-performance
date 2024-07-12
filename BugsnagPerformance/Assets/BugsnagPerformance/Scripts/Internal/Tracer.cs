@@ -125,8 +125,9 @@ namespace BugsnagUnityPerformance
 
         public void RunOnEndCallbacks(Span span)
         {
-            if (!span.WasAborted && _onSpanEndCallbacks != null)
+            if (!span.WasAborted && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
             {
+                var startTime = DateTimeOffset.UtcNow;
                 foreach (var callback in _onSpanEndCallbacks)
                 {
                     try
@@ -142,6 +143,8 @@ namespace BugsnagUnityPerformance
                         Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
+                var duration = DateTimeOffset.UtcNow - startTime;
+                span.SetAttributeInternal("bugsnag.span.callbacks_duration", (int)(duration.Ticks * 100));
             }
             span.SetCallbackComplete();
         }

@@ -11,3 +11,4 @@ Feature: Custom Attributes
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "report-me"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.span.callbacks_duration" is greater than 0
