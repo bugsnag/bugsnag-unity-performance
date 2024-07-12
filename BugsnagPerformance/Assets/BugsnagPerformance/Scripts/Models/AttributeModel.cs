@@ -1,7 +1,7 @@
 ﻿namespace BugsnagUnityPerformance
 {
 
-   public class AttributeModel
+    public class AttributeModel
 {
     public string key;
     public AttributeValueModel value;
