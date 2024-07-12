@@ -44,6 +44,7 @@ namespace BugsnagUnityPerformance
         {
             UnityEngine.Debug.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
         }
+        
         public void End(DateTimeOffset? endTime = null)
         {
             lock (_endLock)
