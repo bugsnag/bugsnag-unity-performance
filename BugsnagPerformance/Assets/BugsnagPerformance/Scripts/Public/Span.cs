@@ -162,10 +162,7 @@ namespace BugsnagUnityPerformance
         {
             if (value == null)
             {
-                if (_attributes.ContainsKey(key))
-                {
-                    _attributes.Remove(key);
-                }
+                _attributes.Remove(key);
                 return;
             }
             _attributes[key] = value;
