@@ -24,8 +24,8 @@ public class BasicAttributes : Scenario
         span.SetAttribute("int", 1);
         span.SetAttribute("int", 2); 
 
-        span.SetAttribute("int array", new int[] { 1, 2 });
-        span.SetAttribute("int array", new int[] { 3, 4 });
+        span.SetAttribute("int array", new long[] { 1, 2 });
+        span.SetAttribute("int array", new long[] { 3, 4 });
 
         span.SetAttribute("double", 1.0);
         span.SetAttribute("double", 2.0);
