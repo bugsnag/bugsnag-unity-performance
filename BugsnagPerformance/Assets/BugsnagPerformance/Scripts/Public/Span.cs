@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
         internal bool IsAppStartSpan;
-        internal bool WasAborted;
+        internal bool WasDiscarded;
         private bool _callbackComplete;
         private Dictionary<string, object> _attributes = new Dictionary<string, object>();
 
@@ -60,11 +60,11 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void Abort()
+        internal void Discard()
         {
             lock (_endLock)
             {
-                WasAborted = true;
+                WasDiscarded = true;
                 if (Ended)
                 {
                     return;
@@ -88,7 +88,7 @@ namespace BugsnagUnityPerformance
 
             EndTime = DateTimeOffset.UtcNow;
 
-            SetAttributeInternal("http.status_code", (int)request.responseCode);
+            SetAttributeInternal("http.status_code", request.responseCode);
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
@@ -154,7 +154,7 @@ namespace BugsnagUnityPerformance
         }
 
 
-        internal void SetAttributeInternal(string key, int value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, long value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, string value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, double value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, bool value) => SetAttributeWithoutChecks(key, value);
@@ -169,12 +169,12 @@ namespace BugsnagUnityPerformance
         }
 
 
-        public void SetAttribute(string key, int value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, long value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, string value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, double value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, bool value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, string[] value) => SetAttributeWithChecks(key, value);
-        public void SetAttribute(string key, int[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, long[] value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, bool[] value) => SetAttributeWithChecks(key, value);
         public void SetAttribute(string key, double[] value) => SetAttributeWithChecks(key, value);
 
@@ -185,7 +185,7 @@ namespace BugsnagUnityPerformance
                 UnityEngine.Debug.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
-            if (value == null || (value is Array array && array.Length == 0))
+            if (value == null)
             {
                 if (_attributes.ContainsKey(key))
                 {

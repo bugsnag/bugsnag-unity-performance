@@ -380,7 +380,7 @@ namespace BugsnagUnityPerformance
             {
                 if (!span.Ended)
                 {
-                    span.Abort();
+                    span.Discard();
                 }
             }
         }

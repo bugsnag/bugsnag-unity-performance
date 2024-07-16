@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
     {
         public string intValue;
 
-        public AttributeIntValueModel(int theValue)
+        public AttributeIntValueModel(long theValue)
         {
             intValue = theValue.ToString();
         }
@@ -60,7 +60,7 @@ namespace BugsnagUnityPerformance
     {
         public ArrayValueModel arrayValue;
 
-        public AttributeIntArrayValueModel(int[] values)
+        public AttributeIntArrayValueModel(long[] values)
         {
             arrayValue = new ArrayValueModel(values);
         }
@@ -99,7 +99,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        public ArrayValueModel(int[] values)
+        public ArrayValueModel(long[] values)
         {
             this.values = new List<AttributeValueModel>();
             foreach (var value in values)

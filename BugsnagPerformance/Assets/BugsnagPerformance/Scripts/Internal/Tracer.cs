@@ -117,7 +117,7 @@ namespace BugsnagUnityPerformance
             {
                 RunOnEndCallbacks(span);
             }
-            if (!span.WasAborted)
+            if (!span.WasDiscarded)
             {
                 Sample(span);
             }
@@ -125,7 +125,7 @@ namespace BugsnagUnityPerformance
 
         public void RunOnEndCallbacks(Span span)
         {
-            if (!span.WasAborted && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
+            if (!span.WasDiscarded && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
             {
                 var startTime = DateTimeOffset.UtcNow;
                 foreach (var callback in _onSpanEndCallbacks)
@@ -134,7 +134,7 @@ namespace BugsnagUnityPerformance
                     {
                         if (!callback.Invoke(span))
                         {
-                            span.Abort();
+                            span.Discard();
                             break;
                         }
                     }
@@ -180,7 +180,7 @@ namespace BugsnagUnityPerformance
                 {
                     return;
                 }
-                batch = _spanQueue.Where(span => !span.WasAborted).ToList();
+                batch = _spanQueue.Where(span => !span.WasDiscarded).ToList();
                 _spanQueue = new List<Span>();
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);

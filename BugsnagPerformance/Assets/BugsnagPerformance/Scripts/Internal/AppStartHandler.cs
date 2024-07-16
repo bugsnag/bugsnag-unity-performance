@@ -37,19 +37,19 @@ namespace BugsnagUnityPerformance
         {
             if (_rootSpan != null && !_rootSpan.Ended)
             {
-                _rootSpan.Abort();
+                _rootSpan.Discard();
             }
             if (_loadAssembliesSpan != null && !_loadAssembliesSpan.Ended)
             {
-                _loadAssembliesSpan.Abort();
+                _loadAssembliesSpan.Discard();
             }
             if (_splashScreenSpan != null && !_splashScreenSpan.Ended)
             {
-                _splashScreenSpan.Abort();
+                _splashScreenSpan.Discard();
             }
             if (_firstSceneSpan != null && !_firstSceneSpan.Ended)
             {
-                _firstSceneSpan.Abort();
+                _firstSceneSpan.Discard();
             }
         }
 
