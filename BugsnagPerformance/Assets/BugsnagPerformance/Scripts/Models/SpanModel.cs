@@ -32,7 +32,7 @@ namespace BugsnagUnityPerformance
             {
                 attributes.Add(new AttributeModel(attr.Key, new AttributeStringArrayValueModel(stringArray)));
             }
-            else if (attr.Value is int[] intArray)
+            else if (attr.Value is long[] intArray)
             {
                 attributes.Add(new AttributeModel(attr.Key, new AttributeIntArrayValueModel(intArray)));
             }
@@ -48,7 +48,7 @@ namespace BugsnagUnityPerformance
             {
                 attributes.Add(new AttributeModel(attr.Key, new AttributeStringValueModel(strValue)));
             }
-            else if (attr.Value is int intValue)
+            else if (attr.Value is long intValue)
             {
                 attributes.Add(new AttributeModel(attr.Key, new AttributeIntValueModel(intValue)));
             }

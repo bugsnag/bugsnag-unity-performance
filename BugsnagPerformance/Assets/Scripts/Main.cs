@@ -10,6 +10,16 @@ using System.Threading;
 public class Main : MonoBehaviour
 {
 
+    public void Start()
+    {
+        var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
+        config.AddOnSpanEndCallback((span) => {
+            Debug.Log("Span ended: " + span.Name);
+            return true;
+        });
+        BugsnagPerformance.Start(config);
+    }
+
     public void DoSpan()
     {
         StartCoroutine(SpanRoutine());
@@ -34,12 +44,14 @@ public class Main : MonoBehaviour
         var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
         span.SetAttribute("my string attribute", "some value");
         span.SetAttribute("my string[] attribute", new string[]{"a","b","c"});
+        span.SetAttribute("my empty string[] attribute", new string[]{});
         span.SetAttribute("my int attribute", 42);
-        span.SetAttribute("my int[] attribute", new int[]{1, 2, 3});
+        span.SetAttribute("my int[] attribute", new long[]{1, 2, 3});
         span.SetAttribute("my bool attribute", true);
         span.SetAttribute("my bool[] attribute", new bool[]{true, false, true});
         span.SetAttribute("my double attribute", 3.14);
         span.SetAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
+
         yield return new WaitForSeconds(0.1f);
         span.End();
     }
