@@ -144,7 +144,7 @@ namespace BugsnagUnityPerformance
                     }
                 }
                 var duration = DateTimeOffset.UtcNow - startTime;
-                span.SetAttributeInternal("bugsnag.span.callbacks_duration", (int)(duration.Ticks * 100));
+                span.SetAttributeInternal("bugsnag.span.callbacks_duration", duration.Ticks * 100);
             }
             span.SetCallbackComplete();
         }
