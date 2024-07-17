@@ -15,11 +15,15 @@ public class CallbackSmokeTests : Scenario
 
     private bool MyConfigCallback(Span span)
     {
+        double result = 0;
+        for (int i = 0; i < 1000000; i++)
+        {
+            result += Math.Sqrt(i);
+        }
         if(span.Name == "discard-me")
         {
             return false;
         }
-        Debug.Log("In Callbacks");
         return true;
     }
 
