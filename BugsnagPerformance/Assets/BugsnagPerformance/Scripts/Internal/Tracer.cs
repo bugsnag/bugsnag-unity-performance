@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
@@ -127,7 +128,7 @@ namespace BugsnagUnityPerformance
         {
             if (!span.WasDiscarded && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
             {
-                var startTime = DateTimeOffset.UtcNow;
+                var stopwatch = Stopwatch.StartNew();
                 foreach (var callback in _onSpanEndCallbacks)
                 {
                     try
@@ -140,14 +141,16 @@ namespace BugsnagUnityPerformance
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                        UnityEngine.Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
-                var duration = DateTimeOffset.UtcNow - startTime;
-                span.SetAttributeInternal("bugsnag.span.callbacks_duration", duration.Ticks * 100);
+                stopwatch.Stop();
+                var duration = stopwatch.ElapsedTicks * 100;
+                span.SetAttributeInternal("bugsnag.span.callbacks_duration", duration);
             }
             span.SetCallbackComplete();
         }
+
 
         private void Sample(Span span)
         {
