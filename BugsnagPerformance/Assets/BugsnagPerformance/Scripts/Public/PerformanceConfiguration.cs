@@ -39,12 +39,12 @@ namespace BugsnagUnityPerformance
         public String[] TracePropagationUrlMatchPatterns;
 
 
-        public void AddOnSpanEndCallback(Func<Span, bool> callback)
+        public void AddOnSpanEnd(Func<Span, bool> callback)
         {
             _onSpanEndCallbacks.Add(callback);
         }
 
-        public void RemoveOnSpanEndCallback(Func<Span, bool> callback)
+        public void RemoveOnSpanEnd(Func<Span, bool> callback)
         {
             _onSpanEndCallbacks.Remove(callback);
         }

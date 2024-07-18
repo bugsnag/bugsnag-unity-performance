@@ -13,7 +13,7 @@ public class Main : MonoBehaviour
     public void Start()
     {
         var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        config.AddOnSpanEndCallback((span) => {
+        config.AddOnSpanEnd((span) => {
             Debug.Log("Span ended: " + span.Name);
             return true;
         });

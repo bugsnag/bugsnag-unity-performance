@@ -10,7 +10,7 @@ public class CallbackSmokeTests : Scenario
     {
         base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(1);
-        Configuration.AddOnSpanEndCallback(MyConfigCallback);
+        Configuration.AddOnSpanEnd(MyConfigCallback);
     }
 
     private bool MyConfigCallback(Span span)
