@@ -73,9 +73,6 @@ steps:
     commands:
       - features/scripts/run-webgl-ci-tests.sh release
 
- 
-
-
   - label: ':windows: Build Windows test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-windows-fixture-2021
@@ -118,9 +115,6 @@ steps:
     commands:
       - features/scripts/run-windows-ci-tests.sh release
 
- 
-
-
   - label: ':macos: Build macos test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-macos-fixture-2021
@@ -159,8 +153,6 @@ steps:
     commands:
       - features/scripts/run-macos-ci-tests.sh release
 
-  
-
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
     key: build-android-fixture-2021
@@ -183,8 +175,6 @@ steps:
         - exit_status: '*'
           limit: 1
 
- 
-
   - label: ':bitbar: Run Android e2e tests for Unity 2021'
     timeout_in_minutes: 60
     depends_on: build-android-fixture-2021
@@ -204,6 +194,7 @@ steps:
           - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
+          - '--appium-version=1.22'
           - '--no-tunnel'
           - '--aws-public-ip'
           - '--fail-fast'
