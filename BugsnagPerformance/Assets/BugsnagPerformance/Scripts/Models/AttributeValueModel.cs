@@ -1,8 +1,10 @@
 ﻿
+using System.Collections.Generic;
+
 namespace BugsnagUnityPerformance
 {
 
-    public class AttributeValueModel{}
+    public class AttributeValueModel { }
 
     public class AttributeStringValueModel : AttributeValueModel
     {
@@ -18,7 +20,7 @@ namespace BugsnagUnityPerformance
     {
         public string intValue;
 
-        public AttributeIntValueModel(int theValue)
+        public AttributeIntValueModel(long theValue)
         {
             intValue = theValue.ToString();
         }
@@ -41,6 +43,87 @@ namespace BugsnagUnityPerformance
         public AttributeDoubleValueModel(double theValue)
         {
             doubleValue = theValue;
+        }
+    }
+
+    public class AttributeStringArrayValueModel : AttributeValueModel
+    {
+        public ArrayValueModel arrayValue;
+
+        public AttributeStringArrayValueModel(string[] values)
+        {
+            arrayValue = new ArrayValueModel(values);
+        }
+    }
+
+    public class AttributeIntArrayValueModel : AttributeValueModel
+    {
+        public ArrayValueModel arrayValue;
+
+        public AttributeIntArrayValueModel(long[] values)
+        {
+            arrayValue = new ArrayValueModel(values);
+        }
+    }
+
+    public class AttributeBoolArrayValueModel : AttributeValueModel
+    {
+        public ArrayValueModel arrayValue;
+
+        public AttributeBoolArrayValueModel(bool[] values)
+        {
+            arrayValue = new ArrayValueModel(values);
+        }
+    }
+
+    public class AttributeDoubleArrayValueModel : AttributeValueModel
+    {
+        public ArrayValueModel arrayValue;
+
+        public AttributeDoubleArrayValueModel(double[] values)
+        {
+            arrayValue = new ArrayValueModel(values);
+        }
+    }
+
+    public class ArrayValueModel
+    {
+        public List<AttributeValueModel> values;
+
+        public ArrayValueModel(string[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeStringValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(long[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeIntValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(bool[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeBoolValueModel(value));
+            }
+        }
+
+        public ArrayValueModel(double[] values)
+        {
+            this.values = new List<AttributeValueModel>();
+            foreach (var value in values)
+            {
+                this.values.Add(new AttributeDoubleValueModel(value));
+            }
         }
     }
 }

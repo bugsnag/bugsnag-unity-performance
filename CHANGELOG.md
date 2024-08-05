@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Additions
+
+- Allow setting custom span attributes. [#124](https://github.com/bugsnag/bugsnag-unity-performance/pull/124)
+
 ## v1.4.2 (2024-06-27)
 
 ### Bug Fixes

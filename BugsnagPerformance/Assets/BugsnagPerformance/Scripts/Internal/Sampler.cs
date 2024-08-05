@@ -53,7 +53,7 @@ namespace BugsnagUnityPerformance
             if (isSampled && shouldAddAttribute)
             {
                 span.UpdateSamplingProbability(p);
-                span.SetAttribute("bugsnag.sampling.p", p);
+                span.SetAttributeInternal("bugsnag.sampling.p", p);
             }
             return isSampled;
         }

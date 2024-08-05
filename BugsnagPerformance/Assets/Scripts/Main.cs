@@ -9,32 +9,15 @@ using System.Threading;
 
 public class Main : MonoBehaviour
 {
-    public string ApiKey;
-    public string Endpoint;
-    public bool StartPerf;
-    void Start()
+
+    public void Start()
     {
-        var config = new PerformanceConfiguration(ApiKey);
-
-        config.Endpoint = Endpoint;
-
-        config.NetworkRequestCallback = NetworkCallback;
-
-        if (StartPerf)
-        {
-            BugsnagPerformance.Start(config);
-        }
-    }
-
-    private BugsnagNetworkRequestInfo NetworkCallback(BugsnagNetworkRequestInfo info)
-    {
-        info.Url = "SANITISED";
-        return info;
-    }
-
-    private void ReportAppStart()
-    {
-        BugsnagPerformance.ReportAppStarted();
+        var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
+        config.AddOnSpanEnd((span) => {
+            Debug.Log("Span ended: " + span.Name);
+            return true;
+        });
+        BugsnagPerformance.Start(config);
     }
 
     public void DoSpan()
@@ -59,6 +42,16 @@ public class Main : MonoBehaviour
     private IEnumerator SpanRoutine()
     {
         var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
+        span.SetAttribute("my string attribute", "some value");
+        span.SetAttribute("my string[] attribute", new string[]{"a","b","c"});
+        span.SetAttribute("my empty string[] attribute", new string[]{});
+        span.SetAttribute("my int attribute", 42);
+        span.SetAttribute("my int[] attribute", new long[]{1, 2, 3});
+        span.SetAttribute("my bool attribute", true);
+        span.SetAttribute("my bool[] attribute", new bool[]{true, false, true});
+        span.SetAttribute("my double attribute", 3.14);
+        span.SetAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
+
         yield return new WaitForSeconds(0.1f);
         span.End();
     }
