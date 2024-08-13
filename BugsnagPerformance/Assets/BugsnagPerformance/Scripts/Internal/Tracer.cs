@@ -33,6 +33,7 @@ namespace BugsnagUnityPerformance
 
         private static AutoInstrumentAppStartSetting _appStartSetting;
 
+        private List<Func<Span, bool>> _onSpanEndCallbacks;
 
 
         public Tracer(Sampler sampler, Delivery delivery)
@@ -43,6 +44,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
+            _onSpanEndCallbacks = config.GetOnSpanEndCallbacks();
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
             _appStartSetting = config.AutoInstrumentAppStart;
@@ -53,7 +55,16 @@ namespace BugsnagUnityPerformance
             StartTracerWorker();
             _started = true;
             // Flush after setting _started so that no new spans are added to the prestart list during or after flushing
+            RunCallbacksOnPrestartSpans();
             FlushPreStartSpans();
+        }
+
+        private void RunCallbacksOnPrestartSpans()
+        {
+            foreach (var span in _preStartSpans)
+            {
+                RunOnEndCallbacks(span);
+            }
         }
 
         private void StartTracerWorker()
@@ -102,14 +113,47 @@ namespace BugsnagUnityPerformance
                 }
                 return;
             }
-            Sample(span);
+            else
+            {
+                Sample(span);
+            }
+        }
+
+        public void RunOnEndCallbacks(Span span)
+        {
+            if (!span.WasDiscarded && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
+            {
+                var startTime = DateTimeOffset.UtcNow;
+                foreach (var callback in _onSpanEndCallbacks)
+                {
+                    try
+                    {
+                        if (!callback.Invoke(span))
+                        {
+                            span.Discard();
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                    }
+                }
+                var duration = DateTimeOffset.UtcNow - startTime;
+                span.SetAttributeInternal("bugsnag.span.callbacks_duration", duration.Ticks * 100);
+            }
+            span.SetCallbackComplete();
         }
 
         private void Sample(Span span)
         {
             if (_sampler.Sampled(span))
             {
-                AddSpanToQueue(span);
+                RunOnEndCallbacks(span);
+                if (!span.WasDiscarded)
+                {
+                    AddSpanToQueue(span);
+                }
             }
         }
 
@@ -136,7 +180,7 @@ namespace BugsnagUnityPerformance
                 {
                     return;
                 }
-                batch = _spanQueue.Where(span => !span.WasAborted).ToList();
+                batch = _spanQueue.Where(span => !span.WasDiscarded).ToList();
                 _spanQueue = new List<Span>();
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);
@@ -170,6 +214,7 @@ namespace BugsnagUnityPerformance
         {
             return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
         }
+
     }
 }
 

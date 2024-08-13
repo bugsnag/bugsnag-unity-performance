@@ -8,21 +8,21 @@ namespace BugsnagUnityPerformance
 
     public class Span : ISpanContext
     {
-        
         public string Name { get; internal set; }
-        public SpanKind Kind { get; }
+        internal SpanKind Kind { get; }
         public string SpanId { get; }
         public string TraceId { get; }
         internal string ParentSpanId { get; }
         public DateTimeOffset StartTime { get; }
         public DateTimeOffset EndTime { get; internal set; }
-        internal List<AttributeModel> Attributes = new List<AttributeModel>();
         internal double samplingProbability { get; private set; }
         internal bool Ended;
         private object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
         internal bool IsAppStartSpan;
-        internal bool WasAborted;
+        internal bool WasDiscarded;
+        private bool _callbackComplete;
+        private Dictionary<string, object> _attributes = new Dictionary<string, object>();
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -35,17 +35,23 @@ namespace BugsnagUnityPerformance
             samplingProbability = 1;
             if (isFirstClass != null)
             {
-                SetAttribute("bugsnag.span.first_class",isFirstClass.Value);
+                SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
             }
             _onSpanEnd = onSpanEnd;
         }
 
+        void LogSpanEndingWarning()
+        {
+            UnityEngine.Debug.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+        }
+        
         public void End(DateTimeOffset? endTime = null)
         {
             lock (_endLock)
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
@@ -54,15 +60,15 @@ namespace BugsnagUnityPerformance
             _onSpanEnd(this);
         }
 
-        internal void Abort()
+        internal void Discard()
         {
             lock (_endLock)
             {
+                WasDiscarded = true;
                 if (Ended)
                 {
                     return;
                 }
-                WasAborted = true;
                 Ended = true;
                 _onSpanEnd(this);
             }
@@ -74,6 +80,7 @@ namespace BugsnagUnityPerformance
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
@@ -81,18 +88,17 @@ namespace BugsnagUnityPerformance
 
             EndTime = DateTimeOffset.UtcNow;
 
-            SetAttribute("http.status_code", (int)request.responseCode);
+            SetAttributeInternal("http.status_code", request.responseCode);
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
-                SetAttribute("http.request_content_length", request.uploadHandler.data.Length);
+                SetAttributeInternal("http.request_content_length", request.uploadHandler.data.Length);
             }
 
             if (request.downloadHandler != null && request.downloadHandler.data != null)
             {
-                SetAttribute("http.response_content_length", request.downloadHandler.data.Length);
+                SetAttributeInternal("http.response_content_length", request.downloadHandler.data.Length);
             }
-
             _onSpanEnd(this);
         }
 
@@ -102,6 +108,7 @@ namespace BugsnagUnityPerformance
             {
                 if (Ended)
                 {
+                    LogSpanEndingWarning();
                     return;
                 }
                 Ended = true;
@@ -111,40 +118,19 @@ namespace BugsnagUnityPerformance
 
             if (statusCode > -1)
             {
-                SetAttribute("http.status_code", statusCode);
+                SetAttributeInternal("http.status_code", statusCode);
             }
 
             if (requestContentLength > -1)
             {
-                SetAttribute("http.request_content_length", requestContentLength);
+                SetAttributeInternal("http.request_content_length", requestContentLength);
             }
 
             if (responseContentLength > -1)
             {
-                SetAttribute("http.response_content_length", responseContentLength);
+                SetAttributeInternal("http.response_content_length", responseContentLength);
             }
-
             _onSpanEnd(this);
-        }
-
-        internal void SetAttribute(string key, string value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
-        }
-
-        internal void SetAttribute(string key, bool value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
-        }
-
-        internal void SetAttribute(string key, int value)
-        {
-            Attributes.Add(new AttributeModel(key,value));
-        }
-
-        internal void SetAttribute(string key, double value)
-        {
-            Attributes.Add(new AttributeModel(key, value));
         }
 
         internal void EndSceneLoadSpan(string sceneName)
@@ -153,9 +139,9 @@ namespace BugsnagUnityPerformance
             Ended = true;
             EndTime = DateTimeOffset.UtcNow;
             Name = "[ViewLoad/UnityScene]" + sceneName;
-            SetAttribute("bugsnag.span.category", "view_load");
-            SetAttribute("bugsnag.view.type", "UnityScene");
-            SetAttribute("bugsnag.view.name", sceneName);
+            SetAttributeInternal("bugsnag.span.category", "view_load");
+            SetAttributeInternal("bugsnag.view.type", "UnityScene");
+            SetAttributeInternal("bugsnag.view.name", sceneName);
             _onSpanEnd(this);
         }
 
@@ -167,5 +153,54 @@ namespace BugsnagUnityPerformance
             }
         }
 
+
+        internal void SetAttributeInternal(string key, long value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, string value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, double value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, bool value) => SetAttributeWithoutChecks(key, value);
+        private void SetAttributeWithoutChecks(string key, object value)
+        {
+            if (value == null)
+            {
+                _attributes.Remove(key);
+                return;
+            }
+            _attributes[key] = value;
+        }
+
+
+        public void SetAttribute(string key, long value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, string value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, double value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, bool value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, string[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, long[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, bool[] value) => SetAttributeWithChecks(key, value);
+        public void SetAttribute(string key, double[] value) => SetAttributeWithChecks(key, value);
+
+        private void SetAttributeWithChecks(string key, object value)
+        {
+            if (_callbackComplete)
+            {
+                UnityEngine.Debug.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
+                return;
+            }
+            if (value == null)
+            {
+                if (_attributes.ContainsKey(key))
+                {
+                    _attributes.Remove(key);
+                }
+                return;
+            }
+            _attributes[key] = value;
+        }
+
+        internal Dictionary<string, object> GetAttributes() => new Dictionary<string, object>(_attributes);
+
+        internal void SetCallbackComplete()
+        {
+            _callbackComplete = true;
+        }
     }
 }
