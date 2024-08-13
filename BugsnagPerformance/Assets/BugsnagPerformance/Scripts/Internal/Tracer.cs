@@ -115,10 +115,6 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                RunOnEndCallbacks(span);
-            }
-            if (!span.WasDiscarded)
-            {
                 Sample(span);
             }
         }
@@ -153,7 +149,11 @@ namespace BugsnagUnityPerformance
         {
             if (_sampler.Sampled(span))
             {
-                AddSpanToQueue(span);
+                RunOnEndCallbacks(span);
+                if (!span.WasDiscarded)
+                {
+                    AddSpanToQueue(span);
+                }
             }
         }
 
