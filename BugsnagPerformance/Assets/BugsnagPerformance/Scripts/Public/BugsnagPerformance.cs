@@ -29,7 +29,7 @@ namespace BugsnagUnityPerformance
         private PValueUpdater _pValueUpdater;
         private static List<Span> _potentiallyOpenSpans = new List<Span>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
-        private static string[] _tracePropagationUrlMatchPatterns;
+        private static Regex[] _tracePropagationUrlMatchPatterns;
 
 
         public static void Start(PerformanceConfiguration configuration)
@@ -46,9 +46,9 @@ namespace BugsnagUnityPerformance
                 }
                 IsStarted = true;
             }
-            if (configuration.TracePropagationUrlMatchPatterns != null)
+            if (configuration.TracePropagationUrls != null)
             {
-                _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrlMatchPatterns.ToArray();
+                _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrls.ToArray();
             }
             ValidateApiKey(configuration.ApiKey);
             if (ReleaseStageEnabled(configuration))
@@ -305,7 +305,7 @@ namespace BugsnagUnityPerformance
             }
             foreach (var pattern in _tracePropagationUrlMatchPatterns)
             {
-                if (Regex.IsMatch(url, pattern))
+                if (pattern.IsMatch(url))
                 {
                     return true;
                 }
