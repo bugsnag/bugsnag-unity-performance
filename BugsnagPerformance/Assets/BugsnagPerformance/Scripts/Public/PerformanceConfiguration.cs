@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -36,8 +37,7 @@ namespace BugsnagUnityPerformance
 
         public string ReleaseStage = Debug.isDebugBuild ? "development" : "production";
 
-        public String[] TracePropagationUrlMatchPatterns;
-
+        public Regex[] TracePropagationUrls;
 
         public void AddOnSpanEnd(Func<Span, bool> callback)
         {

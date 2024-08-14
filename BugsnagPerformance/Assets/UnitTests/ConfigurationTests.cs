@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using BugsnagUnityPerformance;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Tests
 {
@@ -44,6 +45,31 @@ namespace Tests
             span.End(CustomEndTime);
             Assert.AreEqual(span.StartTime, CustomStartTime);
             Assert.AreEqual(span.EndTime, CustomEndTime);
+        }
+
+        [Test]
+        public void TracePropagationUrlsTest()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+
+            Regex pattern1 = new Regex("https://example.com/.*");
+            Regex pattern2 = new Regex("https://anotherexample.com/.*");
+
+            config.TracePropagationUrls = new[] { pattern1, pattern2 };
+
+            Assert.AreEqual(2, config.TracePropagationUrls.Length);
+            Assert.AreEqual(pattern1.ToString(), config.TracePropagationUrls[0].ToString());
+            Assert.AreEqual(pattern2.ToString(), config.TracePropagationUrls[1].ToString());
+
+            string matchingUrl1 = "https://example.com/path/to/resource";
+            string nonMatchingUrl1 = "https://notexample.com/path";
+            string matchingUrl2 = "https://anotherexample.com/another/path";
+            string nonMatchingUrl2 = "https://example.com/not/anotherexample";
+
+            Assert.IsTrue(config.TracePropagationUrls[0].IsMatch(matchingUrl1));
+            Assert.IsFalse(config.TracePropagationUrls[0].IsMatch(nonMatchingUrl1));
+            Assert.IsTrue(config.TracePropagationUrls[1].IsMatch(matchingUrl2));
+            Assert.IsFalse(config.TracePropagationUrls[1].IsMatch(nonMatchingUrl2));
         }
 
     }
