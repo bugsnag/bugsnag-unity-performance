@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -99,7 +98,6 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
-            Debug.Log("OnSpanEnd: " + span.Name);
             var weakSpan = new WeakReference<Span>(span);
 
             if (!_started)
@@ -144,18 +142,11 @@ namespace BugsnagUnityPerformance
 
         private void Sample(Span span)
         {
-            Debug.Log("Sampling span: " + span.Name);
             if (_sampler.Sampled(span))
             {
-                Debug.Log("Running OnEndCallbacks");
-
                 RunOnEndCallbacks(span);
-                                Debug.Log("OnEndCallbacks complete");
-
                 if (!span.WasDiscarded)
                 {
-                                    Debug.Log("Adding span to queue");
-
                     AddSpanToQueue(span);
                 }
             }
