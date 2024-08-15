@@ -99,6 +99,7 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
+            Debug.Log("OnSpanEnd: " + span.Name);
             var weakSpan = new WeakReference<Span>(span);
 
             if (!_started)
@@ -143,6 +144,7 @@ namespace BugsnagUnityPerformance
 
         private void Sample(Span span)
         {
+            Debug.Log("Sampling span: " + span.Name);
             if (_sampler.Sampled(span))
             {
                 RunOnEndCallbacks(span);

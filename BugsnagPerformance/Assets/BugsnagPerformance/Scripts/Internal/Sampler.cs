@@ -1,4 +1,7 @@
 ﻿
+
+using UnityEngine;
+
 namespace BugsnagUnityPerformance
 {
     public class Sampler : IPhasedStartup
@@ -46,6 +49,7 @@ namespace BugsnagUnityPerformance
         public bool Sampled(Span span, bool shouldAddAttribute = true)
         {
             var p = Probability;
+            Debug.Log("Probability: " + p);
             var isSampled = IsSampled(span, GetUpperBound(p));
 #if BUGSNAG_DEBUG
             Logger.I(string.Format("Span {0} is sampled: {1} with p value: {2}",span.Name,isSampled,p));
@@ -61,6 +65,7 @@ namespace BugsnagUnityPerformance
         private bool IsSampled(Span span, ulong upperBound)
         {
             var traceId = ulong.Parse(span.TraceId.Substring(0, 16), System.Globalization.NumberStyles.HexNumber);
+            Debug.Log("traceId: " + traceId + " upperBound: " + upperBound);
             return traceId <= upperBound;
         }
 
