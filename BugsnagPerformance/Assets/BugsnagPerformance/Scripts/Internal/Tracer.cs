@@ -13,7 +13,7 @@ namespace BugsnagUnityPerformance
 
         private float _maxBatchAgeSeconds = 30f;
 
-        private List<WeakReference<Span>> _spanQueue = new List<WeakReference<Span>>();
+        private List<Span> _finishedSpanQueue = new List<Span>();
 
         private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
 
@@ -166,7 +166,7 @@ namespace BugsnagUnityPerformance
             var deliverBatch = false;
             lock (_queueLock)
             {
-                _spanQueue.Add(new WeakReference<Span>(span));
+                _finishedSpanQueue.Add(span);
                 deliverBatch = BatchSizeLimitReached();
             }
             if (deliverBatch)
@@ -180,21 +180,15 @@ namespace BugsnagUnityPerformance
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
                 List<Span> batch = new List<Span>();
-                foreach (var weakRef in _spanQueue)
+                foreach (var finishedSpan in _finishedSpanQueue)
                 {
-                    if (weakRef.TryGetTarget(out var span))
-                    {
-                        batch.Add(span);
-                    }
+                    batch.Add(finishedSpan);
                 }
-                _spanQueue.Clear();
-
-
+                _finishedSpanQueue.Clear();
                 if (batch.Count == 0)
                 {
                     return;
                 }
-
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);
             }
@@ -203,23 +197,15 @@ namespace BugsnagUnityPerformance
                 new Thread(() =>
                 {
                     List<Span> batch = new List<Span>();
-                    lock (_queueLock)
+                    foreach (var finishedSpan in _finishedSpanQueue)
                     {
-                        foreach (var weakRef in _spanQueue)
-                        {
-                            if (weakRef.TryGetTarget(out var span))
-                            {
-                                batch.Add(span);
-                            }
-                        }
-                        _spanQueue.Clear();
+                        batch.Add(finishedSpan);
                     }
-
+                    _finishedSpanQueue.Clear();
                     if (batch.Count == 0)
                     {
                         return;
                     }
-
                     _lastBatchSendTime = DateTimeOffset.UtcNow;
                     _delivery.Deliver(batch);
                 }).Start();
@@ -228,7 +214,7 @@ namespace BugsnagUnityPerformance
 
         private bool BatchSizeLimitReached()
         {
-            return _spanQueue.Count >= _maxBatchSize;
+            return _finishedSpanQueue.Count >= _maxBatchSize;
         }
 
         private bool BatchDue()
