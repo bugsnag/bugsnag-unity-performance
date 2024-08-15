@@ -16,15 +16,17 @@ public class CorrelationOnDifferentThread : Scenario
     public override void Run()
     {
         var span = BugsnagPerformance.StartSpan("Span From Main Thread");
-
+        var finished = false;
         Thread newThread = new Thread(new ThreadStart(()=>
         {
             var newThreadSpan = BugsnagPerformance.StartSpan("Span From Background Thread");
             Bugsnag.Notify(new System.Exception("Event From Background Thread"));
             newThreadSpan.End();
+            finished = true;
         }));
         
         newThread.Start();
+        while(!finished){}
         Bugsnag.Notify(new System.Exception("Event From Main Thread"));
         span.End();
     }
