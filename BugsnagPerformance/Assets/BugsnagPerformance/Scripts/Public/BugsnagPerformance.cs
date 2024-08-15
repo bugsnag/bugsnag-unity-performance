@@ -37,7 +37,7 @@ namespace BugsnagUnityPerformance
 
         internal class SceneLoadSpanContainer
         {
-            public List<WeakReference<Span>> Spans = new List<WeakReference<Span>>();
+            public List<Span> Spans = new List<Span>();
         }
 
         public static void Start(PerformanceConfiguration configuration)
@@ -209,7 +209,7 @@ namespace BugsnagUnityPerformance
                 var spanLoadInstance = new SceneLoadSpanContainer();
                 _sceneLoadSpans.Add(sceneName, spanLoadInstance);
             }
-            _sceneLoadSpans[sceneName].Spans.Add(new WeakReference<Span>(_spanFactory.CreateAutomaticSceneLoadSpan()));
+            _sceneLoadSpans[sceneName].Spans.Add(_spanFactory.CreateAutomaticSceneLoadSpan());
         }
 
         private void OnSceneLoadEnd(Scene scene, LoadSceneMode mode)
@@ -221,18 +221,16 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private Span GetSceneLoadSpan(Scene scene)
+         private Span GetSceneLoadSpan(Scene scene)
         {
             if (_sceneLoadSpans.ContainsKey(scene.name))
             {
                 var container = _sceneLoadSpans[scene.name];
-                foreach (var weakRef in container.Spans)
+                if (container.Spans.Count > 0)
                 {
-                    if (weakRef.TryGetTarget(out var span))
-                    {
-                        container.Spans.Remove(weakRef);
-                        return span;
-                    }
+                    var span = container.Spans[0];
+                    container.Spans.RemoveAt(0);
+                    return span;
                 }
             }
             return null;

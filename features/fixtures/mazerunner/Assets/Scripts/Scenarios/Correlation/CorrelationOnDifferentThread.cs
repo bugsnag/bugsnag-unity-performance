@@ -9,7 +9,7 @@ public class CorrelationOnDifferentThread : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchSize(2);
+        SetMaxBatchSize(1);
         ShouldStartNotifier = true;
     }
 
@@ -19,9 +19,9 @@ public class CorrelationOnDifferentThread : Scenario
 
         Thread newThread = new Thread(new ThreadStart(()=>
         {
-            var span = BugsnagPerformance.StartSpan("Span From Background Thread");
+            var newThreadSpan = BugsnagPerformance.StartSpan("Span From Background Thread");
             Bugsnag.Notify(new System.Exception("Event From Background Thread"));
-            span.End();
+            newThreadSpan.End();
         }));
         
         newThread.Start();
