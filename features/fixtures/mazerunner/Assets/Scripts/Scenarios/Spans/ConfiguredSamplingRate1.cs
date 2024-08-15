@@ -8,7 +8,8 @@ public class ConfiguredSamplingRate1 : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchAgeSeconds(1);
+        Configuration.AutoInstrumentAppStart = AutoInstrumentAppStartSetting.OFF;
+        SetMaxBatchSize(4);
     }
 
     public override void Run()
@@ -18,5 +19,6 @@ public class ConfiguredSamplingRate1 : Scenario
         BugsnagPerformance.StartSpan("ManualSpan2").End();
         BugsnagPerformance.StartSpan("ManualSpan3").End();
         BugsnagPerformance.StartSpan("ManualSpan4").End();
+        Debug.Log("ALL SPANS ENDED");
     }
 }

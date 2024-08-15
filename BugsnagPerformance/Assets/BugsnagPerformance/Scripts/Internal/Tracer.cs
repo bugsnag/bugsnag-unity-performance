@@ -147,9 +147,15 @@ namespace BugsnagUnityPerformance
             Debug.Log("Sampling span: " + span.Name);
             if (_sampler.Sampled(span))
             {
+                Debug.Log("Running OnEndCallbacks");
+
                 RunOnEndCallbacks(span);
+                                Debug.Log("OnEndCallbacks complete");
+
                 if (!span.WasDiscarded)
                 {
+                                    Debug.Log("Adding span to queue");
+
                     AddSpanToQueue(span);
                 }
             }
