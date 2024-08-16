@@ -42,9 +42,11 @@ namespace BugsnagUnityPerformance
 
         public static void Start(PerformanceConfiguration configuration)
         {
+#if BUGSNAG_DEBUG
+            Logger.I("BugsnagPerformance.Start called");
+#endif
             lock (_startLock)
             {
-
                 if (IsStarted)
                 {
                     Debug.LogWarning(ALREADY_STARTED_WARNING);
@@ -68,6 +70,9 @@ namespace BugsnagUnityPerformance
                 });
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
+#if BUGSNAG_DEBUG
+                Logger.I("Start Complete");
+#endif
             }
         }
 
@@ -78,10 +83,10 @@ namespace BugsnagUnityPerformance
 
         private static void ValidateApiKey(string apiKey)
         {
-            if (!System.Text.RegularExpressions.Regex.IsMatch(apiKey, @"\A\b[0-9a-fA-F]+\b\Z") ||
+            if (!Regex.IsMatch(apiKey, @"\A\b[0-9a-fA-F]+\b\Z") ||
                 apiKey.Length != 32)
             {
-                throw new System.Exception($"Invalid Bugsnag Performance configuration. apiKey should be a 32-character hexademical string, got {apiKey} ");
+                throw new Exception($"Invalid Bugsnag Performance configuration. apiKey should be a 32-character hexademical string, got {apiKey} ");
             }
         }
 
@@ -148,6 +153,7 @@ namespace BugsnagUnityPerformance
 
         private void Start()
         {
+            // The ordering of Start() must be carefully curated.
             _cacheManager.Start();
             _persistentState.Start();
             _delivery.Start();
@@ -221,7 +227,7 @@ namespace BugsnagUnityPerformance
             }
         }
 
-         private Span GetSceneLoadSpan(Scene scene)
+        private Span GetSceneLoadSpan(Scene scene)
         {
             if (_sceneLoadSpans.ContainsKey(scene.name))
             {
