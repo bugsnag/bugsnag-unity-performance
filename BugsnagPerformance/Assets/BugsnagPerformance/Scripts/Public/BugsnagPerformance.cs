@@ -29,8 +29,11 @@ namespace BugsnagUnityPerformance
         private PValueUpdater _pValueUpdater;
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
-        private static string[] _tracePropagationUrlMatchPatterns;
+
         private Dictionary<WeakReference<BugsnagUnityWebRequest>, Span> _networkSpans = new Dictionary<WeakReference<BugsnagUnityWebRequest>, Span>();
+
+        private static Regex[] _tracePropagationUrlMatchPatterns;
+
 
         // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
         private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
@@ -54,10 +57,9 @@ namespace BugsnagUnityPerformance
                 }
                 IsStarted = true;
             }
-
-            if (configuration.TracePropagationUrlMatchPatterns != null)
+            if (configuration.TracePropagationUrls != null)
             {
-                _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrlMatchPatterns.ToArray();
+                _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrls.ToArray();
             }
 
             ValidateApiKey(configuration.ApiKey);
@@ -313,7 +315,7 @@ namespace BugsnagUnityPerformance
             }
             foreach (var pattern in _tracePropagationUrlMatchPatterns)
             {
-                if (Regex.IsMatch(url, pattern))
+                if (pattern.IsMatch(url))
                 {
                     return true;
                 }

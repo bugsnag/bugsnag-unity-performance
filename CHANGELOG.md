@@ -6,6 +6,10 @@
 
 - Allow setting custom span attributes. [#124](https://github.com/bugsnag/bugsnag-unity-performance/pull/124)
 
+### Bug Fixes
+
+- Fix an issue where TracePropagationUrls was incorrectly named and typed. [#126](https://github.com/bugsnag/bugsnag-unity-performance/pull/126)
+
 ## v1.4.2 (2024-06-27)
 
 ### Bug Fixes
