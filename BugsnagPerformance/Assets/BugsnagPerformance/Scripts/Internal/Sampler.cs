@@ -5,7 +5,7 @@ namespace BugsnagUnityPerformance
     {
         private PersistentState _persistentState;
 
-        private double _probability = -1;
+        private double _probability = 1;
 
         public double Probability
         {
@@ -27,7 +27,14 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _probability = config.SamplingProbability;
+            if(config.IsSamplingProbabilitySet)
+            {
+                _probability = config.SamplingProbability;
+            }
+            else
+            {
+                _probability = 1.0;
+            }
         }
 
         public void Start()

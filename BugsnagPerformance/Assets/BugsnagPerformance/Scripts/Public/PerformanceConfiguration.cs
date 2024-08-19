@@ -8,6 +8,12 @@ namespace BugsnagUnityPerformance
     public class PerformanceConfiguration
     {
 
+
+        public PerformanceConfiguration(string apiKey)
+        {
+            ApiKey = apiKey;
+        }
+
         //Internal config
 
         internal int MaxBatchSize = 100;
@@ -15,7 +21,6 @@ namespace BugsnagUnityPerformance
         internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
         internal float PValueTimeoutSeconds = 86400f;
         internal float PValueCheckIntervalSeconds = 30f;
-        internal double SamplingProbability = 1.0;
 
         //Public config
 
@@ -26,7 +31,7 @@ namespace BugsnagUnityPerformance
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
-      
+
         public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
@@ -53,14 +58,12 @@ namespace BugsnagUnityPerformance
         {
             return _onSpanEndCallbacks;
         }
-        
+
         private List<Func<Span, bool>> _onSpanEndCallbacks = new List<Func<Span, bool>>();
 
-        public PerformanceConfiguration(string apiKey)
-        {
-            ApiKey = apiKey;
-        }
+        public double SamplingProbability = -1.0;
 
-      
+        public bool IsSamplingProbabilitySet => SamplingProbability >= 0;
+
     }
 }

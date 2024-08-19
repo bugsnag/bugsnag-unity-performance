@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
 
         private string _jsonbody;
 
-        public TracePayload(ResourceModel resourceModel, List<Span> spans)
+        public TracePayload(ResourceModel resourceModel, List<Span> spans, bool probabilityOverride)
         {
             _resourceModel = resourceModel;
             if (spans != null && spans.Count > 0)
@@ -32,11 +32,17 @@ namespace BugsnagUnityPerformance
                     _spans.Add(new SpanModel(span));
                 }
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
-                Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+                if(!probabilityOverride)
+                {
+                    Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
+                }
             }
             else
             {
-                Headers["Bugsnag-Span-Sampling"] = "1:0";
+                if(!probabilityOverride)
+                {
+                    Headers["Bugsnag-Span-Sampling"] = "1:0";
+                }
             }
         }
 

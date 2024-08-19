@@ -16,6 +16,7 @@ namespace BugsnagUnityPerformance
     {
         private string _endpoint;
         private string _apiKey;
+        private bool _probabilityOverride = false;
         private OnProbabilityChanged _onProbabilityChanged;
 
         private bool _flushingCache;
@@ -60,6 +61,7 @@ namespace BugsnagUnityPerformance
         {
             _endpoint = config.Endpoint;
             _apiKey = config.ApiKey;
+            _probabilityOverride = config.IsSamplingProbabilitySet;
         }
 
         public void Start()
@@ -69,7 +71,7 @@ namespace BugsnagUnityPerformance
 
         public void Deliver(List<Span> batch)
         {
-            var payload = new TracePayload(_resourceModel, batch);
+            var payload = new TracePayload(_resourceModel, batch, _probabilityOverride);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
@@ -99,7 +101,7 @@ namespace BugsnagUnityPerformance
             {
                 onResponse = OnPValueRequestCompleted;
             }
-            var payload = new TracePayload(_resourceModel, null);
+            var payload = new TracePayload(_resourceModel, null, false);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
         }
 

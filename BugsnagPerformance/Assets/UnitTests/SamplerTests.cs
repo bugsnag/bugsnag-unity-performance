@@ -98,7 +98,7 @@ namespace Tests
         public void TestProbability0_0()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            SetSamplingProbability(config, 0.0);
+            config.SamplingProbability = 0.0;
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -117,7 +117,7 @@ namespace Tests
         public void TestProbability0_1()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            SetSamplingProbability(config, 0.1);
+            config.SamplingProbability = 0.1;
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -147,7 +147,7 @@ namespace Tests
         public void TestProbability0_9()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            SetSamplingProbability(config, 0.9);
+            config.SamplingProbability = 0.9;
             var sampler = NewSampler(config, true);
 
             var span = new Span("test",
@@ -183,10 +183,5 @@ namespace Tests
 
         }
 
-        private void SetSamplingProbability(PerformanceConfiguration configuration, double p)
-        {
-            var fieldInfo = typeof(PerformanceConfiguration).GetField("SamplingProbability", BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldInfo.SetValue(configuration, p);
-        }
     }
 }
