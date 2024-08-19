@@ -61,7 +61,7 @@ namespace BugsnagUnityPerformance
         {
             _endpoint = config.Endpoint;
             _apiKey = config.ApiKey;
-            _probabilityOverride = config.IsSamplingProbabilitySet;
+            _probabilityOverride = config.IsSamplingProbabilityOverriden;
         }
 
         public void Start()

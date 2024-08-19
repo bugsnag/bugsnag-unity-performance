@@ -27,7 +27,7 @@ namespace BugsnagUnityPerformance
         {
             _pValueTimeoutSeconds = config.PValueTimeoutSeconds;
             _pValueCheckIntervalSeconds = config.PValueCheckIntervalSeconds;
-            _probabilityOverride = config.IsSamplingProbabilitySet;
+            _probabilityOverride = config.IsSamplingProbabilityOverriden;
         }
 
         public void Start()

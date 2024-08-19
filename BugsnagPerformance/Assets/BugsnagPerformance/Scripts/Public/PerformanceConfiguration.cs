@@ -63,7 +63,7 @@ namespace BugsnagUnityPerformance
 
         public double SamplingProbability = -1.0;
 
-        public bool IsSamplingProbabilitySet => SamplingProbability >= 0;
+        internal bool IsSamplingProbabilityOverriden => SamplingProbability >= 0;
 
     }
 }

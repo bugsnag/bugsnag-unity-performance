@@ -11,7 +11,7 @@ public class ConfiguredSamplingRate0 : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetSamplingProbability(0);
+        Configuration.SamplingProbability = 0;
         SetMaxBatchAgeSeconds(1);
     }
 
