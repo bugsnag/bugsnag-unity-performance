@@ -5,6 +5,7 @@ Feature: Sampling spans
 
   Scenario: Override sampling in config 1
     Given I set the sampling probability for the next traces to "0"
+    And I enter unmanaged traces mode
     When I run the game in the "OverrideSampling1" state
     And I wait for 4 spans
     Then the trace Bugsnag-Integrity header is valid
