@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Tests")]
+
 namespace BugsnagUnityPerformance
 {
     public class PerformanceConfiguration
