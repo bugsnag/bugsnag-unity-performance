@@ -309,6 +309,7 @@ namespace BugsnagUnityPerformance
                 }
                 request.SetRequestHeader("traceparent", BuildTraceParentHeader(traceId, parentId, sampled));
             }
+            CleanUpCollectedRequests();
         }
 
         private static bool ShouldAddTraceParentHeader(string url)
@@ -372,6 +373,28 @@ namespace BugsnagUnityPerformance
                         span.EndNetworkSpan(request);
                     }
                     _networkSpans.Remove(networkSpanKey);
+                }
+            }
+            CleanUpCollectedRequests();
+        }
+
+        private void CleanUpCollectedRequests()
+        {
+            List<WeakReference<BugsnagUnityWebRequest>> keysToRemove = new List<WeakReference<BugsnagUnityWebRequest>>();
+
+            lock (_networkSpansLock)
+            {
+                foreach (var key in _networkSpans.Keys)
+                {
+                    if (!key.TryGetTarget(out _))
+                    {
+                        keysToRemove.Add(key);
+                    }
+                }
+
+                foreach (var key in keysToRemove)
+                {
+                    _networkSpans.Remove(key);
                 }
             }
         }
