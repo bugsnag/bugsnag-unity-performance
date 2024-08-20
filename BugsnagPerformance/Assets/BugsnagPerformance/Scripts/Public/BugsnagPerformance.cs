@@ -175,6 +175,10 @@ namespace BugsnagUnityPerformance
             {
                 _potentiallyOpenSpans.RemoveAll(wr => wr.TryGetTarget(out var s) && s == span);
             }
+            if (span.WasDiscarded)
+            {
+                return;
+            }
             _tracer.OnSpanEnd(span);
         }
 
