@@ -135,7 +135,7 @@ namespace BugsnagUnityPerformance
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
             _tracer = new Tracer(_sampler, _delivery);
-            _spanFactory = new SpanFactory(OnSpanEnd);
+            _spanFactory = new SpanFactory(_tracer.OnSpanEnd);
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
@@ -167,19 +167,6 @@ namespace BugsnagUnityPerformance
             SetupNetworkListener();
             SetupSceneLoadListeners();
             IsStarted = true;
-        }
-
-        private void OnSpanEnd(Span span)
-        {
-            lock (_potentiallyOpenSpans)
-            {
-                _potentiallyOpenSpans.RemoveAll(wr => wr.TryGetTarget(out var s) && s == span);
-            }
-            if (span.WasDiscarded)
-            {
-                return;
-            }
-            _tracer.OnSpanEnd(span);
         }
 
         private void OnProbabilityChanged(double newProbability)
@@ -440,6 +427,7 @@ namespace BugsnagUnityPerformance
                         span.Discard();
                     }
                 }
+                _potentiallyOpenSpans.Clear();
             }
         }
 

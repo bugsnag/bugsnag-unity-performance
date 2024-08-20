@@ -70,7 +70,6 @@ namespace BugsnagUnityPerformance
                     return;
                 }
                 Ended = true;
-                _onSpanEnd(this);
             }
         }
 
