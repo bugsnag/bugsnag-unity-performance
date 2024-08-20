@@ -5,8 +5,7 @@ namespace BugsnagUnityPerformance
     {
         private PersistentState _persistentState;
 
-        private double _probability = 1;
-        private bool _probabilityOverride = false;
+        private double _probability = -1;
 
         public double Probability
         {
@@ -28,28 +27,27 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _probabilityOverride = config.IsSamplingProbabilityOverriden;
-            _probability = _probabilityOverride ? config.SamplingProbability : 1.0;
+            if (config.IsFixedSamplingProbability)
+            {
+                _probability = config.SamplingProbability;
+            }
         }
 
         public void Start()
         {
-            if(!_probabilityOverride)
+            // If the probability is not set, try to load it from the persistent state, otherwise set it to 1.0
+            if (_probability < 0)
             {
-                GetStoredProbability();
-            }
-        }
-
-        private void GetStoredProbability()
-        {
-            var storedProbability = _persistentState.Probability;
-            if (storedProbability >= 0)
-            {
-                _probability = storedProbability;
-            }
-            else
-            {
-                _persistentState.Probability = _probability;
+                var storedProbability = _persistentState.Probability;
+                if (storedProbability >= 0)
+                {
+                    _probability = storedProbability;
+                }
+                else
+                {
+                    _probability = 1.0;
+                    _persistentState.Probability = _probability;
+                }
             }
         }
 

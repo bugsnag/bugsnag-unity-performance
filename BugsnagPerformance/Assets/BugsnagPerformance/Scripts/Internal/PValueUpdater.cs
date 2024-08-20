@@ -13,9 +13,6 @@ namespace BugsnagUnityPerformance
         private float _pValueTimeoutSeconds;
         private float _pValueCheckIntervalSeconds;
 
-        private bool _probabilityOverride = false;
-
-
         public PValueUpdater(Delivery delivery, Sampler sampler)
         {
             _delivery = delivery;
@@ -27,16 +24,10 @@ namespace BugsnagUnityPerformance
         {
             _pValueTimeoutSeconds = config.PValueTimeoutSeconds;
             _pValueCheckIntervalSeconds = config.PValueCheckIntervalSeconds;
-            _probabilityOverride = config.IsSamplingProbabilityOverriden;
         }
 
         public void Start()
         {
-            // If the probability is overridden, we don't need to check for p value updates
-            if(_probabilityOverride)
-            {
-                return;
-            }
             MainThreadDispatchBehaviour.Instance().Enqueue(CheckPValue());
         }
         

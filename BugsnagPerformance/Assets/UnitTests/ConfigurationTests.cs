@@ -76,9 +76,9 @@ namespace Tests
         public void CustomSamplingValue()
         {
             var config = new PerformanceConfiguration(VALID_API_KEY);
-            Assert.IsFalse(config.IsSamplingProbabilityOverriden);
+            Assert.IsFalse(config.IsFixedSamplingProbability);
             config.SamplingProbability = 0.5;
-            Assert.IsTrue(config.IsSamplingProbabilityOverriden);
+            Assert.IsTrue(config.IsFixedSamplingProbability);
         }
 
     }
