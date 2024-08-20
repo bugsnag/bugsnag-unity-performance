@@ -98,13 +98,11 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
-            var weakSpan = new WeakReference<Span>(span);
-
             if (!_started)
             {
                 lock (_prestartLock)
                 {
-                    _preStartSpans.Add(weakSpan);
+                    _preStartSpans.Add(new WeakReference<Span>(span));
                 }
                 return;
             }
