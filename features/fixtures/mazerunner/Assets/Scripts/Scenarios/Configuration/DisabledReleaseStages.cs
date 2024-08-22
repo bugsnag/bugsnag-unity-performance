@@ -13,18 +13,13 @@ public class DisabledReleaseStages : Scenario
         base.PreparePerformanceConfig(apiKey, host);
         Configuration.ReleaseStage = "EnabledReleaseStages";
         Configuration.EnabledReleaseStages = new[] { "DisabledReleaseStages" };
-        SetMaxBatchAgeSeconds(1);
+        SetMaxBatchSize(1);
     }
 
     public override void Run()
     {
         base.Run();
-        _span = BugsnagPerformance.StartSpan("DisabledReleaseStages");
-        Invoke("EndSpan", 1);
+        BugsnagPerformance.StartSpan("DisabledReleaseStages").End();
     }
 
-    private void EndSpan()
-    {
-        _span.End();
-    }
 }

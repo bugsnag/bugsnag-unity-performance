@@ -17,7 +17,7 @@ namespace BugsnagUnityPerformance
         private static object _startLock = new object();
         internal static bool IsStarted = false;
         private object _startSpanLock = new object();
-        private object _networkSpansLock = new object();
+        private static object _networkSpansLock = new object();
         private SpanFactory _spanFactory;
         private CacheManager _cacheManager;
         private Delivery _delivery;
@@ -27,9 +27,20 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
-        private static List<Span> _potentiallyOpenSpans = new List<Span>();
+        private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
+
+        private static Dictionary<WeakReference<BugsnagUnityWebRequest>, Span> _networkSpans = new Dictionary<WeakReference<BugsnagUnityWebRequest>, Span>();
+
         private static Regex[] _tracePropagationUrlMatchPatterns;
+
+        // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
+        private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
+
+        internal class SceneLoadSpanContainer
+        {
+            public List<Span> Spans = new List<Span>();
+        }
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -49,11 +60,15 @@ namespace BugsnagUnityPerformance
             {
                 _tracePropagationUrlMatchPatterns = configuration.TracePropagationUrls.ToArray();
             }
+
             ValidateApiKey(configuration.ApiKey);
+
             if (ReleaseStageEnabled(configuration))
             {
-                // init main thread dispatcher and create app lifecycle listener on main thread
-                MainThreadDispatchBehaviour.Instance().Enqueue(() => { CreateAppLifecycleListener(); });
+                MainThreadDispatchBehaviour.Instance().Enqueue(() =>
+                {
+                    CreateAppLifecycleListener();
+                });
                 _sharedInstance.Configure(configuration);
                 _sharedInstance.Start();
 #if BUGSNAG_DEBUG
@@ -69,18 +84,19 @@ namespace BugsnagUnityPerformance
 
         private static void ValidateApiKey(string apiKey)
         {
-            if (!System.Text.RegularExpressions.Regex.IsMatch(apiKey, @"\A\b[0-9a-fA-F]+\b\Z") ||
+            if (!Regex.IsMatch(apiKey, @"\A\b[0-9a-fA-F]+\b\Z") ||
                 apiKey.Length != 32)
             {
-                throw new System.Exception($"Invalid Bugsnag Performance configuration. apiKey should be a 32-character hexademical string, got {apiKey} ");
+                throw new Exception($"Invalid Bugsnag Performance configuration. apiKey should be a 32-character hexademical string, got {apiKey} ");
             }
         }
 
         private static bool ReleaseStageEnabled(PerformanceConfiguration configuration)
         {
-            return configuration.ReleaseStage == null
+            bool result = configuration.ReleaseStage == null
                 || configuration.EnabledReleaseStages == null
                 || configuration.EnabledReleaseStages.Contains(configuration.ReleaseStage);
+            return result;
         }
 
         public static Span StartSpan(string name)
@@ -103,11 +119,6 @@ namespace BugsnagUnityPerformance
             return _sharedInstance._spanFactory.CreateManualNetworkSpan(url, httpVerb, spanOptions);
         }
 
-        private Dictionary<BugsnagUnityWebRequest, Span> _networkSpans = new Dictionary<BugsnagUnityWebRequest, Span>();
-
-        // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
-        private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void SubsystemRegistration()
         {
@@ -123,14 +134,9 @@ namespace BugsnagUnityPerformance
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
             _tracer = new Tracer(_sampler, _delivery);
-            _spanFactory = new SpanFactory(OnSpanEnd);
+            _spanFactory = new SpanFactory(_tracer.OnSpanEnd);
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
-        }
-
-        internal class SceneLoadSpanContainer
-        {
-            public List<Span> Spans = new List<Span>();
         }
 
         private void Configure(PerformanceConfiguration config)
@@ -166,12 +172,6 @@ namespace BugsnagUnityPerformance
             SetupNetworkListener();
             SetupSceneLoadListeners();
             IsStarted = true;
-        }
-
-        private void OnSpanEnd(Span span)
-        {
-            _potentiallyOpenSpans.Remove(span);
-            _tracer.OnSpanEnd(span);
         }
 
         private void OnProbabilityChanged(double newProbability)
@@ -269,7 +269,8 @@ namespace BugsnagUnityPerformance
                 networkSpan = _spanFactory.CreateAutomaticNetworkSpan(request, url);
                 lock (_networkSpansLock)
                 {
-                    _networkSpans[request] = networkSpan;
+                    var weakRequest = new WeakReference<BugsnagUnityWebRequest>(request);
+                    _networkSpans[weakRequest] = networkSpan;
                 }
             }
 
@@ -337,15 +338,54 @@ namespace BugsnagUnityPerformance
 
         private void EndNetworkSpan(BugsnagUnityWebRequest request, bool abort = false)
         {
-            var discard = abort || request.isHttpError || request.isNetworkError;
+            if (request == null)
+            {
+                return;
+            }
             lock (_networkSpansLock)
             {
-                if (!discard && _networkSpans.ContainsKey(request))
+                var networkSpanKey = _networkSpans.Keys.FirstOrDefault(key =>
                 {
-                    var span = _networkSpans[request];
-                    span.EndNetworkSpan(request);
+                    if (key.TryGetTarget(out var targetRequest))
+                    {
+                        return targetRequest == request;
+                    }
+                    return false;
+                });
+
+                if (networkSpanKey != null && _networkSpans.TryGetValue(networkSpanKey, out var span))
+                {
+                    if (abort || request.isHttpError || request.isNetworkError)
+                    {
+                        span.Discard();
+                    }
+                    else
+                    {
+                        span.EndNetworkSpan(request);
+                    }
+                    _networkSpans.Remove(networkSpanKey);
                 }
-                _networkSpans.Remove(request);
+            }
+        }
+
+        private static void CleanUpCollectedRequests()
+        {
+            List<WeakReference<BugsnagUnityWebRequest>> keysToRemove = new List<WeakReference<BugsnagUnityWebRequest>>();
+
+            lock (_networkSpansLock)
+            {
+                foreach (var key in _networkSpans.Keys)
+                {
+                    if (!key.TryGetTarget(out _))
+                    {
+                        keysToRemove.Add(key);
+                    }
+                }
+
+                foreach (var key in keysToRemove)
+                {
+                    _networkSpans.Remove(key);
+                }
             }
         }
 
@@ -359,7 +399,7 @@ namespace BugsnagUnityPerformance
             lock (_startSpanLock)
             {
                 var span = _spanFactory.StartCustomSpan(name, spanOptions);
-                _potentiallyOpenSpans.Add(span);
+                _potentiallyOpenSpans.Add(new WeakReference<Span>(span));
                 return span;
             }
         }
@@ -376,17 +416,22 @@ namespace BugsnagUnityPerformance
 
         internal static void AppBackgrounded()
         {
+            CleanUpCollectedRequests();
             CancelAllOpenSpans();
         }
 
         private static void CancelAllOpenSpans()
         {
-            foreach (var span in _potentiallyOpenSpans.ToArray())
+            lock (_potentiallyOpenSpans)
             {
-                if (!span.Ended)
+                foreach (var weakRef in _potentiallyOpenSpans.ToArray())
                 {
-                    span.Discard();
+                    if (weakRef.TryGetTarget(out var span) && !span.Ended)
+                    {
+                        span.Discard();
+                    }
                 }
+                _potentiallyOpenSpans.Clear();
             }
         }
 

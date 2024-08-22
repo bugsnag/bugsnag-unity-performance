@@ -11,7 +11,7 @@ namespace BugsnagUnityPerformance
     {
 
         [ThreadStatic]
-        private static Stack<ISpanContext> _contextStack;
+        private static Stack<WeakReference<ISpanContext>> _contextStack;
 
         private RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 
@@ -94,18 +94,17 @@ namespace BugsnagUnityPerformance
                     traceId = GetNewTraceId();
                 }
             }
-           
-            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd);
 
+            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd);
             if (spanOptions.MakeCurrentContext)
             {
                 AddToContextStack(newSpan);
             }
-            newSpan.SetAttributeInternal("net.host.connection.type",_currentConnectionType);
+            newSpan.SetAttributeInternal("net.host.connection.type", _currentConnectionType);
             return newSpan;
         }
 
-        internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request,string url)
+        internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request, string url)
         {
             var verb = request.method.ToUpper();
 
@@ -196,32 +195,46 @@ namespace BugsnagUnityPerformance
 
             while (_contextStack.Count > 0)
             {
-                var top = (Span)_contextStack.Peek();
-                if (top.Ended)
+                var top = _contextStack.Peek();
+                if(top == null)
                 {
                     _contextStack.Pop();
+                    continue;
+                }
+                if (top.TryGetTarget(out var spanContext))
+                {
+                    if (((Span)spanContext).Ended)
+                    {
+                        _contextStack.Pop();
+                    }
+                    else
+                    {
+                        return spanContext;
+                    }
                 }
                 else
                 {
-                    return top;
+                    _contextStack.Pop();
+                    continue;
                 }
             }
 
             return null;
         }
 
+
         private void AddToContextStack(ISpanContext spanContext)
         {
             if (_contextStack == null)
             {
-                _contextStack = new Stack<ISpanContext>();
+                _contextStack = new Stack<WeakReference<ISpanContext>>();
             }
-            _contextStack.Push(spanContext);
+            _contextStack.Push(new WeakReference<ISpanContext>(spanContext));
         }
 
         internal Span CreateAutoAppStartSpan(string name, string category)
         {
-            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT,new SpanOptions());
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT, new SpanOptions());
             span.SetAttributeInternal("bugsnag.span.category", category);
             span.SetAttributeInternal("bugsnag.app_start.type", "UnityRuntime");
             span.IsAppStartSpan = true;
