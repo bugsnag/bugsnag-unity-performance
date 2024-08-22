@@ -12,6 +12,7 @@ namespace BugsnagUnityPerformance
         private DateTime _pValueTimeout;
         private float _pValueTimeoutSeconds;
         private float _pValueCheckIntervalSeconds;
+        public bool IsConfigured { get; private set; }
 
         public PValueUpdater(Delivery delivery, Sampler sampler)
         {
@@ -24,6 +25,7 @@ namespace BugsnagUnityPerformance
         {
             _pValueTimeoutSeconds = config.PValueTimeoutSeconds;
             _pValueCheckIntervalSeconds = config.PValueCheckIntervalSeconds;
+            IsConfigured = true;
         }
 
         public void Start()

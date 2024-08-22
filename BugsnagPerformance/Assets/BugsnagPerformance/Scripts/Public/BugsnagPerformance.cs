@@ -30,8 +30,6 @@ namespace BugsnagUnityPerformance
         private static List<Span> _potentiallyOpenSpans = new List<Span>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
         private static Regex[] _tracePropagationUrlMatchPatterns;
-        private bool _isSamplingProbabilityOverriden;
-
 
         public static void Start(PerformanceConfiguration configuration)
         {
@@ -137,14 +135,13 @@ namespace BugsnagUnityPerformance
 
         private void Configure(PerformanceConfiguration config)
         {
-            _isSamplingProbabilityOverriden = config.IsFixedSamplingProbability;
             _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);
             _persistentState.Configure(config);
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
-            if(!_isSamplingProbabilityOverriden)
+            if(!config.IsFixedSamplingProbability)
             {
                 _pValueUpdater.Configure(config);
             }
@@ -160,7 +157,7 @@ namespace BugsnagUnityPerformance
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();
-            if(!_isSamplingProbabilityOverriden)
+            if(_pValueUpdater.IsConfigured)
             {
                _pValueUpdater.Start();
             }
