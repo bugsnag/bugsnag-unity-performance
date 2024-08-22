@@ -72,5 +72,14 @@ namespace Tests
             Assert.IsFalse(config.TracePropagationUrls[1].IsMatch(nonMatchingUrl2));
         }
 
+        [Test]
+        public void CustomSamplingValue()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+            Assert.IsFalse(config.IsFixedSamplingProbability);
+            config.SamplingProbability = 0.5;
+            Assert.IsTrue(config.IsFixedSamplingProbability);
+        }
+
     }
 }

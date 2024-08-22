@@ -34,7 +34,6 @@ namespace BugsnagUnityPerformance
 
         private static Regex[] _tracePropagationUrlMatchPatterns;
 
-
         // All scene load events and operations happen on the main thread, so there is no need for concurrency protection
         private Dictionary<string, SceneLoadSpanContainer> _sceneLoadSpans = new Dictionary<string, SceneLoadSpanContainer>();
 
@@ -148,7 +147,10 @@ namespace BugsnagUnityPerformance
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
-            _pValueUpdater.Configure(config);
+            if(!config.IsFixedSamplingProbability)
+            {
+                _pValueUpdater.Configure(config);
+            }
             _tracer.Configure(config);
             _appStartHandler.Configure(config);
         }
@@ -161,7 +163,10 @@ namespace BugsnagUnityPerformance
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();
-            _pValueUpdater.Start();
+            if(_pValueUpdater.IsConfigured)
+            {
+               _pValueUpdater.Start();
+            }
             _tracer.Start();
             _appStartHandler.Start();
             SetupNetworkListener();

@@ -16,10 +16,9 @@ namespace BugsnagUnityPerformance
     {
         private string _endpoint;
         private string _apiKey;
+        private bool _isFixedSamplingProbability = false;
         private OnProbabilityChanged _onProbabilityChanged;
-
         private bool _flushingCache;
-
         private ResourceModel _resourceModel;
         private CacheManager _cacheManager;
 
@@ -60,6 +59,7 @@ namespace BugsnagUnityPerformance
         {
             _endpoint = config.Endpoint;
             _apiKey = config.ApiKey;
+            _isFixedSamplingProbability = config.IsFixedSamplingProbability;
         }
 
         public void Start()
@@ -69,7 +69,7 @@ namespace BugsnagUnityPerformance
 
         public void Deliver(List<Span> batch)
         {
-            var payload = new TracePayload(_resourceModel, batch);
+            var payload = new TracePayload(_resourceModel, batch, _isFixedSamplingProbability);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
@@ -99,7 +99,7 @@ namespace BugsnagUnityPerformance
             {
                 onResponse = OnPValueRequestCompleted;
             }
-            var payload = new TracePayload(_resourceModel, null);
+            var payload = new TracePayload(_resourceModel, null, false);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
         }
 
