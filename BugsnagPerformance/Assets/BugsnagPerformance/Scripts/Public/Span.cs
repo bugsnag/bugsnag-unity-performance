@@ -65,12 +65,7 @@ namespace BugsnagUnityPerformance
             lock (_endLock)
             {
                 WasDiscarded = true;
-                if (Ended)
-                {
-                    return;
-                }
                 Ended = true;
-                _onSpanEnd(this);
             }
         }
 

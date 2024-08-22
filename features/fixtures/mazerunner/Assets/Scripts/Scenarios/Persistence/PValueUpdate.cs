@@ -9,7 +9,7 @@ public class PValueUpdate : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchAgeSeconds(1);
+        SetMaxBatchSize(1);
     }
 
     public override void Run()
