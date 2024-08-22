@@ -17,7 +17,7 @@ namespace BugsnagUnityPerformance
         private static object _startLock = new object();
         internal static bool IsStarted = false;
         private object _startSpanLock = new object();
-        private object _networkSpansLock = new object();
+        private static object _networkSpansLock = new object();
         private SpanFactory _spanFactory;
         private CacheManager _cacheManager;
         private Delivery _delivery;
@@ -30,7 +30,7 @@ namespace BugsnagUnityPerformance
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
-        private Dictionary<WeakReference<BugsnagUnityWebRequest>, Span> _networkSpans = new Dictionary<WeakReference<BugsnagUnityWebRequest>, Span>();
+        private static Dictionary<WeakReference<BugsnagUnityWebRequest>, Span> _networkSpans = new Dictionary<WeakReference<BugsnagUnityWebRequest>, Span>();
 
         private static Regex[] _tracePropagationUrlMatchPatterns;
 
@@ -296,7 +296,6 @@ namespace BugsnagUnityPerformance
                 }
                 request.SetRequestHeader("traceparent", BuildTraceParentHeader(traceId, parentId, sampled));
             }
-            CleanUpCollectedRequests();
         }
 
         private static bool ShouldAddTraceParentHeader(string url)
@@ -362,10 +361,9 @@ namespace BugsnagUnityPerformance
                     _networkSpans.Remove(networkSpanKey);
                 }
             }
-            CleanUpCollectedRequests();
         }
 
-        private void CleanUpCollectedRequests()
+        private static void CleanUpCollectedRequests()
         {
             List<WeakReference<BugsnagUnityWebRequest>> keysToRemove = new List<WeakReference<BugsnagUnityWebRequest>>();
 
@@ -413,6 +411,7 @@ namespace BugsnagUnityPerformance
 
         internal static void AppBackgrounded()
         {
+            CleanUpCollectedRequests();
             CancelAllOpenSpans();
         }
 
