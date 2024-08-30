@@ -18,7 +18,7 @@ namespace BugsnagUnityPerformance
 
         public string[] EnabledReleaseStages;
 
-        public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
+        public string Endpoint = string.Empty;
 
         public string ReleaseStage;
 

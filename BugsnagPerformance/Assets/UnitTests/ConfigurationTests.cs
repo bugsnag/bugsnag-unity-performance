@@ -16,10 +16,50 @@ namespace Tests
 
         private DateTimeOffset CustomStartTime = new DateTimeOffset(1985, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
         private DateTimeOffset CustomEndTime = new DateTimeOffset(1986, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
+        private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
+        private const string DEFAULT_ENDPOINT_FORMAT = "https://{0}.otlp.bugsnag.com/v1/traces";
 
         private void OnSpanEnd(Span span)
         {
             // Nothing to do
+        }
+
+        [Test]
+        public void TestEndpointWhenUnset()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+            var endpoint = config.GetEndpoint();
+            var expectedEndpoint = string.Format(DEFAULT_ENDPOINT_FORMAT, VALID_API_KEY);
+            Assert.AreEqual(expectedEndpoint, endpoint);
+        }
+
+        [Test]
+        public void TestEndpointWhenSetToLegacyDefault()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+            config.Endpoint = LEGACY_DEFAULT_ENDPOINT;
+            var endpoint = config.GetEndpoint();
+            var expectedEndpoint = string.Format(DEFAULT_ENDPOINT_FORMAT, VALID_API_KEY);
+            Assert.AreEqual(expectedEndpoint, endpoint);
+        }
+
+        [Test]
+        public void TestEndpointWhenSetToCustomValue()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+            string customEndpoint = "https://custom.endpoint.com/traces";
+            config.Endpoint = customEndpoint;
+            var endpoint = config.GetEndpoint();
+            Assert.AreEqual(customEndpoint, endpoint);
+        }
+
+        [Test]
+        public void TestEndpointWithNullApiKey()
+        {
+            var config = new PerformanceConfiguration(null);
+            var endpoint = config.GetEndpoint();
+            var expectedEndpoint = string.Format(DEFAULT_ENDPOINT_FORMAT, string.Empty);
+            Assert.AreEqual(expectedEndpoint, endpoint);
         }
 
         [Test]

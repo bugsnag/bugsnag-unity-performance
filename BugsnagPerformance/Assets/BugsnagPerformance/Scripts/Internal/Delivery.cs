@@ -57,7 +57,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _endpoint = config.Endpoint;
+            _endpoint = config.GetEndpoint();
             _apiKey = config.ApiKey;
             _isFixedSamplingProbability = config.IsFixedSamplingProbability;
         }

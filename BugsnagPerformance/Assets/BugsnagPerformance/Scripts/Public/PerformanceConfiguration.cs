@@ -10,6 +10,8 @@ namespace BugsnagUnityPerformance
     public class PerformanceConfiguration
     {
 
+        private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
+        private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
 
         public PerformanceConfiguration(string apiKey)
         {
@@ -38,7 +40,8 @@ namespace BugsnagUnityPerformance
 
         public string[] EnabledReleaseStages;
 
-        public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
+        public string Endpoint = string.Empty;
+
 
         public Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> NetworkRequestCallback;
 
@@ -66,6 +69,15 @@ namespace BugsnagUnityPerformance
         public double SamplingProbability = -1.0;
 
         internal bool IsFixedSamplingProbability => SamplingProbability >= 0;
+
+        public string GetEndpoint()
+        {
+            if(string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
+            {
+                return string.Format(DEFAULT_ENDPOINT, ApiKey);
+            }
+            return Endpoint;
+        }
 
     }
 }
