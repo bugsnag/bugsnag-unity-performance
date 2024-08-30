@@ -74,7 +74,7 @@ namespace BugsnagUnityPerformance
         {
             if(string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
             {
-                return string.Format(DEFAULT_ENDPOINT,ApiKey);
+                return string.Format(DEFAULT_ENDPOINT, ApiKey);
             }
             return Endpoint;
         }
