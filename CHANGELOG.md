@@ -9,6 +9,8 @@
 - Allow setting custom span attributes. [#124](https://github.com/bugsnag/bugsnag-unity-performance/pull/124)
 - Changed internal Span references to WeakReferences to avoid memory leaks. [#127](https://github.com/bugsnag/bugsnag-unity-performance/pull/127)
 
+- Use API key subdomain as default Performance endpoint. [#129](https://github.com/bugsnag/bugsnag-unity-performance/pull/129)
+
 ### Bug Fixes
 
 - Fix an issue where TracePropagationUrls was incorrectly named and typed. [#126](https://github.com/bugsnag/bugsnag-unity-performance/pull/126)
