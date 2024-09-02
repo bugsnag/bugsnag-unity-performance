@@ -33,6 +33,7 @@ Feature: Manual creation of spans
       | com.bugsnag.fixtures.unity.performance.android |
       | com.bugsnag.fixtures.unity.performance.ios |
       | mazerunner |
+      | unknown_service |
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" is one of:
       | Android |
       | iOS |
