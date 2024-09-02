@@ -87,11 +87,11 @@ public class BugsnagPerformanceEditor : EditorWindow
             EditorGUIUtility.labelWidth = 280;
             settings.UseNotifierSettings = EditorGUILayout.Toggle("Use BugSnag Error Monitoring SDK Settings", settings.UseNotifierSettings);
         }
-     
+
 
         if (!NotifierConfigAvaliable() || !settings.UseNotifierSettings)
         {
-            DrawStandaloneSettings(so,settings);
+            DrawStandaloneSettings(so, settings);
         }
 
         if (NotifierConfigAvaliable() && settings.UseNotifierSettings)
@@ -100,12 +100,12 @@ public class BugsnagPerformanceEditor : EditorWindow
         }
 
         EditorGUIUtility.labelWidth = 200;
-        EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
 
+        EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
+        EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
+
         EditorGUI.indentLevel--;
-
-
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
     }
