@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    public class ResourceModel: IPhasedStartup
+    public class ResourceModel : IPhasedStartup
     {
         private CacheManager _cacheManager;
 
@@ -24,9 +24,9 @@ namespace BugsnagUnityPerformance
                 new AttributeModel("telemetry.sdk.version", Version.VersionString),
                 new AttributeModel("device.model.identifier", SystemInfo.deviceModel),
                 new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
+                new AttributeModel("service.name", GetServiceName(config)),
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
-                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
-                new AttributeModel("service.name", string.IsNullOrEmpty(config.ServiceName) ? Application.identifier : config.ServiceName)
+                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion)
             };
             AddNonNullAttribute(GetNativeVersionInfo(config));
             AddNonNullAttribute(GetManufacturer());
@@ -46,6 +46,18 @@ namespace BugsnagUnityPerformance
         public void Start()
         {
             attributes.Add(new AttributeModel("device.id", _cacheManager.GetDeviceId()));
+        }
+
+        private string GetServiceName(PerformanceConfiguration config)
+        {
+            if (!string.IsNullOrEmpty(config.ServiceName))
+            {
+                return config.ServiceName;
+            }
+
+            var name = Application.identifier ?? Application.productName;
+
+            return !string.IsNullOrEmpty(name) ? name : "unknown_service";
         }
 
         private string GetPlatform()
@@ -85,7 +97,7 @@ namespace BugsnagUnityPerformance
         {
             if (!string.IsNullOrEmpty(config.BundleVersion))
             {
-                return new AttributeModel("bugsnag.app.bundle_version",  config.BundleVersion);
+                return new AttributeModel("bugsnag.app.bundle_version", config.BundleVersion);
             }
             return new AttributeModel("bugsnag.app.bundle_version", Application.platform == RuntimePlatform.IPhonePlayer ? iOSNative.GetBundleVersion() : MacOSNative.GetBundleVersion());
         }
