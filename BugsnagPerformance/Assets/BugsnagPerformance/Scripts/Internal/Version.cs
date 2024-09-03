@@ -3,6 +3,6 @@
     internal static class Version
     {
         //TODO set this using sed or something in the release automation task
-        public const string VersionString = "1.4.2";
+        public const string VersionString = "1.5.0";
     }
 }

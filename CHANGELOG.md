@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD
+## v1.5.0 (2024-03-09)
 
 ### Additions
 
@@ -18,7 +18,7 @@
 
 - Fix an issue where TracePropagationUrls was incorrectly named and typed. [#126](https://github.com/bugsnag/bugsnag-unity-performance/pull/126)
 
-## v1.4.2 (2024-06-27)
+## v1.4.2 (2024-27-06)
 
 ### Bug Fixes
 
