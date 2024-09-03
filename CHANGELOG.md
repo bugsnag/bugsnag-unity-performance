@@ -12,7 +12,7 @@
 
 - Use API key subdomain as default Performance endpoint. [#129](https://github.com/bugsnag/bugsnag-unity-performance/pull/129)
 
-- Added the serivce name resource attribute. [#130] (https://github.com/bugsnag/bugsnag-unity-performance/pull/130)
+- Added the service name resource attribute. [#130] (https://github.com/bugsnag/bugsnag-unity-performance/pull/130)
 
 ### Bug Fixes
 
