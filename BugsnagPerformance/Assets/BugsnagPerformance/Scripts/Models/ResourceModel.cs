@@ -55,9 +55,12 @@ namespace BugsnagUnityPerformance
                 return config.ServiceName;
             }
 
-            var name = Application.identifier ?? Application.productName;
-
-            return !string.IsNullOrEmpty(name) ? name : "unknown_service";
+            var name = string.IsNullOrEmpty(Application.identifier) ? Application.productName : Application.identifier;
+            if (string.IsNullOrEmpty(name))
+            {
+                return "unknown_service";
+            }
+            return name;
         }
 
         private string GetPlatform()
