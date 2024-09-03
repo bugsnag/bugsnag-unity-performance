@@ -70,6 +70,8 @@ namespace BugsnagUnityPerformance
 
         internal bool IsFixedSamplingProbability => SamplingProbability >= 0;
 
+        public string ServiceName = string.Empty;
+
         public string GetEndpoint()
         {
             if(string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
