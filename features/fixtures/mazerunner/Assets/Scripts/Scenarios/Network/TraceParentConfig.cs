@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using BugsnagNetworking;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class TraceParentConfig : Scenario
 {
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        Configuration.TracePropagationUrlMatchPatterns = new string[]{ "dosend" };
+        Configuration.TracePropagationUrls = new Regex[]
+        {
+            new Regex(".*dosend.*")
+        };
     }
 
     public override void Run()

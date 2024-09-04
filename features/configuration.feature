@@ -58,3 +58,10 @@ Feature: Configuration tests
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "VersionCode"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" equals "123"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.device.android_api_version" exists
+
+  Scenario: Custom Service Name
+    When I run the game in the "CustomServiceName" state
+    And I wait for 1 span
+    Then the trace Bugsnag-Integrity header is valid
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "CustomServiceName"
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.name" equals "custom.service.name"

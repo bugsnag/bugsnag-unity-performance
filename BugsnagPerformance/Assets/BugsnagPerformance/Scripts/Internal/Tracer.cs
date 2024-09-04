@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -13,9 +12,9 @@ namespace BugsnagUnityPerformance
 
         private float _maxBatchAgeSeconds = 30f;
 
-        private List<Span> _spanQueue = new List<Span>();
+        private List<Span> _finishedSpanQueue = new List<Span>();
 
-        private List<Span> _preStartSpans = new List<Span>();
+        private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
 
         private object _queueLock = new object();
 
@@ -33,6 +32,7 @@ namespace BugsnagUnityPerformance
 
         private static AutoInstrumentAppStartSetting _appStartSetting;
 
+        private List<Func<Span, bool>> _onSpanEndCallbacks;
 
 
         public Tracer(Sampler sampler, Delivery delivery)
@@ -43,6 +43,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
+            _onSpanEndCallbacks = config.GetOnSpanEndCallbacks();
             _maxBatchSize = config.MaxBatchSize;
             _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
             _appStartSetting = config.AutoInstrumentAppStart;
@@ -70,13 +71,16 @@ namespace BugsnagUnityPerformance
 
         private void FlushPreStartSpans()
         {
-            foreach (var span in _preStartSpans)
+            foreach (var weakRef in _preStartSpans)
             {
-                if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                if (weakRef.TryGetTarget(out var span))
                 {
-                    continue;
+                    if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                    {
+                        continue;
+                    }
+                    Sample(span);
                 }
-                Sample(span);
             }
         }
 
@@ -98,18 +102,51 @@ namespace BugsnagUnityPerformance
             {
                 lock (_prestartLock)
                 {
-                    _preStartSpans.Add(span);
+                    _preStartSpans.Add(new WeakReference<Span>(span));
                 }
                 return;
             }
-            Sample(span);
+            else
+            {
+                Sample(span);
+            }
+        }
+
+        public void RunOnEndCallbacks(Span span)
+        {
+            if (!span.WasDiscarded && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
+            {
+                var startTime = DateTimeOffset.UtcNow;
+                foreach (var callback in _onSpanEndCallbacks)
+                {
+                    try
+                    {
+                        if (!callback.Invoke(span))
+                        {
+                            span.Discard();
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                    }
+                }
+                var duration = DateTimeOffset.UtcNow - startTime;
+                span.SetAttributeInternal("bugsnag.span.callbacks_duration", duration.Ticks * 100);
+            }
+            span.SetCallbackComplete();
         }
 
         private void Sample(Span span)
         {
             if (_sampler.Sampled(span))
             {
-                AddSpanToQueue(span);
+                RunOnEndCallbacks(span);
+                if (!span.WasDiscarded)
+                {
+                    AddSpanToQueue(span);
+                }
             }
         }
 
@@ -118,7 +155,7 @@ namespace BugsnagUnityPerformance
             var deliverBatch = false;
             lock (_queueLock)
             {
-                _spanQueue.Add(span);
+                _finishedSpanQueue.Add(span);
                 deliverBatch = BatchSizeLimitReached();
             }
             if (deliverBatch)
@@ -131,13 +168,16 @@ namespace BugsnagUnityPerformance
         {
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
-                List<Span> batch = null;
-                if (_spanQueue.Count == 0)
+                List<Span> batch = new List<Span>();
+                foreach (var finishedSpan in _finishedSpanQueue)
+                {
+                    batch.Add(finishedSpan);
+                }
+                _finishedSpanQueue.Clear();
+                if (batch.Count == 0)
                 {
                     return;
                 }
-                batch = _spanQueue.Where(span => !span.WasAborted).ToList();
-                _spanQueue = new List<Span>();
                 _lastBatchSendTime = DateTimeOffset.UtcNow;
                 _delivery.Deliver(batch);
             }
@@ -145,15 +185,15 @@ namespace BugsnagUnityPerformance
             {
                 new Thread(() =>
                 {
-                    List<Span> batch = null;
-                    lock (_queueLock)
+                    List<Span> batch = new List<Span>();
+                    foreach (var finishedSpan in _finishedSpanQueue)
                     {
-                        if (_spanQueue.Count == 0)
-                        {
-                            return;
-                        }
-                        batch = _spanQueue;
-                        _spanQueue = new List<Span>();
+                        batch.Add(finishedSpan);
+                    }
+                    _finishedSpanQueue.Clear();
+                    if (batch.Count == 0)
+                    {
+                        return;
                     }
                     _lastBatchSendTime = DateTimeOffset.UtcNow;
                     _delivery.Deliver(batch);
@@ -163,13 +203,14 @@ namespace BugsnagUnityPerformance
 
         private bool BatchSizeLimitReached()
         {
-            return _spanQueue.Count >= _maxBatchSize;
+            return _finishedSpanQueue.Count >= _maxBatchSize;
         }
 
         private bool BatchDue()
         {
             return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
         }
+
     }
 }
 

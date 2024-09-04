@@ -90,7 +90,7 @@ namespace Tests
         {
             var cacheManager = new CacheManager(Application.temporaryCachePath);
             var resourceModel = new ResourceModel(cacheManager);
-            return new TracePayload(resourceModel, SpansWithProbabilities(pValues));
+            return new TracePayload(resourceModel, SpansWithProbabilities(pValues), false);
         }
 
         private void AssertSpanSamplingHistogram(List<double> pValues, string expectedHistogram)

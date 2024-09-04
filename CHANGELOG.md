@@ -1,18 +1,36 @@
 # Changelog
 
+## v1.5.0 (2024-09-03)
+
+### Additions
+
+- Allow setting a fixed Span Sampling probability. [#128](https://github.com/bugsnag/bugsnag-unity-performance/pull/128)
+
+- Allow setting custom span attributes. [#124](https://github.com/bugsnag/bugsnag-unity-performance/pull/124)
+
+- Changed internal Span references to WeakReferences to avoid memory leaks. [#127](https://github.com/bugsnag/bugsnag-unity-performance/pull/127)
+
+- Use API key subdomain as default Performance endpoint. [#129](https://github.com/bugsnag/bugsnag-unity-performance/pull/129)
+
+- Added the service name resource attribute. [#130] (https://github.com/bugsnag/bugsnag-unity-performance/pull/130)
+
+### Bug Fixes
+
+- Fix an issue where TracePropagationUrls was incorrectly named and typed. [#126](https://github.com/bugsnag/bugsnag-unity-performance/pull/126)
+
 ## v1.4.2 (2024-06-27)
 
 ### Bug Fixes
 
 - Fix an issue where spans with MakeCurrentContext set to false and passed as a parent would be added to the context stack. [#122](https://github.com/bugsnag/bugsnag-unity-performance/pull/122)
 
-## v1.4.1 (2024-11-06)
+## v1.4.1 (2024-06-11)
 
 ### Bug Fixes
 
 - Fixed issue where creating a span in a background thread caused an exception (mono or IL2CPP Dev builds only) [#117](https://github.com/bugsnag/bugsnag-unity-performance/pull/117)
 
-## v1.4.0 (2024-30-05)
+## v1.4.0 (2024-05-30)
 
 ### Additions
 

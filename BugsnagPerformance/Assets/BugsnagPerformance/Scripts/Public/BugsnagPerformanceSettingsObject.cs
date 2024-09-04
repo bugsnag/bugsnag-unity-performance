@@ -18,13 +18,14 @@ namespace BugsnagUnityPerformance
 
         public string[] EnabledReleaseStages;
 
-        public string Endpoint = "https://otlp.bugsnag.com/v1/traces";
+        public string Endpoint = string.Empty;
 
         public string ReleaseStage;
 
         public string AppVersion;
         public int VersionCode = -1;
         public string BundleVersion;
+        public string ServiceName;
 
         public bool GenerateAnonymousId = true;
 
@@ -60,7 +61,9 @@ namespace BugsnagUnityPerformance
             config.Endpoint = Endpoint;
 
             config.GenerateAnonymousId = GenerateAnonymousId;
-            
+
+            config.ServiceName = ServiceName;
+
             return config;
         }
 

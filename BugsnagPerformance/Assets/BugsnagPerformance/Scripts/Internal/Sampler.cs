@@ -1,5 +1,4 @@
-﻿
-namespace BugsnagUnityPerformance
+﻿namespace BugsnagUnityPerformance
 {
     public class Sampler : IPhasedStartup
     {
@@ -27,19 +26,27 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _probability = config.SamplingProbability;
+            if (config.IsFixedSamplingProbability)
+            {
+                _probability = config.SamplingProbability;
+            }
         }
 
         public void Start()
         {
-            var storedProbability = _persistentState.Probability;
-            if (storedProbability >= 0)
+            // If the probability is not set, try to load it from the persistent state, otherwise set it to 1.0
+            if (_probability < 0)
             {
-                _probability = storedProbability;
-            }
-            else
-            {
-                _persistentState.Probability = _probability;
+                var storedProbability = _persistentState.Probability;
+                if (storedProbability >= 0)
+                {
+                    _probability = storedProbability;
+                }
+                else
+                {
+                    _probability = 1.0;
+                    _persistentState.Probability = _probability;
+                }
             }
         }
 
@@ -48,12 +55,12 @@ namespace BugsnagUnityPerformance
             var p = Probability;
             var isSampled = IsSampled(span, GetUpperBound(p));
 #if BUGSNAG_DEBUG
-            Logger.I(string.Format("Span {0} is sampled: {1} with p value: {2}",span.Name,isSampled,p));
+            Logger.I(string.Format("Span {0} is sampled: {1} with p value: {2}", span.Name, isSampled, p));
 #endif
             if (isSampled && shouldAddAttribute)
             {
                 span.UpdateSamplingProbability(p);
-                span.SetAttribute("bugsnag.sampling.p", p);
+                span.SetAttributeInternal("bugsnag.sampling.p", p);
             }
             return isSampled;
         }
