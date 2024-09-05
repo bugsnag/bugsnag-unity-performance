@@ -186,11 +186,11 @@ namespace BugsnagUnityPerformance
                 new Thread(() =>
                 {
                     List<Span> batch = new List<Span>();
-                    foreach (var finishedSpan in _finishedSpanQueue)
+                    lock (_queueLock)
                     {
-                        batch.Add(finishedSpan);
+                        batch.AddRange(_finishedSpanQueue);
+                        _finishedSpanQueue.Clear();
                     }
-                    _finishedSpanQueue.Clear();
                     if (batch.Count == 0)
                     {
                         return;
