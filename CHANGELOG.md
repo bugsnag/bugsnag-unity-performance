@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fix an issue where the access to the finished span queue in the tracer was not thread safe. [#132](https://github.com/bugsnag/bugsnag-unity-performance/pull/132)
+
 ## v1.5.0 (2024-09-03)
 
 ### Additions
