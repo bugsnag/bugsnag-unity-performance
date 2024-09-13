@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -26,6 +27,7 @@ namespace BugsnagUnityPerformance
         public int VersionCode = -1;
         public string BundleVersion;
         public string ServiceName;
+        public string[] TracePropagationUrls;
 
         public bool GenerateAnonymousId = true;
 
@@ -45,8 +47,7 @@ namespace BugsnagUnityPerformance
 
         internal PerformanceConfiguration GetConfig()
         {
-            PerformanceConfiguration config = null;
-
+            PerformanceConfiguration config;
             if (UseNotifierSettings && NotifierConfigAvaliable())
             {
                 config = GetSettingsFromNotifier(out StartAutomaticallyAtLaunch);
@@ -56,15 +57,43 @@ namespace BugsnagUnityPerformance
                 config = GetStandaloneConfig();
             }
 
-            config.AutoInstrumentAppStart = AutoInstrumentAppStart;
-
-            config.Endpoint = Endpoint;
-
-            config.GenerateAnonymousId = GenerateAnonymousId;
-
-            config.ServiceName = ServiceName;
+            GetCommonConfigValues(config);
 
             return config;
+        }
+
+        private void GetCommonConfigValues(PerformanceConfiguration config)
+        {
+            config.AutoInstrumentAppStart = AutoInstrumentAppStart;
+            config.Endpoint = Endpoint;
+            if(TracePropagationUrls != null && TracePropagationUrls.Length > 0)
+            {
+                config.TracePropagationUrls = ConvertTracePropagationUrls(TracePropagationUrls);
+            }
+            config.ServiceName = ServiceName;
+        }
+
+        private Regex[] ConvertTracePropagationUrls(string[] urls)
+        {
+            if (urls == null)
+            {
+                return null;
+            }
+
+            var regexes = new Regex[urls.Length];
+            for (int i = 0; i < urls.Length; i++)
+            {
+                try
+                {
+                    regexes[i] = new Regex(urls[i]);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("Error converting TracePropagationUrl " + urls[i] + " into a regex pattern in settings object: " + e.Message);
+                }
+            }
+
+            return regexes;
         }
 
         private PerformanceConfiguration GetStandaloneConfig()

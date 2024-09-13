@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Additions
+
+- Add TracePropagationUrls to the configuration window. [#136](https://github.com/bugsnag/bugsnag-unity-performance/pull/136)
+
 ## v1.5.1 (2024-09-09)
 
 ### Bug Fixes

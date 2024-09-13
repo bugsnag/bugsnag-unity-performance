@@ -101,10 +101,9 @@ public class BugsnagPerformanceEditor : EditorWindow
 
         EditorGUIUtility.labelWidth = 200;
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
-
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
-
+        EditorGUILayout.PropertyField(so.FindProperty("TracePropagationUrls"));
         EditorGUI.indentLevel--;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
