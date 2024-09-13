@@ -14,6 +14,12 @@ public class ConfiguredSamplingRate1 : Scenario
     public override void Run()
     {
         base.Run();
+        StartCoroutine(DoSpans());
+    }
+
+    private IEnumerator DoSpans()
+    {
+        yield return new WaitForSeconds(4);
         BugsnagPerformance.StartSpan("ManualSpan1").End();
         BugsnagPerformance.StartSpan("ManualSpan2").End();
         BugsnagPerformance.StartSpan("ManualSpan3").End();
