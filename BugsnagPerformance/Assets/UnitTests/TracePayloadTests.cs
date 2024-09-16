@@ -12,6 +12,8 @@ namespace Tests
     public class TracePayloadTests
     {
 
+        private const string VALID_API_KEY = "227df1042bc7772c321dbde3b31a03c2";
+
         [Test]
         public void TestPersistenceNoHeaders()
         {
@@ -90,7 +92,7 @@ namespace Tests
         {
             var cacheManager = new CacheManager(Application.temporaryCachePath);
             var resourceModel = new ResourceModel(cacheManager);
-            return new TracePayload(resourceModel, SpansWithProbabilities(pValues), false);
+            return new TracePayload(resourceModel, SpansWithProbabilities(pValues), new PerformanceConfiguration(VALID_API_KEY));
         }
 
         private void AssertSpanSamplingHistogram(List<double> pValues, string expectedHistogram)

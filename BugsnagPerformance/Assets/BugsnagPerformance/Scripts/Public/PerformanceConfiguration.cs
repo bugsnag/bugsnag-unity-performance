@@ -27,6 +27,22 @@ namespace BugsnagUnityPerformance
         internal float PValueCheckIntervalSeconds = 30f;
 
         //Public config
+        private const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
+        private int _attributeStringValueLimit = DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT;
+        public int AttributeStringValueLimit {
+            get => _attributeStringValueLimit;
+            set {
+                if (value > 0 && value <= 10000)
+                {
+                    _attributeStringValueLimit = value;
+                }
+                else
+                {
+                    Debug.LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than 10000");
+                }
+            }
+        }
+
 
         public string ApiKey;
 
