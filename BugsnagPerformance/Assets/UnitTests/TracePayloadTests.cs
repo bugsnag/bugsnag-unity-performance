@@ -125,7 +125,8 @@ namespace Tests
                             "",
                             DateTimeOffset.Now,
                             true,
-                            OnSpanEnd);
+                            OnSpanEnd,
+                            128);
             span.UpdateSamplingProbability(probability);
             return span;
         }

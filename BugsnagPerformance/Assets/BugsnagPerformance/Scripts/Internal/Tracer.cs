@@ -129,7 +129,7 @@ namespace BugsnagUnityPerformance
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                        MainThreadDispatchBehaviour.Instance().LogWarning("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
                 var duration = DateTimeOffset.UtcNow - startTime;

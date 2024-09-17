@@ -40,7 +40,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    Debug.LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than 10000");
+                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than 10000");
                 }
             }
         }
@@ -58,12 +58,12 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    Debug.LogWarning("AttributeArrayLengthLimit must be  must be greater than 0 and no larger than 10000");
+                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeArrayLengthLimit must be  must be greater than 0 and no larger than 10000");
                 }
             }
         }
 
-        private const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
+        internal const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
         private int _attributeCountLimit = DEFAULT_ATTRIBUTE_COUNT_LIMIT;
         public int AttributeCountLimit
         {
@@ -76,7 +76,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    Debug.LogWarning("AttributeCountLimit must be greater than 0 and no larger than 1000");
+                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeCountLimit must be greater than 0 and no larger than 1000");
                 }
             }
         }
