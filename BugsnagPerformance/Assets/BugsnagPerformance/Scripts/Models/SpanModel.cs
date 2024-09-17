@@ -7,9 +7,8 @@ namespace BugsnagUnityPerformance
     internal class SpanModel
     {
         static readonly DateTimeOffset _unixStart = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-
         private const string KEY_LIMIT_WARNING_MESSAGE = "Custom Span Attribute {0} was removed from the span {1} because the key exceeds the 128 character limit.";
-
+        private const string ARRAY_LIMIT_WARNING_MESSAGE = "Custom Span Array Attribute {0} in span {1} was truncated because it exceeded the length limit of {2} elements.";
         public string name;
         public int kind;
         public string spanId;
@@ -18,7 +17,6 @@ namespace BugsnagUnityPerformance
         public string endTimeUnixNano;
         public string parentSpanId;
         public List<AttributeModel> attributes = new List<AttributeModel>();
-        private int _droppedAttributesCount = 0;
 
         public SpanModel(Span span, PerformanceConfiguration config)
         {
@@ -30,46 +28,52 @@ namespace BugsnagUnityPerformance
             startTimeUnixNano = GetNanoSeconds(span.StartTime);
             endTimeUnixNano = GetNanoSeconds(span.EndTime);
 
-
             foreach (var attr in span.GetAttributes())
             {
-                if (string.IsNullOrEmpty(attr.Key))
+                if (string.IsNullOrEmpty(attr.Key) || attr.Value == null)
                 {
                     continue;
                 }
+
                 if (attr.Key.Length > 128)
                 {
-                    _droppedAttributesCount++;
-                    UnityEngine.Debug.LogWarning(string.Format(KEY_LIMIT_WARNING_MESSAGE, attr.Key, span.Name));
+                    span.DroppedAttributesCount++;
+                    MainThreadDispatchBehaviour.Instance().LogWarning(string.Format(KEY_LIMIT_WARNING_MESSAGE, attr.Key, span.Name));
                     continue;
                 }
+
+                int arrayLengthLimit = config.AttributeArrayLengthLimit == 0 ? 1000 : Math.Min(config.AttributeArrayLengthLimit, 10000);
+
                 if (attr.Value is string[] stringArray)
                 {
-                    var truncatedStringArray = new string[stringArray.Length];
-                    for (int i = 0; i < stringArray.Length; i++)
+                    var truncatedStringArray = TruncateArrayIfNeeded(stringArray, arrayLengthLimit, attr.Key, span.Name);
+                    var valueLengthCheckedStringArray = new string[truncatedStringArray.Length];
+                    for (int i = 0; i < truncatedStringArray.Length; i++)
                     {
-                        var strValue = stringArray[i];
+                        var strValue = truncatedStringArray[i];
                         if (strValue.Length > config.AttributeStringValueLimit)
                         {
                             int truncatedLength = strValue.Length - config.AttributeStringValueLimit;
                             strValue = strValue.Substring(0, config.AttributeStringValueLimit) + $"*** {truncatedLength} CHARS TRUNCATED";
                         }
-                        truncatedStringArray[i] = strValue;
+                        valueLengthCheckedStringArray[i] = strValue;
                     }
-                    attributes.Add(new AttributeModel(attr.Key, new AttributeStringArrayValueModel(truncatedStringArray)));
-
+                    attributes.Add(new AttributeModel(attr.Key, new AttributeStringArrayValueModel(valueLengthCheckedStringArray)));
                 }
                 else if (attr.Value is long[] intArray)
                 {
-                    attributes.Add(new AttributeModel(attr.Key, new AttributeIntArrayValueModel(intArray)));
+                    var truncatedIntArray = TruncateArrayIfNeeded(intArray, arrayLengthLimit, attr.Key, span.Name);
+                    attributes.Add(new AttributeModel(attr.Key, new AttributeIntArrayValueModel(truncatedIntArray)));
                 }
                 else if (attr.Value is bool[] boolArray)
                 {
-                    attributes.Add(new AttributeModel(attr.Key, new AttributeBoolArrayValueModel(boolArray)));
+                    var truncatedBoolArray = TruncateArrayIfNeeded(boolArray, arrayLengthLimit, attr.Key, span.Name);
+                    attributes.Add(new AttributeModel(attr.Key, new AttributeBoolArrayValueModel(truncatedBoolArray)));
                 }
                 else if (attr.Value is double[] doubleArray)
                 {
-                    attributes.Add(new AttributeModel(attr.Key, new AttributeDoubleArrayValueModel(doubleArray)));
+                    var truncatedDoubleArray = TruncateArrayIfNeeded(doubleArray, arrayLengthLimit, attr.Key, span.Name);
+                    attributes.Add(new AttributeModel(attr.Key, new AttributeDoubleArrayValueModel(truncatedDoubleArray)));
                 }
                 else if (attr.Value is string strValue)
                 {
@@ -94,11 +98,24 @@ namespace BugsnagUnityPerformance
                 }
             }
 
-            if (_droppedAttributesCount > 0)
+            if (span.DroppedAttributesCount > 0)
             {
-                attributes.Add(new AttributeModel("dropped_attributes_count", new AttributeIntValueModel(_droppedAttributesCount)));
+                attributes.Add(new AttributeModel("dropped_attributes_count", new AttributeIntValueModel(span.DroppedAttributesCount)));
             }
         }
+
+        private T[] TruncateArrayIfNeeded<T>(T[] array, int limit, string key, string spanName)
+        {
+            if (array.Length > limit)
+            {
+                MainThreadDispatchBehaviour.Instance().LogWarning(string.Format(ARRAY_LIMIT_WARNING_MESSAGE, key, spanName, limit));
+                var truncatedArray = new T[limit];
+                Array.Copy(array, truncatedArray, limit);
+                return truncatedArray;
+            }
+            return array;
+        }
+
 
 
         private string GetNanoSeconds(DateTimeOffset time)

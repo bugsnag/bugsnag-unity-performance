@@ -89,7 +89,7 @@ namespace BugsnagUnityPerformance
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("Error converting TracePropagationUrl " + urls[i] + " into a regex pattern in settings object: " + e.Message);
+                    MainThreadDispatchBehaviour.Instance().LogWarning("Error converting TracePropagationUrl " + urls[i] + " into a regex pattern in settings object: " + e.Message);
                 }
             }
 

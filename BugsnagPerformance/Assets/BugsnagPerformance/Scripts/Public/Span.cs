@@ -23,6 +23,8 @@ namespace BugsnagUnityPerformance
         internal bool WasDiscarded;
         private bool _callbackComplete;
         private Dictionary<string, object> _attributes = new Dictionary<string, object>();
+        internal int DroppedAttributesCount;
+        private int _customAttributeCount;
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
         {
@@ -42,7 +44,7 @@ namespace BugsnagUnityPerformance
 
         void LogSpanEndingWarning()
         {
-            UnityEngine.Debug.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+            MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
         }
         
         public void End(DateTimeOffset? endTime = null)
@@ -177,18 +179,31 @@ namespace BugsnagUnityPerformance
         {
             if (_callbackComplete)
             {
-                UnityEngine.Debug.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
+                MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
+
+            var keyExists = _attributes.ContainsKey(key);
+
             if (value == null)
             {
-                if (_attributes.ContainsKey(key))
+                if (keyExists)
                 {
                     _attributes.Remove(key);
+                    _customAttributeCount--;
                 }
                 return;
             }
+            if(_customAttributeCount >= 64)
+            {
+                DroppedAttributesCount++;
+                return;
+            }
             _attributes[key] = value;
+            if (!keyExists)
+            {
+                _customAttributeCount++;
+            }
         }
 
         internal Dictionary<string, object> GetAttributes() => new Dictionary<string, object>(_attributes);

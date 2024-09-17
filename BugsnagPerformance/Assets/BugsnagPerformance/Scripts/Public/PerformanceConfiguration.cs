@@ -29,9 +29,11 @@ namespace BugsnagUnityPerformance
         //Public config
         private const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
         private int _attributeStringValueLimit = DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT;
-        public int AttributeStringValueLimit {
+        public int AttributeStringValueLimit
+        {
             get => _attributeStringValueLimit;
-            set {
+            set
+            {
                 if (value > 0 && value <= 10000)
                 {
                     _attributeStringValueLimit = value;
@@ -43,6 +45,41 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        private const int DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 1000;
+        private int _attributeArrayLengthLimit = DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT;
+        public int AttributeArrayLengthLimit
+        {
+            get => _attributeArrayLengthLimit;
+            set
+            {
+                if (value >= 0 && value <= 10000)
+                {
+                    _attributeArrayLengthLimit = value == 0 ? DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT : value;
+                }
+                else
+                {
+                    Debug.LogWarning("AttributeArrayLengthLimit must be  must be greater than 0 and no larger than 10000");
+                }
+            }
+        }
+
+        private const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
+        private int _attributeCountLimit = DEFAULT_ATTRIBUTE_COUNT_LIMIT;
+        public int AttributeCountLimit
+        {
+            get => _attributeCountLimit;
+            set
+            {
+                if (value > 0 && value <= 1000)
+                {
+                    _attributeCountLimit = value;
+                }
+                else
+                {
+                    Debug.LogWarning("AttributeCountLimit must be greater than 0 and no larger than 1000");
+                }
+            }
+        }
 
         public string ApiKey;
 
@@ -90,7 +127,7 @@ namespace BugsnagUnityPerformance
 
         public string GetEndpoint()
         {
-            if(string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
+            if (string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
             {
                 return string.Format(DEFAULT_ENDPOINT, ApiKey);
             }

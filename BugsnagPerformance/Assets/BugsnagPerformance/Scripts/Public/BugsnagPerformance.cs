@@ -51,7 +51,7 @@ namespace BugsnagUnityPerformance
             {
                 if (IsStarted)
                 {
-                    Debug.LogWarning(ALREADY_STARTED_WARNING);
+                    MainThreadDispatchBehaviour.Instance().LogWarning(ALREADY_STARTED_WARNING);
                     return;
                 }
                 IsStarted = true;

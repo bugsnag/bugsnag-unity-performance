@@ -121,5 +121,75 @@ namespace Tests
             Assert.IsTrue(config.IsFixedSamplingProbability);
         }
 
+        [Test]
+        public void TestAttributeStringValueLimit()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+
+            Assert.AreEqual(1024, config.AttributeStringValueLimit);
+
+            config.AttributeStringValueLimit = 5000;
+            Assert.AreEqual(5000, config.AttributeStringValueLimit);
+
+            config.AttributeStringValueLimit = 10000;
+            Assert.AreEqual(10000, config.AttributeStringValueLimit);
+
+            config.AttributeStringValueLimit = -1;
+            Assert.AreEqual(10000, config.AttributeStringValueLimit, "Value should not change if it's less than 0");
+
+            config.AttributeStringValueLimit = 0;
+            Assert.AreEqual(10000, config.AttributeStringValueLimit, "Value should not change if it's 0");
+
+            config.AttributeStringValueLimit = 15000;
+            Assert.AreEqual(10000, config.AttributeStringValueLimit, "Value should not exceed the maximum of 10000");
+        }
+
+        [Test]
+        public void TestAttributeArrayLengthLimit()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+
+            Assert.AreEqual(1000, config.AttributeArrayLengthLimit);
+
+            config.AttributeArrayLengthLimit = 500;
+            Assert.AreEqual(500, config.AttributeArrayLengthLimit);
+
+            config.AttributeArrayLengthLimit = 10000;
+            Assert.AreEqual(10000, config.AttributeArrayLengthLimit);
+
+            config.AttributeArrayLengthLimit = 0;
+            Assert.AreEqual(1000, config.AttributeArrayLengthLimit, "Value should reset to default when set to 0");
+
+            config.AttributeArrayLengthLimit = -1;
+            Assert.AreEqual(1000, config.AttributeArrayLengthLimit, "Value should not change if it's less than 0");
+
+            config.AttributeArrayLengthLimit = 15000;
+            Assert.AreEqual(1000, config.AttributeArrayLengthLimit, "Value should not exceed the maximum of 10000");
+        }
+
+        [Test]
+        public void TestAttributeCountLimit()
+        {
+            var config = new PerformanceConfiguration(VALID_API_KEY);
+
+            Assert.AreEqual(128, config.AttributeCountLimit);
+
+            config.AttributeCountLimit = 500;
+            Assert.AreEqual(500, config.AttributeCountLimit);
+
+            config.AttributeCountLimit = 1000;
+            Assert.AreEqual(1000, config.AttributeCountLimit);
+
+            config.AttributeCountLimit = -1;
+            Assert.AreEqual(1000, config.AttributeCountLimit, "Value should not change if it's less than 0");
+
+            config.AttributeCountLimit = 0;
+            Assert.AreEqual(1000, config.AttributeCountLimit, "Value should not change if it's 0");
+
+            config.AttributeCountLimit = 1500;
+            Assert.AreEqual(1000, config.AttributeCountLimit, "Value should not exceed the maximum of 1000");
+        }
+
+
     }
 }
