@@ -46,6 +46,11 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        internal static TracePayload GetTracePayloadForPValueRequest(ResourceModel resourceModel)
+        {
+            return new TracePayload(resourceModel, null, false, 0, 0);
+        }
+
         private TracePayload(Dictionary<string, string> headers, string cachedJson, string payloadId)
         {
             PayloadId = payloadId;

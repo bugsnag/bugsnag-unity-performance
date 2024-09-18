@@ -65,7 +65,7 @@ namespace BugsnagUnityPerformance
 
         public void Deliver(List<Span> batch)
         {
-            var payload = TracePayloadGenerator.GenerateTracePayload(_resourceModel, batch, _config);
+            var payload = new TracePayload(_resourceModel, batch, _config.IsFixedSamplingProbability, _config.AttributeArrayLengthLimit, _config.AttributeStringValueLimit);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
@@ -95,7 +95,7 @@ namespace BugsnagUnityPerformance
             {
                 onResponse = OnPValueRequestCompleted;
             }
-            var payload = TracePayloadGenerator.GenerateTracePayload(_resourceModel, null, _config);
+            var payload = TracePayload.GetTracePayloadForPValueRequest(_resourceModel);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
         }
 
