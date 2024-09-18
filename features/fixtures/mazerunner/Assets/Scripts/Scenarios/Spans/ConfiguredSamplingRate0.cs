@@ -1,7 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using BugsnagUnityPerformance;
-using UnityEngine;
 
 public class ConfiguredSamplingRate0 : Scenario
 {
@@ -11,19 +9,20 @@ public class ConfiguredSamplingRate0 : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetSamplingProbability(0);
-        SetMaxBatchAgeSeconds(1);
+        SetMaxBatchSize(0);
     }
 
     public override void Run()
     {
-        base.Run();
-        _span = BugsnagPerformance.StartSpan("ManualSpan");
-        Invoke("EndSpan", 1);
+       StartCoroutine(DoSpans());
     }
 
-    private void EndSpan()
-    {
-        _span.End();
+    private IEnumerator DoSpans(){
+        yield return new UnityEngine.WaitForSeconds(4);
+        BugsnagPerformance.StartSpan("ManualSpan1").End();
+        BugsnagPerformance.StartSpan("ManualSpan2").End();
+        BugsnagPerformance.StartSpan("ManualSpan3").End();
+        BugsnagPerformance.StartSpan("ManualSpan4").End();
     }
+
 }

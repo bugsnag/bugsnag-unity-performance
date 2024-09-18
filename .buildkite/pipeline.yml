@@ -55,6 +55,7 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+
   - label: Run WebGL e2e tests for Unity 2021
     timeout_in_minutes: 60
     depends_on: build-webgl-fixture-2021
@@ -70,8 +71,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-webgl-ci-tests.sh
-
+      - features/scripts/run-webgl-ci-tests.sh release
 
   - label: ':windows: Build Windows test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -90,7 +90,7 @@ steps:
           - features/fixtures/build_windows.log
     commands:
       - features/scripts/import_package.sh
-      - features/scripts/build_windows.sh
+      - features/scripts/build_windows.sh release
     retry:
       automatic:
         - exit_status: '*'
@@ -113,8 +113,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-windows-ci-tests.sh
-
+      - features/scripts/run-windows-ci-tests.sh release
 
   - label: ':macos: Build macos test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -152,7 +151,7 @@ steps:
           - 'clear_cache.log'
           - maze_output/metrics.csv
     commands:
-      - features/scripts/run-macos-ci-tests.sh
+      - features/scripts/run-macos-ci-tests.sh release
 
   - label: ':android: Build Android test fixture for Unity 2021'
     timeout_in_minutes: 30
@@ -195,6 +194,7 @@ steps:
           - '--app=/app/features/fixtures/mazerunner/mazerunner_2021.apk'
           - '--farm=bb'
           - '--device=ANDROID_9|ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13'
+          - '--appium-version=1.22'
           - '--no-tunnel'
           - '--aws-public-ip'
           - '--fail-fast'
@@ -271,6 +271,7 @@ steps:
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
+
   - label: Conditionally trigger full set of tests
     timeout_in_minutes: 30
     command: sh -c .buildkite/pipeline_trigger.sh

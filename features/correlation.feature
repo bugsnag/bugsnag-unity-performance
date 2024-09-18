@@ -36,10 +36,11 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" is stored as the value "background_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.traceId" is stored as the value "background_trace_id"
 
+    And I discard the oldest trace
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "Span From Main Thread"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.spanId" is stored as the value "main_span_id"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.traceId" is stored as the value "main_trace_id"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "Span From Main Thread"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" is stored as the value "main_span_id"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.traceId" is stored as the value "main_trace_id"
 
     * I sort the errors by the payload field "events.0.exceptions.0.message"
 

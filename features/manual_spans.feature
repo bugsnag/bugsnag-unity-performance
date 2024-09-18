@@ -20,13 +20,21 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "custom"
 
     #Resource attributes
-    * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "production"
+    * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" is one of:
+      | production |
+      | development |
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.name" equals "bugsnag.performance.unity"
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.version" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "os.version" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.id" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.model.identifier" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.0"
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.name" is one of:
+      | com.bugsnag.fixtures.unity.performance.android |
+      | com.bugsnag.fixtures.unity.performance.ios |
+      | com.bugsnag.mazerunner |
+      | mazerunner |
+      | unknown_service |
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" is one of:
       | Android |
       | iOS |

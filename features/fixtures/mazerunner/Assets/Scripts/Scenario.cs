@@ -95,10 +95,4 @@ public class Scenario : MonoBehaviour
         fieldInfo.SetValue(Configuration, seconds);
     }
 
-    public void SetSamplingProbability(double p)
-    {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("SamplingProbability", BindingFlags.Instance | BindingFlags.NonPublic);
-        fieldInfo.SetValue(Configuration, p);
-    }
-
 }

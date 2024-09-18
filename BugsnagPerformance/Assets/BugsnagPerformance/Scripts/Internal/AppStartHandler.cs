@@ -37,19 +37,19 @@ namespace BugsnagUnityPerformance
         {
             if (_rootSpan != null && !_rootSpan.Ended)
             {
-                _rootSpan.Abort();
+                _rootSpan.Discard();
             }
             if (_loadAssembliesSpan != null && !_loadAssembliesSpan.Ended)
             {
-                _loadAssembliesSpan.Abort();
+                _loadAssembliesSpan.Discard();
             }
             if (_splashScreenSpan != null && !_splashScreenSpan.Ended)
             {
-                _splashScreenSpan.Abort();
+                _splashScreenSpan.Discard();
             }
             if (_firstSceneSpan != null && !_firstSceneSpan.Ended)
             {
-                _firstSceneSpan.Abort();
+                _firstSceneSpan.Discard();
             }
         }
 
@@ -91,7 +91,7 @@ namespace BugsnagUnityPerformance
         {
             _rootSpan = CreateAppStartSpan("[AppStart/UnityRuntime]", "app_start");
             _loadAssembliesSpan = CreateAppStartSpan("[AppStartPhase/LoadAssemblies]", "app_start_phase");
-            _loadAssembliesSpan.SetAttribute("bugsnag.phase", "LoadAssemblies");
+            _loadAssembliesSpan.SetAttributeInternal("bugsnag.phase", "LoadAssemblies");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -104,14 +104,14 @@ namespace BugsnagUnityPerformance
         private static void BeforeSplashScreen()
         {
             _splashScreenSpan = CreateAppStartSpan("[AppStartPhase/SplashScreen]", "app_start_phase");
-            _splashScreenSpan.SetAttribute("bugsnag.phase", "SplashScreen");
+            _splashScreenSpan.SetAttributeInternal("bugsnag.phase", "SplashScreen");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BeforeSceneLoad()
         {
             _firstSceneSpan = CreateAppStartSpan("[AppStartPhase/LoadFirstScene]", "app_start_phase");
-            _firstSceneSpan.SetAttribute("bugsnag.phase", "LoadFirstScene");
+            _firstSceneSpan.SetAttributeInternal("bugsnag.phase", "LoadFirstScene");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
