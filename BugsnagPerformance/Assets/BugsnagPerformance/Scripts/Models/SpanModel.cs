@@ -6,8 +6,6 @@ namespace BugsnagUnityPerformance
     internal class SpanModel
     {
         static readonly DateTimeOffset _unixStart = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        private const string KEY_LIMIT_WARNING_MESSAGE = "Custom Span Attribute {0} was removed from the span {1} because the key exceeds the 128 character limit.";
-        private const string ARRAY_LIMIT_WARNING_MESSAGE = "Custom Span Array Attribute {0} in span {1} was truncated because it exceeded the length limit of {2} elements.";
         public string name;
         public int kind;
         public string spanId;
@@ -37,7 +35,6 @@ namespace BugsnagUnityPerformance
                 if (attr.Key.Length > 128)
                 {
                     span.DroppedAttributesCount++;
-                    MainThreadDispatchBehaviour.Instance().LogWarning(string.Format(KEY_LIMIT_WARNING_MESSAGE, attr.Key, span.Name));
                     continue;
                 }
 
@@ -47,13 +44,7 @@ namespace BugsnagUnityPerformance
                     var valueLengthCheckedStringArray = new string[truncatedStringArray.Length];
                     for (int i = 0; i < truncatedStringArray.Length; i++)
                     {
-                        var strValue = truncatedStringArray[i];
-                        if (strValue.Length > attributeStringValueLimit)
-                        {
-                            int truncatedLength = strValue.Length - attributeStringValueLimit;
-                            strValue = strValue.Substring(0, attributeStringValueLimit) + $"*** {truncatedLength} CHARS TRUNCATED";
-                        }
-                        valueLengthCheckedStringArray[i] = strValue;
+                        valueLengthCheckedStringArray[i] = TruncateStringIfNeeded(truncatedStringArray[i], attributeStringValueLimit);
                     }
                     attributes.Add(new AttributeModel(attr.Key, new AttributeStringArrayValueModel(valueLengthCheckedStringArray)));
                 }
@@ -74,12 +65,7 @@ namespace BugsnagUnityPerformance
                 }
                 else if (attr.Value is string strValue)
                 {
-                    if (strValue.Length > attributeStringValueLimit)
-                    {
-                        int truncatedLength = strValue.Length - attributeStringValueLimit;
-                        strValue = strValue.Substring(0, attributeStringValueLimit) + $"*** {truncatedLength} CHARS TRUNCATED";
-                    }
-                    attributes.Add(new AttributeModel(attr.Key, new AttributeStringValueModel(strValue)));
+                    attributes.Add(new AttributeModel(attr.Key, new AttributeStringValueModel(TruncateStringIfNeeded(strValue, attributeStringValueLimit))));
                 }
                 else if (attr.Value is long longValue)
                 {
@@ -105,7 +91,6 @@ namespace BugsnagUnityPerformance
         {
             if (array.Length > limit)
             {
-                MainThreadDispatchBehaviour.Instance().LogWarning(string.Format(ARRAY_LIMIT_WARNING_MESSAGE, key, spanName, limit));
                 var truncatedArray = new T[limit];
                 Array.Copy(array, truncatedArray, limit);
                 return truncatedArray;
@@ -113,7 +98,15 @@ namespace BugsnagUnityPerformance
             return array;
         }
 
-
+        private string TruncateStringIfNeeded(string strValue, int limit)
+        {
+            if (strValue.Length > limit)
+            {
+                int truncatedLength = strValue.Length - limit;
+                return strValue.Substring(0, limit) + $"*** {truncatedLength} CHARS TRUNCATED";
+            }
+            return strValue;
+        }
 
         private string GetNanoSeconds(DateTimeOffset time)
         {

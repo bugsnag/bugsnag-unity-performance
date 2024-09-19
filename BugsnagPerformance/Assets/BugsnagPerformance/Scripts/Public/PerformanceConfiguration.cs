@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("BugsnagPerformanceEditor")]
 
 namespace BugsnagUnityPerformance
 {
@@ -12,6 +13,12 @@ namespace BugsnagUnityPerformance
 
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
         private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
+        internal const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
+        private const int MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT = 10000;
+        internal const int DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 1000;
+        private const int MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 10000;
+        internal const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
+        private const int MAXIMUM_ATTRIBUTE_COUNT_LIMIT = 1000;
 
         public PerformanceConfiguration(string apiKey)
         {
@@ -27,14 +34,13 @@ namespace BugsnagUnityPerformance
         internal float PValueCheckIntervalSeconds = 30f;
 
         //Public config
-        private const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
         private int _attributeStringValueLimit = DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT;
         public int AttributeStringValueLimit
         {
             get => _attributeStringValueLimit;
             set
             {
-                if (value > 0 && value <= 10000)
+                if (value > 0 && value <= MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT)
                 {
                     _attributeStringValueLimit = value;
                 }
@@ -45,16 +51,15 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private const int DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 1000;
         private int _attributeArrayLengthLimit = DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT;
         public int AttributeArrayLengthLimit
         {
             get => _attributeArrayLengthLimit;
             set
             {
-                if (value >= 0 && value <= 10000)
+                if (value >= 0 && value <= MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT)
                 {
-                    _attributeArrayLengthLimit = value == 0 ? DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT : value;
+                    _attributeArrayLengthLimit = value;
                 }
                 else
                 {
@@ -63,14 +68,13 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        internal const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
         private int _attributeCountLimit = DEFAULT_ATTRIBUTE_COUNT_LIMIT;
         public int AttributeCountLimit
         {
             get => _attributeCountLimit;
             set
             {
-                if (value > 0 && value <= 1000)
+                if (value > 0 && value <= MAXIMUM_ATTRIBUTE_COUNT_LIMIT)
                 {
                     _attributeCountLimit = value;
                 }

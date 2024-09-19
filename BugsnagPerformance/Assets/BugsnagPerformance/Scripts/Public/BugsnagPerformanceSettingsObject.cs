@@ -28,6 +28,11 @@ namespace BugsnagUnityPerformance
         public string BundleVersion;
         public string ServiceName;
         public string[] TracePropagationUrls;
+        public int AttributeStringValueLimit;
+        public int AttributeArrayLengthLimit;
+        public int AttributeCountLimit;
+
+
 
         public bool GenerateAnonymousId = true;
 
@@ -66,11 +71,24 @@ namespace BugsnagUnityPerformance
         {
             config.AutoInstrumentAppStart = AutoInstrumentAppStart;
             config.Endpoint = Endpoint;
-            if(TracePropagationUrls != null && TracePropagationUrls.Length > 0)
+            if (TracePropagationUrls != null && TracePropagationUrls.Length > 0)
             {
                 config.TracePropagationUrls = ConvertTracePropagationUrls(TracePropagationUrls);
             }
             config.ServiceName = ServiceName;
+            if (AttributeStringValueLimit > 0)
+            {
+                config.AttributeStringValueLimit = AttributeStringValueLimit;
+            }
+            if (AttributeArrayLengthLimit > 0)
+            {
+                config.AttributeArrayLengthLimit = AttributeArrayLengthLimit;
+            }
+            if (AttributeCountLimit > 0)
+            {
+                config.AttributeCountLimit = AttributeCountLimit;
+            }
+
         }
 
         private Regex[] ConvertTracePropagationUrls(string[] urls)

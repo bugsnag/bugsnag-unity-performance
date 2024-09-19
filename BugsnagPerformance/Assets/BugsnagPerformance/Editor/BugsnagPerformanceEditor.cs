@@ -100,13 +100,33 @@ public class BugsnagPerformanceEditor : EditorWindow
         }
 
         EditorGUIUtility.labelWidth = 200;
-        EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
+        
+        DrawIntPropertyWithDefault(so, "AttributeStringValueLimit", "AttributeStringValueLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT);
+        DrawIntPropertyWithDefault(so, "AttributeArrayLengthLimit", "AttributeArrayLengthLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
+        DrawIntPropertyWithDefault(so, "AttributeCountLimit", "AttributeCountLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT);
+
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
+        EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
         EditorGUILayout.PropertyField(so.FindProperty("TracePropagationUrls"));
+
         EditorGUI.indentLevel--;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
+    }
+
+    private void DrawIntPropertyWithDefault(SerializedObject so, string propertyName, string label, int defaultValue)
+    {
+        var property = so.FindProperty(propertyName);
+        var isValueSet = property.intValue > 0;
+        if (!isValueSet)
+        {
+            property.intValue = EditorGUILayout.IntField(label, isValueSet ? property.intValue : defaultValue);
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(property);
+        }
     }
 
     private void DrawStandaloneSettings(SerializedObject so, BugsnagPerformanceSettingsObject settings)
