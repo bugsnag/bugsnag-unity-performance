@@ -100,16 +100,13 @@ public class BugsnagPerformanceEditor : EditorWindow
         }
 
         EditorGUIUtility.labelWidth = 200;
-        
-        DrawIntPropertyWithDefault(so, "AttributeStringValueLimit", "AttributeStringValueLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeArrayLengthLimit", "AttributeArrayLengthLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeCountLimit", "AttributeCountLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT);
-
+        DrawIntPropertyWithDefault(so, "AttributeStringValueLimit", "AttributeStringValueLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT);
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
         EditorGUILayout.PropertyField(so.FindProperty("TracePropagationUrls"));
-
         EditorGUI.indentLevel--;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);

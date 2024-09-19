@@ -25,7 +25,7 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _config = config;
-            if (config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
+            if (_config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
             {
                 AbortAppStartSpans();
             }

@@ -57,7 +57,7 @@ namespace BugsnagUnityPerformance
             get => _attributeArrayLengthLimit;
             set
             {
-                if (value >= 0 && value <= MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT)
+                if (value > 0 && value <= MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT)
                 {
                     _attributeArrayLengthLimit = value;
                 }
