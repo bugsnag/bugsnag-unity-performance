@@ -63,7 +63,8 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeArrayLengthLimit must be  must be greater than 0 and no larger than 10000");
+                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeArrayLengthLimit must be greater than 0 and no larger than 10000");
+
                 }
             }
         }
