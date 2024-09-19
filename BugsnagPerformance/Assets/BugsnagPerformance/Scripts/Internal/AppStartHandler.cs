@@ -11,11 +11,9 @@ namespace BugsnagUnityPerformance
         private static Span _loadAssembliesSpan;
         private static Span _splashScreenSpan;
         private static Span _firstSceneSpan;
-
+        private PerformanceConfiguration _config;
         private static bool _appStartComplete;
         private static DateTimeOffset? _defaultAppStartEndTime = null; 
-
-        private static AutoInstrumentAppStartSetting _appStartSetting;
 
         private static SpanFactory _spanFactory;
 
@@ -26,8 +24,8 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _appStartSetting = config.AutoInstrumentAppStart;
-            if (_appStartSetting == AutoInstrumentAppStartSetting.OFF)
+            _config = config;
+            if (config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
             {
                 AbortAppStartSpans();
             }
@@ -55,7 +53,7 @@ namespace BugsnagUnityPerformance
 
         public void Start()
         {
-            if (_appStartSetting == AutoInstrumentAppStartSetting.FULL)
+            if (_config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.FULL)
             {
                 MainThreadDispatchBehaviour.Instance().Enqueue(CheckForAppStartCompletion());
             }

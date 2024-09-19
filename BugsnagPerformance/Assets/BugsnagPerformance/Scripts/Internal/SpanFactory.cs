@@ -35,6 +35,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
+            // private property used here as this factory can be accessed before configure is called
             _maxCustomAttributes = config.AttributeCountLimit;
         }
 
