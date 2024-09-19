@@ -5,6 +5,7 @@ namespace BugsnagUnityPerformance
 {
     internal class SpanModel
     {
+        private const int MAXIMUM_ATTRIBUTE_KEY_LENGTH_LIMIT = 128;
         static readonly DateTimeOffset _unixStart = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
         public string name;
         public int kind;
@@ -32,7 +33,7 @@ namespace BugsnagUnityPerformance
                     continue;
                 }
 
-                if (attr.Key.Length > 128)
+                if (attr.Key.Length > MAXIMUM_ATTRIBUTE_KEY_LENGTH_LIMIT)
                 {
                     span.DroppedAttributesCount++;
                     continue;
