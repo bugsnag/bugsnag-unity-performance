@@ -18,19 +18,19 @@ done
 # Set Unity path based on the platform
 if [ "$BUILD_WINDOWS" = true ]; then
   UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
+  PACKAGE_PATH="$(pwd | sed 's|/mnt/c|C:|' | sed 's|/|\\|g')\\Bugsnag.unitypackage"
 else
   UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS/Unity"
+  PACKAGE_PATH="$(pwd)/Bugsnag.unitypackage"
 fi
 
 FIXTURE_PATH="features/fixtures/mazerunner"
 DEFAULT_CLI_ARGS="-batchmode -nographics -quit"
 BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/download/Bugsnag.unitypackage"
-PACKAGE_NAME="Bugsnag.unitypackage"
-TEMP_DIR=$(mktemp -d)
 
-# Download the latest Bugsnag Unity package
+# Download the latest Bugsnag Unity package if it doesn't exist or override it
 echo "Downloading Bugsnag.unitypackage from $BUGSNAG_RELEASE_URL"
-curl -L "$BUGSNAG_RELEASE_URL" -o "$TEMP_DIR/$PACKAGE_NAME"
+curl -L "$BUGSNAG_RELEASE_URL" -o "$PACKAGE_PATH"
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "Failed to download Bugsnag.unitypackage"
@@ -48,16 +48,12 @@ echo "Importing Bugsnag.unitypackage into $FIXTURE_PATH"
 "$UNITY_PATH" $DEFAULT_CLI_ARGS \
             -projectPath $FIXTURE_PATH \
             -ignoreCompilerErrors \
-            -importPackage "$TEMP_DIR/$PACKAGE_NAME"
+            -importPackage "$PACKAGE_PATH"
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "Failed to import Bugsnag.unitypackage"
   exit $RESULT
 fi
-
-# Cleanup
-echo "Cleaning up temporary files"
-rm -rf "$TEMP_DIR"
 
 echo "Bugsnag package imported successfully"
 
