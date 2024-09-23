@@ -45,7 +45,7 @@ fi
 
 # Importing the Bugsnag package into Unity project
 echo "Importing Bugsnag.unitypackage into $FIXTURE_PATH"
-$UNITY_PATH $DEFAULT_CLI_ARGS \
+"$UNITY_PATH" $DEFAULT_CLI_ARGS \
             -projectPath $FIXTURE_PATH \
             -ignoreCompilerErrors \
             -importPackage "$TEMP_DIR/$PACKAGE_NAME"
