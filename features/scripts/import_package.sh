@@ -9,7 +9,12 @@ if [ -z "$UNITY_PERFORMANCE_VERSION" ]; then
   exit 1
 fi
 
-UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+  UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
+else
+  UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS/Unity"
+fi
+
 DEFAULT_CLI_ARGS="-batchmode -nographics -quit"
 BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/download/Bugsnag.unitypackage"
 PACKAGE_NAME="Bugsnag.unitypackage"
