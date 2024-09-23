@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
-    internal class SpanFactory
+    internal class SpanFactory : IPhasedStartup
     {
 
         [ThreadStatic]
@@ -25,10 +25,22 @@ namespace BugsnagUnityPerformance
 
         private WaitForSeconds _connectionPollRate = new WaitForSeconds(1);
 
+        private int _maxCustomAttributes = PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT;
+
         public SpanFactory(OnSpanEnd onSpanEnd)
         {
             _onSpanEnd = onSpanEnd;
             MainThreadDispatchBehaviour.Instance().StartCoroutine(GetConnectionType());
+        }
+
+        public void Configure(PerformanceConfiguration config)
+        {
+            // private property used here as this factory can be accessed before configure is called
+            _maxCustomAttributes = config.AttributeCountLimit;
+        }
+
+        public void Start()
+        {
         }
 
         private string GetNewTraceId()
@@ -95,7 +107,7 @@ namespace BugsnagUnityPerformance
                 }
             }
 
-            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd);
+            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes);
             if (spanOptions.MakeCurrentContext)
             {
                 AddToContextStack(newSpan);
@@ -240,5 +252,7 @@ namespace BugsnagUnityPerformance
             span.IsAppStartSpan = true;
             return span;
         }
+
+
     }
 }

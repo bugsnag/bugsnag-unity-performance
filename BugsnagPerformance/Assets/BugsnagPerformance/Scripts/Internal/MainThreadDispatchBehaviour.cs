@@ -72,6 +72,14 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        public void LogWarning(string msg)
+        {
+            Enqueue(() =>
+            {
+                Debug.LogWarning(msg);
+            });
+        }
+
         /// <summary>
         /// Locks the queue and adds the Action to the queue
         /// </summary>

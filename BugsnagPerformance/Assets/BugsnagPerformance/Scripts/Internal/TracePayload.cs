@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
 
         private string _jsonbody;
 
-        public TracePayload(ResourceModel resourceModel, List<Span> spans, bool isFixedSamplingProbability)
+        public TracePayload(ResourceModel resourceModel, List<Span> spans, bool isFixedSamplingProbability,  int attributeArrayLengthLimit, int attributeStringValueLimit )
         {
             _resourceModel = resourceModel;
             if (spans != null && spans.Count > 0)
@@ -29,7 +29,7 @@ namespace BugsnagUnityPerformance
                 PayloadId = Guid.NewGuid().ToString();
                 foreach (var span in spans)
                 {
-                    _spans.Add(new SpanModel(span));
+                    _spans.Add(new SpanModel(span, attributeArrayLengthLimit, attributeStringValueLimit));
                 }
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
                 if(!isFixedSamplingProbability)
@@ -44,6 +44,11 @@ namespace BugsnagUnityPerformance
                     Headers["Bugsnag-Span-Sampling"] = "1:0";
                 }
             }
+        }
+
+        internal static TracePayload GetTracePayloadForPValueRequest(ResourceModel resourceModel)
+        {
+            return new TracePayload(resourceModel, null, false, 0, 0);
         }
 
         private TracePayload(Dictionary<string, string> headers, string cachedJson, string payloadId)
