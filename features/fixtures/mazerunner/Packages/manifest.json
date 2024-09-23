@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.bugsnag.unitynotifier": "https://github.com/bugsnag/bugsnag-unity-upm.git#ec-v1",
     "com.unity.collab-proxy": "2.0.5",
     "com.unity.ide.rider": "1.2.1",
     "com.unity.ide.visualstudio": "2.0.12",
