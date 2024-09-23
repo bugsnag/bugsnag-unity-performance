@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Import Bugsnag Unity package using the notifier script logic
-
-FIXTURE_PATH="features/fixtures/mazerunner"
-
 if [ -z "$UNITY_PERFORMANCE_VERSION" ]; then
   echo "UNITY_PERFORMANCE_VERSION must be set"
   exit 1
@@ -26,6 +22,7 @@ else
   UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS/Unity"
 fi
 
+FIXTURE_PATH="features/fixtures/mazerunner"
 DEFAULT_CLI_ARGS="-batchmode -nographics -quit"
 BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/download/Bugsnag.unitypackage"
 PACKAGE_NAME="Bugsnag.unitypackage"
