@@ -89,7 +89,7 @@ steps:
           - features/fixtures/mazerunner/build/Windows-2021.zip
           - features/fixtures/build_windows.log
     commands:
-      - features/scripts/import_package.sh
+      - features/scripts/import_package.sh --windows
       - features/scripts/build_windows.sh release
     retry:
       automatic:
