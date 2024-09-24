@@ -51,7 +51,7 @@ namespace BugsnagUnityPerformance
             {
                 if (IsStarted)
                 {
-                    Debug.LogWarning(ALREADY_STARTED_WARNING);
+                    MainThreadDispatchBehaviour.Instance().LogWarning(ALREADY_STARTED_WARNING);
                     return;
                 }
                 IsStarted = true;
@@ -141,6 +141,7 @@ namespace BugsnagUnityPerformance
 
         private void Configure(PerformanceConfiguration config)
         {
+            _spanFactory.Configure(config);
             _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);
             _persistentState.Configure(config);
@@ -158,6 +159,7 @@ namespace BugsnagUnityPerformance
         private void Start()
         {
             // The ordering of Start() must be carefully curated.
+            _spanFactory.Start();
             _cacheManager.Start();
             _persistentState.Start();
             _delivery.Start();

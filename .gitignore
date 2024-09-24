@@ -28,3 +28,4 @@ features/fixtures/minimalapp/minimal_with_xcode
 features/fixtures/minimalapp/minimal_without_xcode
 features/fixtures/mazerunner/mazerunner_macos_BackUpThisFolder_ButDontShipItWithYourGame
 BugsnagPerformance/.vscode
+features/fixtures/mazerunner/Assets/Bugsnag

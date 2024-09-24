@@ -99,7 +99,7 @@ steps:
           - features/fixtures/mazerunner/build/Windows-2020.zip
           - features/fixtures/build_windows.log
     commands:
-      - features/scripts/import_package.sh
+      - features/scripts/import_package.sh --windows
       - features/scripts/build_windows.sh release
     retry:
       automatic:
@@ -141,7 +141,7 @@ steps:
           - features/fixtures/mazerunner/build/Windows-2022.zip
           - features/fixtures/build_windows.log
     commands:
-      - features/scripts/import_package.sh
+      - features/scripts/import_package.sh --windows
       - features/scripts/build_windows.sh release
     retry:
       automatic:
@@ -464,7 +464,7 @@ steps:
           - features/fixtures/mazerunner/build/Windows-dev-2021.zip
           - features/fixtures/build_windows.log
     commands:
-      - features/scripts/import_package.sh
+      - features/scripts/import_package.sh --windows
       - features/scripts/build_windows.sh dev
     retry:
       automatic:

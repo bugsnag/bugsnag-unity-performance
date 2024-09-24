@@ -7,11 +7,10 @@ namespace BugsnagUnityPerformance
 {
     internal class PValueUpdater : IPhasedStartup
     {
+        private PerformanceConfiguration _config;
         private Delivery _delivery;
         private Sampler _sampler;
         private DateTime _pValueTimeout;
-        private float _pValueTimeoutSeconds;
-        private float _pValueCheckIntervalSeconds;
         public bool IsConfigured { get; private set; }
 
         public PValueUpdater(Delivery delivery, Sampler sampler)
@@ -23,8 +22,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _pValueTimeoutSeconds = config.PValueTimeoutSeconds;
-            _pValueCheckIntervalSeconds = config.PValueCheckIntervalSeconds;
+            _config = config;
             IsConfigured = true;
         }
 
@@ -45,13 +43,13 @@ namespace BugsnagUnityPerformance
                     _delivery.DeliverPValueRequest(OnPValueRequestCompleted);
                 }
 
-                yield return new WaitForSeconds(_pValueCheckIntervalSeconds);
+                yield return new WaitForSeconds(_config.PValueCheckIntervalSeconds);
             }
         }
 
         private void markPValueUpdated()
         {
-            _pValueTimeout = DateTime.Now.AddSeconds(_pValueTimeoutSeconds);
+            _pValueTimeout = DateTime.Now.AddSeconds(_config.PValueTimeoutSeconds);
         }
 
         private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)

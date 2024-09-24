@@ -15,8 +15,8 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" is stored as the value "context_span_id"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.traceId" is stored as the value "context_trace_id"
 
-    * the error payload field "events.0.correlation.spanid" equals the stored value "context_span_id"
-    * the error payload field "events.0.correlation.traceid" equals the stored value "context_trace_id"
+    * the error payload field "events.0.correlation.spanId" equals the stored value "context_span_id"
+    * the error payload field "events.0.correlation.traceId" equals the stored value "context_trace_id"
 
 
   Scenario: Correlation Should be null
@@ -45,15 +45,15 @@ Feature: Manual creation of spans
     * I sort the errors by the payload field "events.0.exceptions.0.message"
 
     * the exception "message" equals "Event From Background Thread"
-    * the error payload field "events.0.correlation.spanid" equals the stored value "background_span_id"
-    * the error payload field "events.0.correlation.traceid" equals the stored value "background_trace_id"
+    * the error payload field "events.0.correlation.spanId" equals the stored value "background_span_id"
+    * the error payload field "events.0.correlation.traceId" equals the stored value "background_trace_id"
 
 
     And I discard the oldest error
 
     * the exception "message" equals "Event From Main Thread"
-    * the error payload field "events.0.correlation.spanid" equals the stored value "main_span_id"
-    * the error payload field "events.0.correlation.traceid" equals the stored value "main_trace_id"
+    * the error payload field "events.0.correlation.spanId" equals the stored value "main_span_id"
+    * the error payload field "events.0.correlation.traceId" equals the stored value "main_trace_id"
 
 
 

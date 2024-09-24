@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.0 (2024-09-24)
+
+### Additions
+
+- Add configurable limits to custom attributes. [#137](https://github.com/bugsnag/bugsnag-unity-performance/pull/137)
+
+- Add TracePropagationUrls to the configuration window. [#136](https://github.com/bugsnag/bugsnag-unity-performance/pull/136)
+
 ## v1.5.1 (2024-09-09)
 
 ### Bug Fixes

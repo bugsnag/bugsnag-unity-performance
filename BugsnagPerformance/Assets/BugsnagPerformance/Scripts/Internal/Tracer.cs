@@ -8,32 +8,16 @@ namespace BugsnagUnityPerformance
 {
     internal class Tracer : IPhasedStartup
     {
-        private int _maxBatchSize = 100;
-
-        private float _maxBatchAgeSeconds = 30f;
-
+        private PerformanceConfiguration _config;
         private List<Span> _finishedSpanQueue = new List<Span>();
-
         private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
-
         private object _queueLock = new object();
-
         private object _prestartLock = new object();
-
         private WaitForSeconds _workerPollFrequency = new WaitForSeconds(1);
-
         private DateTimeOffset _lastBatchSendTime = DateTimeOffset.UtcNow;
-
         private Sampler _sampler;
-
         private Delivery _delivery;
-
         private bool _started;
-
-        private static AutoInstrumentAppStartSetting _appStartSetting;
-
-        private List<Func<Span, bool>> _onSpanEndCallbacks;
-
 
         public Tracer(Sampler sampler, Delivery delivery)
         {
@@ -43,10 +27,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _onSpanEndCallbacks = config.GetOnSpanEndCallbacks();
-            _maxBatchSize = config.MaxBatchSize;
-            _maxBatchAgeSeconds = config.MaxBatchAgeSeconds;
-            _appStartSetting = config.AutoInstrumentAppStart;
+            _config = config;
         }
 
         public void Start()
@@ -75,7 +56,7 @@ namespace BugsnagUnityPerformance
             {
                 if (weakRef.TryGetTarget(out var span))
                 {
-                    if (span.IsAppStartSpan && _appStartSetting == AutoInstrumentAppStartSetting.OFF)
+                    if (span.IsAppStartSpan && _config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
                     {
                         continue;
                     }
@@ -114,10 +95,11 @@ namespace BugsnagUnityPerformance
 
         public void RunOnEndCallbacks(Span span)
         {
-            if (!span.WasDiscarded && _onSpanEndCallbacks != null && _onSpanEndCallbacks.Count > 0)
+            var callbacks = _config.GetOnSpanEndCallbacks();
+            if (!span.WasDiscarded && callbacks != null && callbacks.Count > 0)
             {
                 var startTime = DateTimeOffset.UtcNow;
-                foreach (var callback in _onSpanEndCallbacks)
+                foreach (var callback in callbacks)
                 {
                     try
                     {
@@ -129,7 +111,7 @@ namespace BugsnagUnityPerformance
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("Error running OnSpanEndCallback: " + e.Message);
+                        MainThreadDispatchBehaviour.Instance().LogWarning("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
                 var duration = DateTimeOffset.UtcNow - startTime;
@@ -203,12 +185,12 @@ namespace BugsnagUnityPerformance
 
         private bool BatchSizeLimitReached()
         {
-            return _finishedSpanQueue.Count >= _maxBatchSize;
+            return _finishedSpanQueue.Count >= _config.MaxBatchSize;
         }
 
         private bool BatchDue()
         {
-            return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _maxBatchAgeSeconds;
+            return (DateTimeOffset.UtcNow - _lastBatchSendTime).TotalSeconds > _config.MaxBatchAgeSeconds;
         }
 
     }

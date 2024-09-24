@@ -23,8 +23,11 @@ namespace BugsnagUnityPerformance
         internal bool WasDiscarded;
         private bool _callbackComplete;
         private Dictionary<string, object> _attributes = new Dictionary<string, object>();
+        internal int DroppedAttributesCount;
+        private int _customAttributeCount;
+        private int _maxCustomAttributes;
 
-        public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd)
+        public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes)
         {
             Name = name;
             Kind = kind;
@@ -33,6 +36,7 @@ namespace BugsnagUnityPerformance
             StartTime = startTime;
             ParentSpanId = parentSpanId;
             samplingProbability = 1;
+            _maxCustomAttributes = maxCustomAttributes;
             if (isFirstClass != null)
             {
                 SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
@@ -42,9 +46,9 @@ namespace BugsnagUnityPerformance
 
         void LogSpanEndingWarning()
         {
-            UnityEngine.Debug.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+            MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
         }
-        
+
         public void End(DateTimeOffset? endTime = null)
         {
             lock (_endLock)
@@ -177,18 +181,31 @@ namespace BugsnagUnityPerformance
         {
             if (_callbackComplete)
             {
-                UnityEngine.Debug.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
+                MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
-            if (value == null)
+
+            if (_attributes.ContainsKey(key))
             {
-                if (_attributes.ContainsKey(key))
+                if (value == null)
                 {
                     _attributes.Remove(key);
+                    _customAttributeCount--;
+                }
+                else
+                {
+                    _attributes[key] = value;
                 }
                 return;
             }
+
+            if (_customAttributeCount >= _maxCustomAttributes)
+            {
+                DroppedAttributesCount++;
+                return;
+            }
             _attributes[key] = value;
+            _customAttributeCount++;
         }
 
         internal Dictionary<string, object> GetAttributes() => new Dictionary<string, object>(_attributes);

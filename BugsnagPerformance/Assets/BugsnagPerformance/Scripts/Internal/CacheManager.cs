@@ -7,8 +7,7 @@ namespace BugsnagUnityPerformance
 {
     public class CacheManager : IPhasedStartup
     {
-        private int _maxPersistedBatchAgeSeconds;
-        private bool _deviceAutoGenerateId;
+        private PerformanceConfiguration _config;
         private string _cacheDirectory;
         private string _deviceidFilePath;
         private string _persistentStateFilePath;
@@ -32,9 +31,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _maxPersistedBatchAgeSeconds = config.MaxPersistedBatchAgeSeconds;
-            _deviceAutoGenerateId = config.GenerateAnonymousId;
-
+            _config = config;
         }
 
         public void Start()
@@ -50,7 +47,7 @@ namespace BugsnagUnityPerformance
             try
             {
                 //if generateAnonymousId is true then store/report/generate else don't 
-                if (_deviceAutoGenerateId)
+                if (_config.GenerateAnonymousId)
                 {
                     if (File.Exists(_deviceidFilePath))
                     {
@@ -138,7 +135,7 @@ namespace BugsnagUnityPerformance
             {
                 var creationTime = File.GetCreationTimeUtc(path);
                 var timeSinceCreation = DateTimeOffset.UtcNow - creationTime;
-                if (timeSinceCreation.TotalSeconds > _maxPersistedBatchAgeSeconds)
+                if (timeSinceCreation.TotalSeconds > _config.MaxPersistedBatchAgeSeconds)
                 {
                     DeleteFile(path);
                 }

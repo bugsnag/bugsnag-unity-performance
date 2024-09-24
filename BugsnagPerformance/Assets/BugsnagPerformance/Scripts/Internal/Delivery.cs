@@ -14,13 +14,11 @@ namespace BugsnagUnityPerformance
 
     internal class Delivery : IPhasedStartup
     {
-        private string _endpoint;
-        private string _apiKey;
-        private bool _isFixedSamplingProbability = false;
         private OnProbabilityChanged _onProbabilityChanged;
         private bool _flushingCache;
         private ResourceModel _resourceModel;
         private CacheManager _cacheManager;
+        private PerformanceConfiguration _config;
 
         private enum RequestResult
         {
@@ -57,9 +55,7 @@ namespace BugsnagUnityPerformance
 
         public void Configure(PerformanceConfiguration config)
         {
-            _endpoint = config.GetEndpoint();
-            _apiKey = config.ApiKey;
-            _isFixedSamplingProbability = config.IsFixedSamplingProbability;
+            _config = config;
         }
 
         public void Start()
@@ -69,7 +65,7 @@ namespace BugsnagUnityPerformance
 
         public void Deliver(List<Span> batch)
         {
-            var payload = new TracePayload(_resourceModel, batch, _isFixedSamplingProbability);
+            var payload = new TracePayload(_resourceModel, batch, _config.IsFixedSamplingProbability, _config.AttributeArrayLengthLimit, _config.AttributeStringValueLimit);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
@@ -99,7 +95,7 @@ namespace BugsnagUnityPerformance
             {
                 onResponse = OnPValueRequestCompleted;
             }
-            var payload = new TracePayload(_resourceModel, null, false);
+            var payload = TracePayload.GetTracePayloadForPValueRequest(_resourceModel);
             MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
         }
 
@@ -134,13 +130,13 @@ namespace BugsnagUnityPerformance
                 yield break;
             }
 
-            using (var req = new UnityWebRequest(_endpoint))
+            using (var req = new UnityWebRequest(_config.Endpoint))
             {
                 foreach (var header in payload.Headers)
                 {
                     req.SetRequestHeader(header.Key, header.Value);
                 }
-                req.SetRequestHeader("Bugsnag-Api-Key", _apiKey);
+                req.SetRequestHeader("Bugsnag-Api-Key", _config.ApiKey);
                 req.SetRequestHeader("Content-Type", "application/json");
                 req.SetRequestHeader("Bugsnag-Integrity", "sha1 " + Hash(body));
                 req.SetRequestHeader("Bugsnag-Sent-At", DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture));
