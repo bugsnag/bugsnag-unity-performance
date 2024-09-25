@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using UnityEngine.Scripting;
 
 namespace BugsnagUnityPerformance
 {
@@ -112,7 +113,8 @@ namespace BugsnagUnityPerformance
             return (duration.Ticks * 100).ToString();
         }
 
-         // This method tells Json.NET whether to serialize the droppedAttributesCount or not.
+        // This method tells Json.NET whether to serialize the droppedAttributesCount or not.
+        [Preserve]
         public bool ShouldSerializedroppedAttributesCount()
         {
             return droppedAttributesCount > 0;
