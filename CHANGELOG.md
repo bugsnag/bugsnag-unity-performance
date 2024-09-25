@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fix an issue where Span.droppedAttributeCount was incorrectly implemented. [#140](https://github.com/bugsnag/bugsnag-unity-performance/pull/140)
+
 ## v1.6.0 (2024-09-24)
 
 ### Additions
