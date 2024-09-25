@@ -111,6 +111,12 @@ namespace BugsnagUnityPerformance
             var duration = time - _unixStart;
             return (duration.Ticks * 100).ToString();
         }
+
+         // This method tells Json.NET whether to serialize the droppedAttributesCount or not.
+        public bool ShouldSerializedroppedAttributesCount()
+        {
+            return droppedAttributesCount > 0;
+        }
     }
 
 }

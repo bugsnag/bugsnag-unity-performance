@@ -18,7 +18,7 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.endTimeUnixNano" matches the regex "^[0-9]+$"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "net.host.connection.type" equals "wifi"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "custom"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.droppedAttributesCount" equals 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.droppedAttributesCount" is null
 
     #Resource attributes
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" is one of:
