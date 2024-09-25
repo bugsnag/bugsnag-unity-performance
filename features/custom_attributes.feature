@@ -58,7 +58,7 @@ Feature: Custom Attributes
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values.0.stringValue" equals "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*** 1 CHARS TRUNCATED"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "int1" equals 999
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.droppedAttributesCount" equals 77
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 132 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 131 elements
 
 
   Scenario: Custom AttributeLimits
@@ -76,7 +76,7 @@ Feature: Custom Attributes
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values.0.stringValue" equals "aaaaaaaaaa*** 1015 CHARS TRUNCATED"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "int1" equals 999
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.droppedAttributesCount" equals 197
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 12 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 11 elements
 
 
 
