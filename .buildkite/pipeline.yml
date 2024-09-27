@@ -150,6 +150,10 @@ steps:
           - '*-mazerunner.log'
           - 'clear_cache.log'
           - maze_output/metrics.csv
+      test-collector#v1.10.2:
+        files: "reports/TEST-*.xml"
+        format: "junit"
+        branch: "^main|next$$"
     commands:
       - features/scripts/run-macos-ci-tests.sh release
 
@@ -198,6 +202,10 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
           - '--fail-fast'
+      test-collector#v1.10.2:
+        files: "reports/TEST-*.xml"
+        format: "junit"
+        branch: "^main|next$$"
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
@@ -268,6 +276,10 @@ steps:
           - '--no-tunnel'
           - '--aws-public-ip'
           - '--fail-fast'
+      test-collector#v1.10.2:
+        files: "reports/TEST-*.xml"
+        format: "junit"
+        branch: "^main|next$$"
     concurrency: 25
     concurrency_group: bitbar
     concurrency_method: eager
