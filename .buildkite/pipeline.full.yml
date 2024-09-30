@@ -469,6 +469,10 @@ steps:
           - '*-mazerunner.log'
           - 'clear_cache.log'
           - maze_output/metrics.csv
+      test-collector#v1.10.2:
+        files: "reports/TEST-*.xml"
+        format: "junit"
+        branch: "^main|next$$"
     commands:
       - features/scripts/run-webgl-ci-tests.sh dev
 
