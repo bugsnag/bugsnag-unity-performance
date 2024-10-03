@@ -23,6 +23,7 @@ services:
       MAZE_ASPECTO_REPEATER_API_KEY:
       MAZE_REPEATER_API_KEY:
       UNITY_VERSION:
+      MAZE_NO_FAIL_FAST:
     ports:
       - "9000-9499:9339"
     volumes:
@@ -30,3 +31,4 @@ services:
       - ./features/:/app/features
       - ./maze_output:/app/maze_output
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./reports/:/app/reports/
