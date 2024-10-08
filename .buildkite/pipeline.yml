@@ -1,10 +1,37 @@
+aliases:
+  - &2021 "2021.3.36f1"
+  - &2020 "2020.3.48f1"
+
 agents:
   queue: macos-14
 
 steps:
-  - name: 'Append Unity 2020 Basic Pipeline'
+  - label: Build released library artifact
+    timeout_in_minutes: 30
+    key: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2020
     commands:
-      - buildkite-agent pipeline upload .buildkite/unity.2020.yml
+      - bundle install
+      - 'bundle exec rake plugin:build:export'
+    artifact_paths:
+      - upm-package.zip
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
+
+  - label: Build size impact reporting
+    timeout_in_minutes: 10
+    depends_on: build-artifacts
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    plugins:
+      'artifacts#v1.9.0':
+        download:
+          - upm-package.zip
+    commands:
+      features/scripts/do_size_test.sh
 
   - name: 'Append Unity 2021 Basic Pipeline'
     commands:
