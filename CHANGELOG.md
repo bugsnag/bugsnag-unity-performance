@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.1 (2024-10-09)
+
+### Bug Fixes
+
+- Fix an issue where config.Endpoiunt was incorrectly used in the delivery class [#143](https://github.com/bugsnag/bugsnag-unity-performance/pull/143)
+
+- Fix an issue where Span.droppedAttributeCount was incorrectly implemented. [#140](https://github.com/bugsnag/bugsnag-unity-performance/pull/140)
+
 ## v1.6.0 (2024-09-24)
 
 ### Additions

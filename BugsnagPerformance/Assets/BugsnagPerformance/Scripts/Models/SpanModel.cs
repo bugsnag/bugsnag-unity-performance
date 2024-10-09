@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using UnityEngine.Scripting;
 
 namespace BugsnagUnityPerformance
 {
@@ -14,6 +15,7 @@ namespace BugsnagUnityPerformance
         public string startTimeUnixNano;
         public string endTimeUnixNano;
         public string parentSpanId;
+        public int droppedAttributesCount;
         public List<AttributeModel> attributes = new List<AttributeModel>();
 
         public SpanModel(Span span, int attributeArrayLengthLimit, int attributeStringValueLimit)
@@ -81,11 +83,7 @@ namespace BugsnagUnityPerformance
                     attributes.Add(new AttributeModel(attr.Key, new AttributeDoubleValueModel(doubleValue)));
                 }
             }
-
-            if (span.DroppedAttributesCount > 0)
-            {
-                attributes.Add(new AttributeModel("dropped_attributes_count", new AttributeIntValueModel(span.DroppedAttributesCount)));
-            }
+            droppedAttributesCount = span.DroppedAttributesCount;
         }
 
         private T[] TruncateArrayIfNeeded<T>(T[] array, int limit, string key, string spanName)
@@ -113,6 +111,13 @@ namespace BugsnagUnityPerformance
         {
             var duration = time - _unixStart;
             return (duration.Ticks * 100).ToString();
+        }
+
+        // This method tells Json.NET whether to serialize the droppedAttributesCount or not.
+        [Preserve]
+        public bool ShouldSerializedroppedAttributesCount()
+        {
+            return droppedAttributesCount > 0;
         }
     }
 
