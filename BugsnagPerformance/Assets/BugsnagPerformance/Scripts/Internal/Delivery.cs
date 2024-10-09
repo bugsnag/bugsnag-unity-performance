@@ -130,7 +130,7 @@ namespace BugsnagUnityPerformance
                 yield break;
             }
 
-            using (var req = new UnityWebRequest(_config.Endpoint))
+            using (var req = new UnityWebRequest(_config.GetEndpoint()))
             {
                 foreach (var header in payload.Headers)
                 {
