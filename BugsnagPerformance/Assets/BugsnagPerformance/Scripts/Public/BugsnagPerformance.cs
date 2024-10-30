@@ -437,29 +437,23 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        [Serializable]
-        private class PerformanceState
-        {
-            public string currentContextSpanId;
-            public string currentContextTraceId;
-            public PerformanceState(string currentContextSpanId, string currentContextTraceId)
-            {
-                this.currentContextSpanId = currentContextSpanId;
-                this.currentContextTraceId = currentContextTraceId;
-            }
-        }
-
         [Preserve]
-        internal static string GetPerformanceState()
+        internal static byte[] GetPerformanceState()
         {
             var context = GetCurrentSpanContext();
             if (context != null)
             {
-                var performanceState = new PerformanceState(context.SpanId, context.TraceId);
-                var json = JsonUtility.ToJson(performanceState);
-                return json;
+                var spanIdBytes = System.Text.Encoding.UTF8.GetBytes(context.SpanId);
+                var traceIdBytes = System.Text.Encoding.UTF8.GetBytes(context.TraceId);
+                
+                byte[] result = new byte[4 + spanIdBytes.Length + 4 + traceIdBytes.Length];
+                BitConverter.GetBytes(spanIdBytes.Length).CopyTo(result, 0);
+                spanIdBytes.CopyTo(result, 4);
+                BitConverter.GetBytes(traceIdBytes.Length).CopyTo(result, 4 + spanIdBytes.Length);
+                traceIdBytes.CopyTo(result, 4 + spanIdBytes.Length + 4);
+                return result;
             }
-            return string.Empty;
+            return null;
         }
 
     }
