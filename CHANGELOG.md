@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.2 (2024-10-30)
+
+### Bug Fixes
+
+- Fix an issue where DateTime.Now was used instead of DateTimeOffset.UtcNow during initialisation [#146](https://github.com/bugsnag/bugsnag-unity-performance/pull/146)
+
 ## v1.6.1 (2024-10-09)
 
 ### Bug Fixes
