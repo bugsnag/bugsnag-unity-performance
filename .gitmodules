@@ -1,3 +1,0 @@
-[submodule "BugsnagPerformance/Assets/BugsnagPerformance/Scripts/BugsnagUnityWebRequest"]
-	path = BugsnagPerformance/Assets/BugsnagPerformance/Scripts/BugsnagUnityWebRequest
-	url = https://github.com/bugsnag/bugsnag-unity-web-request
