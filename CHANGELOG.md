@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.7.0 (2024-11-14)
+
+### Additions
+
+- Add support for Unity V6. [#148](https://github.com/bugsnag/bugsnag-unity-performance/pull/148)
+
+### Dependencies
+
+- Updated BugsnagUnityWebRequest to remove deprecation warnings and add new PostWwwForm methods introduced in Unity 2022.2 [#148](https://github.com/bugsnag/bugsnag-unity-performance/pull/148)
+
 ## v1.6.2 (2024-10-30)
 
 ### Bug Fixes

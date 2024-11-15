@@ -13,3 +13,8 @@ steps:
   - name: 'Append Unity 2022 Full Pipeline'
     commands:
       - buildkite-agent pipeline upload .buildkite/unity.2022.full.yml
+
+  - name: 'Append Unity 6000 Full Pipeline'
+    commands:
+      - buildkite-agent pipeline upload .buildkite/unity.6000.full.yml
+

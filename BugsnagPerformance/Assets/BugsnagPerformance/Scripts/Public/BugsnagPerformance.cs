@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using BugsnagNetworking;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
 
@@ -357,7 +358,7 @@ namespace BugsnagUnityPerformance
 
                 if (networkSpanKey != null && _networkSpans.TryGetValue(networkSpanKey, out var span))
                 {
-                    if (abort || request.isHttpError || request.isNetworkError)
+                    if (abort || request.UnityWebRequest.result == UnityWebRequest.Result.ProtocolError || request.UnityWebRequest.result == UnityWebRequest.Result.ConnectionError)
                     {
                         span.Discard();
                     }
