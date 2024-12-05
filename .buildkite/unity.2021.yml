@@ -8,7 +8,7 @@ steps:
   - group: ":hammer: Build Unity 2021 Test Fixtures"
     steps:
       - label: ':webgl: Build webgl test fixture for Unity 2021'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-webgl-fixture-2021
         depends_on: build-artifacts
         env:
@@ -73,7 +73,7 @@ steps:
               limit: 1
 
       - label: ':android: Build Android test fixture for Unity 2021'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-android-fixture-2021
         depends_on: build-artifacts
         env:
@@ -95,7 +95,7 @@ steps:
               limit: 1
 
       - label: ':ios: Generate Xcode project - Unity 2021'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: generate-fixture-project-2021
         depends_on: build-artifacts
         env:
@@ -117,7 +117,7 @@ steps:
               limit: 1
 
       - label: ':ios: Build iOS test fixture for Unity 2021'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-ios-fixture-2021
         depends_on: generate-fixture-project-2021
         env:
@@ -141,7 +141,7 @@ steps:
   - group: ":test_tube: E2E Tests Unity 2021"
     steps:
       - label: Run WebGL e2e tests for Unity 2021
-        timeout_in_minutes: 60
+        timeout_in_minutes: 20
         depends_on: build-webgl-fixture-2021
         env:
           UNITY_PERFORMANCE_VERSION: *2021
@@ -185,7 +185,7 @@ steps:
           - features/scripts/run-windows-ci-tests.sh release
 
       - label: Run MacOS e2e tests for Unity 2021
-        timeout_in_minutes: 60
+        timeout_in_minutes: 30
         depends_on: build-macos-fixture-2021
         env:
           UNITY_PERFORMANCE_VERSION: *2021
