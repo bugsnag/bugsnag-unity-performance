@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fix an issue where using this SDK with v8.3.0+ the BugSnag Unity Notifier would cause an exception while trying to resolve the BugsnagUnityWebRequest wrapper [#151](https://github.com/bugsnag/bugsnag-unity-performance/pull/151)
+
 ## v1.7.0 (2024-11-14)
 
 ### Additions
