@@ -19,9 +19,19 @@ public class NetworkPostFail : Scenario
 
     private IEnumerator DoRun()
     {
+#if UNITY_2022_2_OR_NEWER
+        WWWForm form = new WWWForm();
+        form.AddField("data", "1234567890");
+        yield return BugsnagUnityWebRequest.Post(FAIL_URL, form).SendWebRequest();
+#else
         yield return BugsnagUnityWebRequest.Post(FAIL_URL, "1234567890").SendWebRequest();
+#endif
         yield return new WaitForSeconds(1);
-        BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
+#if UNITY_2022_2_OR_NEWER
+        yield return BugsnagUnityWebRequest.Post(Main.MazeHost, form).SendWebRequest();
+#else
+        yield return BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
+#endif
     }
 
 }
