@@ -14,7 +14,13 @@ public class NetworkPostSuccess : Scenario
 
     public override void Run()
     {
+    #if UNITY_2022_2_OR_NEWER
+        WWWForm form = new WWWForm();
+        form.AddField("data", "1234567890");
+        BugsnagUnityWebRequest.Post(Main.MazeHost, form).SendWebRequest();
+    #else
         BugsnagUnityWebRequest.Post(Main.MazeHost, "1234567890").SendWebRequest();
+    #endif
     }
 
 }

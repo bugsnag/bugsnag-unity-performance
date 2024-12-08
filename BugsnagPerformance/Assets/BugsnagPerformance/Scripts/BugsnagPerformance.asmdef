@@ -1,3 +1,16 @@
-﻿{
-	"name": "BugsnagPerformance"
+{
+    "name": "BugsnagPerformance",
+    "rootNamespace": "",
+    "references": [
+        "BugsnagUnity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
