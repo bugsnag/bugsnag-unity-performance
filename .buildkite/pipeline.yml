@@ -7,7 +7,7 @@ agents:
 
 steps:
   - label: Build released library artifact
-    timeout_in_minutes: 30
+    timeout_in_minutes: 10
     key: build-artifacts
     env:
       UNITY_PERFORMANCE_VERSION: *2020
@@ -22,8 +22,8 @@ steps:
           limit: 1
 
   - label: Build size impact reporting
-    timeout_in_minutes: 10
     depends_on: build-artifacts
+    timeout_in_minutes: 10
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     plugins:
@@ -33,10 +33,15 @@ steps:
     commands:
       features/scripts/do_size_test.sh
 
-  - name: 'Append Unity 2021 Basic Pipeline'
+  - label: 'Append Unity 2021 Basic Pipeline'
+    agents:
+      queue: macos
+    timeout_in_minutes: 2
     commands:
       - buildkite-agent pipeline upload .buildkite/unity.2021.yml
 
   - label: Conditionally trigger full set of tests
-    timeout_in_minutes: 30
+    agents:
+      queue: macos
+    timeout_in_minutes: 2
     command: sh -c .buildkite/pipeline_trigger.sh
