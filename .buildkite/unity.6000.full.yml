@@ -52,7 +52,7 @@ steps:
               limit: 1
 
       - label: ':android: Build Android test fixture for Unity 6000'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-android-fixture-6000
         depends_on: build-artifacts
         env:
@@ -74,7 +74,7 @@ steps:
               limit: 1
 
       - label: ':ios: Generate Xcode project - Unity 6000'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: generate-fixture-project-6000
         depends_on: build-artifacts
         env:
@@ -96,7 +96,7 @@ steps:
               limit: 1
 
       - label: ':ios: Build iOS test fixture for Unity 6000'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-ios-fixture-6000
         depends_on: generate-fixture-project-6000
         env:
@@ -121,7 +121,7 @@ steps:
   - group: ":test_tube: E2E Tests Unity 6000"
     steps:
       - label: Run MacOS e2e tests for Unity 6000
-        timeout_in_minutes: 60
+        timeout_in_minutes: 30
         depends_on: build-macos-fixture-6000
         env:
           UNITY_PERFORMANCE_VERSION: *6000

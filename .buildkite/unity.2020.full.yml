@@ -96,7 +96,7 @@ steps:
               limit: 1
 
       - label: ':ios: Build iOS test fixture for Unity 2020'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-ios-fixture-2020
         depends_on: generate-fixture-project-2020
         env:
@@ -125,7 +125,7 @@ steps:
   - group: ":test_tube: E2E Tests Unity 2020"
     steps:
       - label: Run MacOS e2e tests for Unity 2020
-        timeout_in_minutes: 60
+        timeout_in_minutes: 30
         depends_on: build-macos-fixture-2020
         env:
           UNITY_PERFORMANCE_VERSION: *2020
