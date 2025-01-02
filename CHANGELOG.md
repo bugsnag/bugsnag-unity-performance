@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Bug Fixes
+
+- Fix an issue where spans started with null names sent no name field. Now string.Empty will be sent instead [#154](https://github.com/bugsnag/bugsnag-unity-performance/pull/154)
+
 ## v1.7.1 (2024-12-06)
 
 ### Bug Fixes
