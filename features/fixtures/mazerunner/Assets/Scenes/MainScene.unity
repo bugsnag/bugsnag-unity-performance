@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -269,6 +268,7 @@ GameObject:
   - component: {fileID: 259057445}
   - component: {fileID: 259057446}
   - component: {fileID: 259057447}
+  - component: {fileID: 259057448}
   m_Layer: 0
   m_Name: ManualSpans
   m_TagString: Untagged
@@ -314,6 +314,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1acdfac80082464180a997600222189, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
+--- !u!114 &259057448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259057444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207dd502074ed4e0c8fde31423e1eb9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShouldStartNotifier: 0
@@ -564,6 +577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 552d75942a8b04b0cb4df3695b068649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
 --- !u!114 &323187835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbb1313beb8e2452eb405afc7461767c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
 --- !u!1 &368414949
 GameObject:
   m_ObjectHideFlags: 0

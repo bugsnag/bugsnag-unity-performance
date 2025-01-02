@@ -68,4 +68,10 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" exists
 
+  Scenario: null span name becomes empty string
+    When I run the game in the "NullSpanName" state
+    And I wait for 2 spans
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals ""
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "control"
+
 

@@ -29,7 +29,7 @@ namespace BugsnagUnityPerformance
 
         public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes)
         {
-            Name = name;
+            Name = name ?? string.Empty;
             Kind = kind;
             SpanId = id;
             TraceId = traceId;
