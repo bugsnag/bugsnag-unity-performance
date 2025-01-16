@@ -28,6 +28,7 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
+        private FrameMetricsCollector _frameMetricsCollector;
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
@@ -131,6 +132,7 @@ namespace BugsnagUnityPerformance
         {
             _cacheManager = new CacheManager(Application.persistentDataPath);
             _persistentState = new PersistentState(_cacheManager);
+            _frameMetricsCollector = new FrameMetricsCollector();
             _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);

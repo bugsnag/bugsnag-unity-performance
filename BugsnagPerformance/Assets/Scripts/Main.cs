@@ -12,12 +12,12 @@ public class Main : MonoBehaviour
 
     public void Start()
     {
-        var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        config.AddOnSpanEnd((span) => {
-            Debug.Log("Span ended: " + span.Name);
-            return true;
-        });
-        BugsnagPerformance.Start(config);
+        // var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
+        // config.AddOnSpanEnd((span) => {
+        //     Debug.Log("Span ended: " + span.Name);
+        //     return true;
+        // });
+        // BugsnagPerformance.Start(config);
     }
 
     public void DoSpan()
