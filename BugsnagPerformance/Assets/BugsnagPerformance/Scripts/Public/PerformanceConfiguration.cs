@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
+    [Serializable]
     public class EnabledMetrics
     {
         public bool Rendering = false;

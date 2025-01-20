@@ -9,6 +9,8 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     public Texture DarkIcon, LightIcon;
 
+    bool _showEnabledMetrics;
+
     private void OnEnable()
     {
         titleContent.text = "BugSnag Performance";
@@ -107,10 +109,33 @@ public class BugsnagPerformanceEditor : EditorWindow
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
         EditorGUILayout.PropertyField(so.FindProperty("TracePropagationUrls"));
+        DrawEnabledMetricsDropdown(so,settings);
         EditorGUI.indentLevel--;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
     }
+
+    private void DrawEnabledMetricsDropdown(SerializedObject so, BugsnagPerformanceSettingsObject settings)
+    {
+        var style = new GUIStyle(GUI.skin.GetStyle("foldout"));
+        style.margin = new RectOffset(2, 0, 0, 0);
+        _showEnabledMetrics = EditorGUILayout.Foldout(_showEnabledMetrics, "Enabled Metrics", true, style);
+
+        if (_showEnabledMetrics)
+        {
+            EditorGUI.indentLevel += 2;
+
+            // Grab the property
+            var enabledMetricsProp = so.FindProperty("EnabledMetrics");
+            var renderingProp = enabledMetricsProp.FindPropertyRelative("Rendering");
+
+            // Draw the property so it’s serialized properly:
+            EditorGUILayout.PropertyField(renderingProp, new GUIContent("Rendering"));
+
+            EditorGUI.indentLevel -= 2;
+        }
+    }
+
 
     private void DrawIntPropertyWithDefault(SerializedObject so, string propertyName, string label, int defaultValue)
     {

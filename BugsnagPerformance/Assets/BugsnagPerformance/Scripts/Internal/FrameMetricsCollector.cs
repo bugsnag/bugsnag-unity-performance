@@ -20,7 +20,6 @@ namespace BugsnagUnityPerformance
         }
         private void BeginCollectingMetrics()
         {
-            Debug.Log(Application.targetFrameRate);
             var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
             _playerUpdateCallback= new PlayerLoopSystem
             {
