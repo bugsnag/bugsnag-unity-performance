@@ -9,7 +9,6 @@ namespace BugsnagUnityPerformance
         private int TotalFrames = 0;
         private int SlowFrames = 0;
         private int FrozenFrames = 0;
-        private float SlowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
         private const float FROZEN_FRAME_THRESHOLD = 0.7f; // 700 ms
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
@@ -36,14 +35,18 @@ namespace BugsnagUnityPerformance
 
         private void OnUnityUpdate()
         {
-            float frameTime = Time.unscaledDeltaTime;
             TotalFrames++;
-
+            float frameTime = Time.unscaledDeltaTime;
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
                 FrozenFrames++;
+                return;
             }
-            else if (frameTime > SlowFrameThreshold)
+
+            // this cannot be a cached value as target frame rate can change at any time
+            var slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
+
+            if (frameTime > slowFrameThreshold)
             {
                 SlowFrames++;
             }
