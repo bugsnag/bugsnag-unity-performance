@@ -12,9 +12,8 @@ namespace BugsnagUnityPerformance
 
         [ThreadStatic]
         private static Stack<WeakReference<ISpanContext>> _contextStack;
-
+        FrameMetricsCollector _frameMetricsCollector;
         private RNGCryptoServiceProvider _rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
-
         private OnSpanEnd _onSpanEnd;
 
         private const string CONNECTION_TYPE_UNAVAILABLE = "unavailable";
@@ -27,9 +26,10 @@ namespace BugsnagUnityPerformance
 
         private int _maxCustomAttributes = PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT;
 
-        public SpanFactory(OnSpanEnd onSpanEnd)
+        public SpanFactory(OnSpanEnd onSpanEnd, FrameMetricsCollector frameMetricsCollector)
         {
             _onSpanEnd = onSpanEnd;
+            _frameMetricsCollector = frameMetricsCollector;
             MainThreadDispatchBehaviour.Instance().StartCoroutine(GetConnectionType());
         }
 
@@ -106,8 +106,10 @@ namespace BugsnagUnityPerformance
                     traceId = GetNewTraceId();
                 }
             }
-
-            var newSpan = new Span(name, kind, spanId, traceId, parentSpanId, spanOptions.StartTime, spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes);
+            var newSpan = new Span(name, kind, spanId, 
+            traceId, parentSpanId, spanOptions.StartTime, 
+            spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes, 
+            _frameMetricsCollector.TakeSnapshot());
             if (spanOptions.MakeCurrentContext)
             {
                 AddToContextStack(newSpan);

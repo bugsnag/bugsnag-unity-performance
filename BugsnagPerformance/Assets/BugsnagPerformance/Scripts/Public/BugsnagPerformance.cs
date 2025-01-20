@@ -136,14 +136,15 @@ namespace BugsnagUnityPerformance
             _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
-            _tracer = new Tracer(_sampler, _delivery);
-            _spanFactory = new SpanFactory(_tracer.OnSpanEnd);
+            _tracer = new Tracer(_sampler, _delivery, _frameMetricsCollector);
+            _spanFactory = new SpanFactory(_tracer.OnSpanEnd, _frameMetricsCollector);
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
 
         private void Configure(PerformanceConfiguration config)
         {
+            _frameMetricsCollector.Configure(config);
             _spanFactory.Configure(config);
             _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);

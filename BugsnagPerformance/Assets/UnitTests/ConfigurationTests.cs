@@ -82,7 +82,8 @@ namespace Tests
                 CustomStartTime,
                 true,
                 OnSpanEnd,
-                128);
+                128,
+                null);
             span.End(CustomEndTime);
             Assert.AreEqual(span.StartTime, CustomStartTime);
             Assert.AreEqual(span.EndTime, CustomEndTime);
