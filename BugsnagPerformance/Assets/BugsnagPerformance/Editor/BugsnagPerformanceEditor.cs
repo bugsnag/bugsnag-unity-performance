@@ -124,14 +124,9 @@ public class BugsnagPerformanceEditor : EditorWindow
         if (_showEnabledMetrics)
         {
             EditorGUI.indentLevel += 2;
-
-            // Grab the property
             var enabledMetricsProp = so.FindProperty("EnabledMetrics");
             var renderingProp = enabledMetricsProp.FindPropertyRelative("Rendering");
-
-            // Draw the property so it’s serialized properly:
             EditorGUILayout.PropertyField(renderingProp, new GUIContent("Rendering"));
-
             EditorGUI.indentLevel -= 2;
         }
     }
