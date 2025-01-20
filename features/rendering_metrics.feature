@@ -18,6 +18,16 @@ Feature: Rendering Metrics
 
 
 
+  Scenario: Disable Frame Rate Metrics
+    When I run the game in the "ConfigureRenderMetrics" state
+    And I wait for 1 span
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BeforeStart"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 4 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "custom"
+
+
+
 
 
 
