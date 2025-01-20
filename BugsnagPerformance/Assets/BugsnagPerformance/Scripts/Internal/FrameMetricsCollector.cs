@@ -11,9 +11,9 @@ namespace BugsnagUnityPerformance
         private int FrozenFrames = 0;
         private float SlowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
         private const float FROZEN_FRAME_THRESHOLD = 0.7f; // 700 ms
-
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
+        private bool _callbackActive = false;
 
         public FrameMetricsCollector()
         {
@@ -31,6 +31,7 @@ namespace BugsnagUnityPerformance
             systems.Insert(0, _playerUpdateCallback);
             playerLoop.subSystemList = systems.ToArray();
             PlayerLoop.SetPlayerLoop(playerLoop);
+            _callbackActive = true;
         }
 
         private void OnUnityUpdate()
@@ -50,7 +51,7 @@ namespace BugsnagUnityPerformance
 
         public FrameMetricsSnapshot TakeSnapshot()
         {
-            if(!_isEnabled)
+            if(!_isEnabled || !_callbackActive)
             {
                 return null;
             }
@@ -78,6 +79,7 @@ namespace BugsnagUnityPerformance
             systems.Remove(_playerUpdateCallback);
             playerLoop.subSystemList = systems.ToArray();
             PlayerLoop.SetPlayerLoop(playerLoop);
+            _callbackActive = false;
         }
 
         public void Start()

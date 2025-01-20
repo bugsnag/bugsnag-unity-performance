@@ -62,6 +62,10 @@ namespace BugsnagUnityPerformance
                     {
                         continue;
                     }
+                    if(!_config.EnabledMetrics.Rendering)
+                    {
+                        span.RemoveFrameRateMetrics();
+                    }
                     Sample(span);
                 }
             }
@@ -98,7 +102,7 @@ namespace BugsnagUnityPerformance
 
         private void ApplyFrameRateMetrics(Span span)
         {
-            span.ApplyFrameRateMetrics(_frameMetricsCollector.TakeSnapshot());
+            span.CalculateFrameRateMetrics(_frameMetricsCollector.TakeSnapshot());
         }
 
         public void RunOnEndCallbacks(Span span)

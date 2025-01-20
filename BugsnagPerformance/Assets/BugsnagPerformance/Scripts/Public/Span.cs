@@ -26,7 +26,6 @@ namespace BugsnagUnityPerformance
         internal int DroppedAttributesCount;
         private int _customAttributeCount;
         private int _maxCustomAttributes;
-
         private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
 
         public Span(string name, SpanKind kind, string id, 
@@ -221,7 +220,7 @@ namespace BugsnagUnityPerformance
             _callbackComplete = true;
         }
 
-        internal void ApplyFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
+        internal void CalculateFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
         {
             if(_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
             {
@@ -230,6 +229,13 @@ namespace BugsnagUnityPerformance
             SetAttributeInternal("bugsnag.framerate.frozen_frames", endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames);
             SetAttributeInternal("bugsnag.framerate.slow_frames", endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
             SetAttributeInternal("bugsnag.framerate.total_frames", endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
+        }
+
+        internal void RemoveFrameRateMetrics()
+        {
+            _attributes.Remove("bugsnag.framerate.frozen_frames");
+            _attributes.Remove("bugsnag.framerate.slow_frames");
+            _attributes.Remove("bugsnag.framerate.total_frames");
         }
     }
 }
