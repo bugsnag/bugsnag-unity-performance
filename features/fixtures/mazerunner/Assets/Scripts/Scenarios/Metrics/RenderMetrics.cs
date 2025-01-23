@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class RenderMetrics : Scenario
 {
-    bool _doTenSlowFrames;
-    int _slowFramesDone;
+    bool _testStarted, _testEnded;
+    int _slowFramesDone, _frozenFramesDone;
     Span _slowFrameSpan, _noFramesSpan, _disableInSpanOptionsSpan;
 
-    int _frameCount = 0;
+    int _frameCount;
 
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
@@ -26,55 +26,50 @@ public class RenderMetrics : Scenario
 
     private IEnumerator StartTest()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
         _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
         _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
-        _doTenSlowFrames = true;
+        _testStarted = true;
     }
 
-    private IEnumerator EndTest()
-    {
-        yield return new WaitForSeconds(1);
-        _slowFrameSpan.End();
-        _noFramesSpan.End();
-        _disableInSpanOptionsSpan.End();
-    }
+
 
     void Update()
     {
-        _frameCount++;
-        if(_frameCount < 101)
+        if (!_testStarted || _testEnded)
         {
             return;
         }
-        if (_doTenSlowFrames)
+
+        if (_slowFramesDone < 10)
         {
-            if (_slowFramesDone < 10)
-            {
-                float startTime = Time.realtimeSinceStartup;
+            float startTime = Time.realtimeSinceStartup;
+            // Simulate a busy workload by blocking the main thread
+            while (Time.realtimeSinceStartup < startTime + 0.25f){}
+            _slowFramesDone++;
+            return;
+        }
 
-                // Simulate a busy workload by blocking the main thread
-                while (Time.realtimeSinceStartup < startTime + 0.25f)
-                {
-                    // Do nothing, just burn CPU cycles
-                }
-                _slowFramesDone++;
-                return;
-            }
-            else
-            {
-                float startTime = Time.realtimeSinceStartup;
+        if (_frozenFramesDone < 1)
+        {
+            var startTime2 = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup < startTime2 + 5){}
+            _frozenFramesDone++;
+            return;
+        }
 
-                // Simulate a busy workload by blocking the main thread
-                while (Time.realtimeSinceStartup < startTime + 5)
-                {
-                    // Do nothing, just burn CPU cycles
-                }
-                // Thread.Sleep(1000); // frozen frame
-                _doTenSlowFrames = false;
-                StartCoroutine(EndTest());
-            }
+        if (_frameCount < 100)
+        {
+            _frameCount++;
+            return;
+        }
+        if (!_testEnded)
+        {
+            _testEnded = true;
+            _slowFrameSpan.End();
+            _noFramesSpan.End();
+            _disableInSpanOptionsSpan.End();
         }
     }
 
