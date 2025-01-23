@@ -9,6 +9,8 @@ public class RenderMetrics : Scenario
     int _slowFramesDone;
     Span _slowFrameSpan, _noFramesSpan, _disableInSpanOptionsSpan;
 
+    int _frameCount = 0;
+
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
@@ -28,7 +30,6 @@ public class RenderMetrics : Scenario
         _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
         _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
         _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
-        yield return new WaitForSeconds(1);
         _doTenSlowFrames = true;
     }
 
@@ -42,6 +43,11 @@ public class RenderMetrics : Scenario
 
     void Update()
     {
+        _frameCount++;
+        if(_frameCount < 101)
+        {
+            return;
+        }
         if (_doTenSlowFrames)
         {
             if (_slowFramesDone < 10)
