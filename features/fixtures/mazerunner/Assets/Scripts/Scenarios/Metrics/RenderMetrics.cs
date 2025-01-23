@@ -12,7 +12,7 @@ public class RenderMetrics : Scenario
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchSize(2);
+        SetMaxBatchSize(3);
         Configuration.EnabledMetrics.Rendering = true;
     }
 
@@ -24,6 +24,7 @@ public class RenderMetrics : Scenario
 
     private IEnumerator StartTest()
     {
+        yield return new WaitForSeconds(3);
         _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
         _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
         _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
