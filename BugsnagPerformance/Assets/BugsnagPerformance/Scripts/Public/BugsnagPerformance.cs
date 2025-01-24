@@ -28,6 +28,7 @@ namespace BugsnagUnityPerformance
         private AppStartHandler _appStartHandler;
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
+        private FrameMetricsCollector _frameMetricsCollector;
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
@@ -131,17 +132,19 @@ namespace BugsnagUnityPerformance
         {
             _cacheManager = new CacheManager(Application.persistentDataPath);
             _persistentState = new PersistentState(_cacheManager);
+            _frameMetricsCollector = new FrameMetricsCollector();
             _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
-            _tracer = new Tracer(_sampler, _delivery);
-            _spanFactory = new SpanFactory(_tracer.OnSpanEnd);
+            _tracer = new Tracer(_sampler, _delivery, _frameMetricsCollector);
+            _spanFactory = new SpanFactory(_tracer.OnSpanEnd, _frameMetricsCollector);
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
 
         private void Configure(PerformanceConfiguration config)
         {
+            _frameMetricsCollector.Configure(config);
             _spanFactory.Configure(config);
             _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);

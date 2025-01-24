@@ -97,7 +97,9 @@ namespace BugsnagUnityPerformance
                 return version.GetStatic<string>("RELEASE");
             }
 #endif
+#pragma warning disable CS0162 // Unreachable code detected
             return string.Empty;
+#pragma warning restore CS0162 // Unreachable code detected
         }
 
     }

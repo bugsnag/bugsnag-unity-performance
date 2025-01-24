@@ -31,8 +31,7 @@ namespace BugsnagUnityPerformance
         public int AttributeStringValueLimit;
         public int AttributeArrayLengthLimit;
         public int AttributeCountLimit;
-
-
+        public EnabledMetrics EnabledMetrics = new EnabledMetrics();
 
         public bool GenerateAnonymousId = true;
 
@@ -88,7 +87,7 @@ namespace BugsnagUnityPerformance
             {
                 config.AttributeCountLimit = AttributeCountLimit;
             }
-
+            config.EnabledMetrics = EnabledMetrics;
         }
 
         private Regex[] ConvertTracePropagationUrls(string[] urls)

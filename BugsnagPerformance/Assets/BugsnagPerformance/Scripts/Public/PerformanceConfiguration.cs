@@ -8,6 +8,11 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
+    [Serializable]
+    public class EnabledMetrics
+    {
+        public bool Rendering = false;
+    }
     public class PerformanceConfiguration
     {
 
@@ -19,6 +24,7 @@ namespace BugsnagUnityPerformance
         private const int MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 10000;
         internal const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
         private const int MAXIMUM_ATTRIBUTE_COUNT_LIMIT = 1000;
+
 
         public PerformanceConfiguration(string apiKey)
         {
@@ -98,8 +104,9 @@ namespace BugsnagUnityPerformance
 
         public string[] EnabledReleaseStages;
 
-        public string Endpoint = string.Empty;
+        public EnabledMetrics EnabledMetrics = new EnabledMetrics();
 
+        public string Endpoint = string.Empty;
 
         public Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> NetworkRequestCallback;
 

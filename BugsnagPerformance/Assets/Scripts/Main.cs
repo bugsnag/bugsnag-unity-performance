@@ -13,10 +13,7 @@ public class Main : MonoBehaviour
     public void Start()
     {
         var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        config.AddOnSpanEnd((span) => {
-            Debug.Log("Span ended: " + span.Name);
-            return true;
-        });
+        config.EnabledMetrics.Rendering = true;
         BugsnagPerformance.Start(config);
     }
 
@@ -52,7 +49,7 @@ public class Main : MonoBehaviour
         span.SetAttribute("my double attribute", 3.14);
         span.SetAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1.0f);
         span.End();
     }
 

@@ -2,6 +2,10 @@
 
 ## TBD
 
+### Additions
+
+- Add frame rate metrics to spans. [#155](https://github.com/bugsnag/bugsnag-unity-performance/pull/155)
+
 ### Bug Fixes
 
 - Fix an issue where spans started with null names sent no name field. Now string.Empty will be sent instead [#154](https://github.com/bugsnag/bugsnag-unity-performance/pull/154)
