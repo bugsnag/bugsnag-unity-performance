@@ -8,6 +8,11 @@ namespace BugsnagUnityPerformance
 
     public class Span : ISpanContext
     {
+
+        private const string FROZEN_FRAMES_KEY = "bugsnag.rendering.frozen_frames";
+        private const string SLOW_FRAMES_KEY = "bugsnag.rendering.slow_frames";
+        private const string TOTAL_FRAMES_KEY = "bugsnag.rendering.total_frames";
+
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
         public string SpanId { get; }
@@ -222,20 +227,20 @@ namespace BugsnagUnityPerformance
 
         internal void CalculateFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
         {
-            if(_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
+            if (_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
             {
                 return;
             }
-            SetAttributeInternal("bugsnag.framerate.frozen_frames", endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames);
-            SetAttributeInternal("bugsnag.framerate.slow_frames", endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
-            SetAttributeInternal("bugsnag.framerate.total_frames", endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
+            SetAttributeInternal(FROZEN_FRAMES_KEY, endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames);
+            SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
+            SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
         }
 
         internal void RemoveFrameRateMetrics()
         {
-            _attributes.Remove("bugsnag.framerate.frozen_frames");
-            _attributes.Remove("bugsnag.framerate.slow_frames");
-            _attributes.Remove("bugsnag.framerate.total_frames");
+            _attributes.Remove(FROZEN_FRAMES_KEY);
+            _attributes.Remove(SLOW_FRAMES_KEY);
+            _attributes.Remove(TOTAL_FRAMES_KEY);
         }
     }
 }
