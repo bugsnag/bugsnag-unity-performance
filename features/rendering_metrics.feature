@@ -9,9 +9,9 @@ Feature: Rendering Metrics
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "SlowFrames"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 7 elements
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.framerate.frozen_frames" equals 1
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.framerate.slow_frames" is greater than 10
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.framerate.total_frames" is greater than 100
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.rendering.frozen_frames" equals 1
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.rendering.slow_frames" is greater than 10
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "bugsnag.rendering.total_frames" is greater than 100
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "NoFrames"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.attributes" is an array with 4 elements
