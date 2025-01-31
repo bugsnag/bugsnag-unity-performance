@@ -24,6 +24,7 @@ public class RenderMetrics : Scenario
     public override void Run()
     {
         base.Run();
+        Application.targetFrameRate = 60;
         StartCoroutine(StartTest());
     }
 
