@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class RenderMetrics : Scenario
 {
-    bool _testStarted, _testEnded;
+    bool _testStarted, _testEnded, _testInitialised;
     int _slowFramesDone, _frozenFramesDone;
     Span _slowFrameSpan, _noFramesSpan, _disableInSpanOptionsSpan;
+
+    const int NUM_SLOW_FRAMES_TO_DO = 10;
+    const int NUM_FROZEN_FRAMES_TO_DO = 2;
 
     int _frameCount;
 
@@ -26,10 +29,7 @@ public class RenderMetrics : Scenario
 
     private IEnumerator StartTest()
     {
-        yield return new WaitForSeconds(1);
-        _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
-        _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
-        _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
+        yield return new WaitForSeconds(3); // wait for the app to settle and frame rate to stabilise
         _testStarted = true;
     }
 
@@ -41,8 +41,14 @@ public class RenderMetrics : Scenario
         {
             return;
         }
-
-        if (_slowFramesDone < 10)
+        if(!_testInitialised)
+        {
+            _testInitialised = true;
+             _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
+            _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
+            _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
+        }
+        if (_slowFramesDone < NUM_SLOW_FRAMES_TO_DO)
         {
             float startTime = Time.realtimeSinceStartup;
             // Simulate a busy workload by blocking the main thread
@@ -50,16 +56,14 @@ public class RenderMetrics : Scenario
             _slowFramesDone++;
             return;
         }
-
-        if (_frozenFramesDone < 1)
+        if (_frozenFramesDone < NUM_FROZEN_FRAMES_TO_DO)
         {
             var startTime2 = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < startTime2 + 5){}
+            while (Time.realtimeSinceStartup < startTime2 + 2){}
             _frozenFramesDone++;
             return;
         }
-
-        if (_frameCount < 100)
+        if (_frameCount < (100 - NUM_SLOW_FRAMES_TO_DO - NUM_FROZEN_FRAMES_TO_DO))
         {
             _frameCount++;
             return;
