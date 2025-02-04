@@ -62,7 +62,7 @@ namespace BugsnagUnityPerformance
                     {
                         continue;
                     }
-                    if(_config.EnabledMetrics != null && ! _config.EnabledMetrics.Rendering)
+                    if(!_config.AutoInstrumentRendering)
                     {
                         span.RemoveFrameRateMetrics();
                     }
