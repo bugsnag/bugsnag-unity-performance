@@ -10,6 +10,7 @@ namespace BugsnagUnityPerformance
         private int SlowFrames = 0;
         private int FrozenFrames = 0;
         private const float FROZEN_FRAME_THRESHOLD = 0.7f; // 700 ms
+        private const float DEFAULT_SLOW_FRAME_TOLERANCE = 0.05f;
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
         private bool _callbackActive = false;
@@ -44,6 +45,8 @@ namespace BugsnagUnityPerformance
 
             // this cannot be a cached value as target frame rate can change at any time
             var slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
+            // apply tolerance to allow for some variance in frame time
+            slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
 
             if (frameTime > slowFrameThreshold)
             {
