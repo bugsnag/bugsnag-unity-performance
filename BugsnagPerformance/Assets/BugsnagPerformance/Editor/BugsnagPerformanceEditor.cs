@@ -105,32 +105,15 @@ public class BugsnagPerformanceEditor : EditorWindow
         DrawIntPropertyWithDefault(so, "AttributeArrayLengthLimit", "AttributeArrayLengthLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeCountLimit", "AttributeCountLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeStringValueLimit", "AttributeStringValueLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT);
+        EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentRendering"));
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));
         EditorGUILayout.PropertyField(so.FindProperty("TracePropagationUrls"));
-        DrawEnabledMetricsDropdown(so,settings);
         EditorGUI.indentLevel--;
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(settings);
     }
-
-    private void DrawEnabledMetricsDropdown(SerializedObject so, BugsnagPerformanceSettingsObject settings)
-    {
-        var style = new GUIStyle(GUI.skin.GetStyle("foldout"));
-        style.margin = new RectOffset(2, 0, 0, 0);
-        _showEnabledMetrics = EditorGUILayout.Foldout(_showEnabledMetrics, "Enabled Metrics", true, style);
-
-        if (_showEnabledMetrics)
-        {
-            EditorGUI.indentLevel += 2;
-            var enabledMetricsProp = so.FindProperty("EnabledMetrics");
-            var renderingProp = enabledMetricsProp.FindPropertyRelative("Rendering");
-            EditorGUILayout.PropertyField(renderingProp, new GUIContent("Rendering"));
-            EditorGUI.indentLevel -= 2;
-        }
-    }
-
 
     private void DrawIntPropertyWithDefault(SerializedObject so, string propertyName, string label, int defaultValue)
     {

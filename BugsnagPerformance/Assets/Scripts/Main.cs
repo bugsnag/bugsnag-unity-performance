@@ -13,7 +13,6 @@ public class Main : MonoBehaviour
     public void Start()
     {
         var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        config.EnabledMetrics.Rendering = true;
         BugsnagPerformance.Start(config);
     }
 
