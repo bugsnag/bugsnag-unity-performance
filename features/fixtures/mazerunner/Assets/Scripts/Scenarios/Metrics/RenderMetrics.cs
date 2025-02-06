@@ -10,14 +10,14 @@ public class RenderMetrics : Scenario
     Span _slowFrameSpan, _noFramesSpan, _disableInSpanOptionsSpan;
 
     const int NUM_SLOW_FRAMES_TO_DO = 10;
-    const int NUM_FROZEN_FRAMES_TO_DO = 2;
+    const int NUM_FROZEN_FRAMES_TO_DO = 1;
 
     int _frameCount;
 
     public override void PreparePerformanceConfig(string apiKey, string host)
     {
         base.PreparePerformanceConfig(apiKey, host);
-        SetMaxBatchSize(3);
+        SetMaxBatchSize(4);
         Configuration.AutoInstrumentRendering = true;
     }
 

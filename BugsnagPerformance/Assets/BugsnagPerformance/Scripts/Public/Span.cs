@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BugsnagNetworking;
 
 namespace BugsnagUnityPerformance
@@ -231,7 +232,22 @@ namespace BugsnagUnityPerformance
             {
                 return;
             }
-            SetAttributeInternal(FROZEN_FRAMES_KEY, endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames);
+
+            var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
+            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameDurations.TakeLast(numFrozenFrames).ToList();
+            for(int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            {
+                var options = new SpanOptions
+                {
+                    ParentContext = this,
+                    IsFirstClass = false,
+                    MakeCurrentContext = false
+                };
+                var span = BugsnagPerformance.StartSpan("FrozenFrame",options);
+                span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
+                span.End(DateTimeOffset.UtcNow.AddSeconds(frozenFrameDurations[i]));
+            }
+            SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
             SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
             SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
         }
