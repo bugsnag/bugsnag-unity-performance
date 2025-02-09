@@ -33,6 +33,7 @@ namespace BugsnagUnityPerformance
         private int _customAttributeCount;
         private int _maxCustomAttributes;
         private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
+        internal bool IsFrozenFrameSpan;
 
         public Span(string name, SpanKind kind, string id, 
         string traceId, string parentSpanId, DateTimeOffset startTime, 
@@ -244,6 +245,7 @@ namespace BugsnagUnityPerformance
                     MakeCurrentContext = false
                 };
                 var span = BugsnagPerformance.StartSpan("FrozenFrame",options);
+                span.IsFrozenFrameSpan = true;
                 span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
                 span.End(DateTimeOffset.UtcNow.AddSeconds(frozenFrameDurations[i]));
             }

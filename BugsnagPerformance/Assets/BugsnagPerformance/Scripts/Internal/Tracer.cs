@@ -64,7 +64,14 @@ namespace BugsnagUnityPerformance
                     }
                     if(!_config.AutoInstrumentRendering)
                     {
-                        span.RemoveFrameRateMetrics();
+                        if(span.IsFrozenFrameSpan)
+                        {
+                            span.Discard();
+                        }
+                        else
+                        {
+                            span.RemoveFrameRateMetrics();
+                        }
                     }
                     Sample(span);
                 }
