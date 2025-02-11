@@ -12,7 +12,8 @@ Feature: Rendering Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is false
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "frozen_frame"
     * the span named "SlowFrames" is the parent of the span named "FrozenFrame"
-    
+    * the span named "FrozenFrame" starts and ends before the span named "SlowFrames" ends and lasts at least 1 second
+
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "SlowFrames"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.attributes" is an array with 7 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.frozen_frames" equals 1
@@ -28,6 +29,7 @@ Feature: Rendering Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.attributes" is an array with 4 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3" boolean attribute "bugsnag.span.first_class" is true
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3" string attribute "bugsnag.span.category" equals "custom"
+
 
 
   Scenario: Disable Frame Rate Metrics

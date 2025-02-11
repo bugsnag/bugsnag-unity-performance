@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,6 +6,17 @@ using UnityEngine.LowLevel;
 
 namespace BugsnagUnityPerformance
 {
+    public struct FrozenFrame
+    {
+        public DateTimeOffset StartTime;
+        public DateTimeOffset EndTime;
+        public FrozenFrame(float duration)
+        {
+            var now = DateTimeOffset.Now;
+            StartTime = now.AddSeconds(-duration);
+            EndTime = now;
+        }
+    }
     internal class FrameMetricsCollector : IPhasedStartup
     {
         private int TotalFrames = 0;
@@ -15,7 +27,7 @@ namespace BugsnagUnityPerformance
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
         private bool _callbackActive = false;
-        private List<float> _frozenFrameDurations = new List<float>();
+        private List<FrozenFrame> _frozenFrameDurations = new List<FrozenFrame>();
 
         public FrameMetricsCollector()
         {
@@ -41,7 +53,7 @@ namespace BugsnagUnityPerformance
             float frameTime = Time.unscaledDeltaTime;
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
-                _frozenFrameDurations.Add(frameTime);
+                _frozenFrameDurations.Add(new FrozenFrame(frameTime) );
                 FrozenFrames++;
                 return;
             }
@@ -99,7 +111,7 @@ namespace BugsnagUnityPerformance
 
     public class FrameMetricsSnapshot
     {
-        public List<float> FrozenFrameDurations;
+        public List<FrozenFrame> FrozenFrameDurations;
         public int TotalFrames;
         public int SlowFrames;
         public int FrozenFrames;

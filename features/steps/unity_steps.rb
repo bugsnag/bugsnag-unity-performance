@@ -187,3 +187,24 @@ Then('the span named {string} has no parent') do |spanName|
 
   Maze.check.true(span1['parentSpanId'] == nil);
 end
+
+Then('the span named {string} starts and ends before the span named {string} ends and lasts at least 1 second') do |span1_name, span2_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  span1 = spans.find { |span| span['name'].eql?(span1_name) }
+  span2 = spans.find { |span| span['name'].eql?(span2_name) }
+
+  raise Test::Unit::AssertionFailedError.new "No span found with the name #{span1_name}" if span1.nil?
+  raise Test::Unit::AssertionFailedError.new "No span found with the name #{span2_name}" if span2.nil?
+
+  span1_start_time = Integer(span1["startTimeUnixNano"])
+  span1_end_time = Integer(span1["endTimeUnixNano"])
+  span2_end_time = Integer(span2["endTimeUnixNano"])
+
+  duration_nanos = span1_end_time - span1_start_time
+  min_duration_nanos = 1_000_000_000 # 1 second in nanoseconds
+
+  Maze.check.true(span1_start_time < span2_end_time, "Expected span '#{span1_name}' to start before span '#{span2_name}' ends")
+  Maze.check.true(span1_end_time < span2_end_time, "Expected span '#{span1_name}' to end before span '#{span2_name}' ends")
+  Maze.check.true(duration_nanos >= min_duration_nanos, "Expected span '#{span1_name}' to last at least 1 second, but it lasted #{duration_nanos} nanoseconds")
+end

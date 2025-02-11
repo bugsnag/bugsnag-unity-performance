@@ -34,8 +34,8 @@ namespace BugsnagUnityPerformance
         private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
         internal bool IsFrozenFrameSpan;
 
-        public Span(string name, SpanKind kind, string id, 
-        string traceId, string parentSpanId, DateTimeOffset startTime, 
+        public Span(string name, SpanKind kind, string id,
+        string traceId, string parentSpanId, DateTimeOffset startTime,
         bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes,
         FrameMetricsSnapshot startFrameRateMetricsSnapshot)
         {
@@ -236,18 +236,20 @@ namespace BugsnagUnityPerformance
             var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
             var startingIndex = endFrameRateMetricsSnapshot.FrozenFrameDurations.Count - numFrozenFrames;
             var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameDurations.GetRange(startingIndex, numFrozenFrames);
-            for(int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
             {
+                var frameTimes = frozenFrameDurations[i];
                 var options = new SpanOptions
                 {
                     ParentContext = this,
                     IsFirstClass = false,
-                    MakeCurrentContext = false
+                    MakeCurrentContext = false,
+                    StartTime = frameTimes.StartTime
                 };
-                var span = BugsnagPerformance.StartSpan("FrozenFrame",options);
+                var span = BugsnagPerformance.StartSpan("FrozenFrame", options);
                 span.IsFrozenFrameSpan = true;
                 span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
-                span.End(DateTimeOffset.UtcNow.AddSeconds(frozenFrameDurations[i]));
+                span.End(frameTimes.EndTime);
             }
             SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
             SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
