@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
@@ -10,6 +9,7 @@ namespace BugsnagUnityPerformance
     {
         public DateTimeOffset StartTime;
         public DateTimeOffset EndTime;
+
         public FrozenFrame(float duration)
         {
             var now = DateTimeOffset.Now;
@@ -17,6 +17,72 @@ namespace BugsnagUnityPerformance
             EndTime = now;
         }
     }
+
+    internal class FrozenFrameBuffer
+    {
+        private const int BUFFER_SIZE = 64;
+        private FrozenFrame[] _frames;
+        private int _index;
+        public FrozenFrameBuffer Next { get; private set; }
+
+        public FrozenFrameBuffer()
+        {
+            _frames = new FrozenFrame[BUFFER_SIZE];
+            _index = 0;
+        }
+
+        public bool Add(FrozenFrame frame)
+        {
+            if (_index >= BUFFER_SIZE)
+            {
+                return false; // Buffer full
+            }
+
+            _frames[_index++] = frame;
+            return true;
+        }
+
+        public FrozenFrameBuffer AppendNewBuffer()
+        {
+            Next = new FrozenFrameBuffer();
+            return Next;
+        }
+
+        public IEnumerable<FrozenFrame> GetFrames()
+        {
+            for (int i = 0; i < _index; i++)
+            {
+                yield return _frames[i];
+            }
+        }
+
+        public List<FrozenFrame> GetLastFrames(int amount)
+        {
+            var result = new List<FrozenFrame>(amount);
+            var stack = new Stack<FrozenFrameBuffer>();
+
+            var buffer = this;
+            while (buffer != null)
+            {
+                stack.Push(buffer);
+                buffer = buffer.Next;
+            }
+
+            while (stack.Count > 0 && result.Count < amount)
+            {
+                var currentBuffer = stack.Pop();
+
+                for (int i = currentBuffer._index - 1; i >= 0 && result.Count < amount; i--)
+                {
+                    result.Add(currentBuffer._frames[i]);
+                }
+            }
+
+            result.Reverse();
+            return result;
+        }
+    }
+
     internal class FrameMetricsCollector : IPhasedStartup
     {
         private int TotalFrames = 0;
@@ -27,16 +93,17 @@ namespace BugsnagUnityPerformance
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
         private bool _callbackActive = false;
-        private List<FrozenFrame> _frozenFrameDurations = new List<FrozenFrame>();
+        private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer(); 
 
         public FrameMetricsCollector()
         {
             BeginCollectingMetrics();
         }
+
         private void BeginCollectingMetrics()
         {
             var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
-            _playerUpdateCallback= new PlayerLoopSystem
+            _playerUpdateCallback = new PlayerLoopSystem
             {
                 updateDelegate = OnUnityUpdate
             };
@@ -51,16 +118,23 @@ namespace BugsnagUnityPerformance
         {
             TotalFrames++;
             float frameTime = Time.unscaledDeltaTime;
+
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
-                _frozenFrameDurations.Add(new FrozenFrame(frameTime) );
+                if (!_frozenFrameBuffer.Add(new FrozenFrame(frameTime)))
+                {
+                    // Buffer full, create a new one and append
+                    var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
+                    newBuffer.Add(new FrozenFrame(frameTime));
+                    _frozenFrameBuffer = newBuffer; // Move to new buffer
+                }
+
                 FrozenFrames++;
                 return;
             }
 
-            // this cannot be a cached value as target frame rate can change at any time
+            // Slow frame detection logic
             var slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
-            // apply tolerance to allow for some variance in frame time
             slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
 
             if (frameTime > slowFrameThreshold)
@@ -71,13 +145,14 @@ namespace BugsnagUnityPerformance
 
         public FrameMetricsSnapshot TakeSnapshot()
         {
-            if(!_isEnabled || !_callbackActive)
+            if (!_isEnabled || !_callbackActive)
             {
                 return null;
             }
+
             return new FrameMetricsSnapshot
             {
-                FrozenFrameDurations = _frozenFrameDurations.ToList(),
+                FrozenFrameBuffer = _frozenFrameBuffer,
                 TotalFrames = TotalFrames,
                 SlowFrames = SlowFrames,
                 FrozenFrames = FrozenFrames
@@ -87,7 +162,7 @@ namespace BugsnagUnityPerformance
         public void Configure(PerformanceConfiguration config)
         {
             _isEnabled = config.AutoInstrumentRendering;
-            if(!_isEnabled)
+            if (!_isEnabled)
             {
                 RemoveUpdateCallback();
             }
@@ -105,15 +180,16 @@ namespace BugsnagUnityPerformance
 
         public void Start()
         {
-            //do nothing
+            // Do nothing
         }
     }
 
     public class FrameMetricsSnapshot
     {
-        public List<FrozenFrame> FrozenFrameDurations;
-        public int TotalFrames;
-        public int SlowFrames;
-        public int FrozenFrames;
+        internal FrozenFrameBuffer FrozenFrameBuffer { get; set; }
+        public int TotalFrames { get; set; }
+        public int SlowFrames { get; set; }
+        public int FrozenFrames { get; set; }
+
     }
 }

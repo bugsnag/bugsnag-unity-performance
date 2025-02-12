@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BugsnagNetworking;
 
 namespace BugsnagUnityPerformance
@@ -232,12 +233,14 @@ namespace BugsnagUnityPerformance
             {
                 return;
             }
-
             var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
-            var startingIndex = endFrameRateMetricsSnapshot.FrozenFrameDurations.Count - numFrozenFrames;
-            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameDurations.GetRange(startingIndex, numFrozenFrames);
+            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
             for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
             {
+                if (i >= frozenFrameDurations.Count)
+                {
+                    break;
+                }
                 var frameTimes = frozenFrameDurations[i];
                 var options = new SpanOptions
                 {
