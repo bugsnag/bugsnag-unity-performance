@@ -10,11 +10,10 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset StartTime;
         public DateTimeOffset EndTime;
 
-        public FrozenFrame(float duration)
+        public FrozenFrame(DateTimeOffset start, DateTimeOffset end)
         {
-            var now = DateTimeOffset.Now;
-            StartTime = now.AddSeconds(-duration);
-            EndTime = now;
+            StartTime = start;
+            EndTime = end;
         }
     }
 
@@ -93,7 +92,9 @@ namespace BugsnagUnityPerformance
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
         private bool _callbackActive = false;
-        private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer(); 
+        private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer();
+        private DateTimeOffset _lastFrameEndTime;
+
 
         public FrameMetricsCollector()
         {
@@ -116,32 +117,44 @@ namespace BugsnagUnityPerformance
 
         private void OnUnityUpdate()
         {
-            TotalFrames++;
-            float frameTime = Time.unscaledDeltaTime;
+            var now = DateTimeOffset.UtcNow;
 
-            if (frameTime >= FROZEN_FRAME_THRESHOLD)
+            if (_lastFrameEndTime == default)
             {
-                if (!_frozenFrameBuffer.Add(new FrozenFrame(frameTime)))
-                {
-                    // Buffer full, create a new one and append
-                    var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
-                    newBuffer.Add(new FrozenFrame(frameTime));
-                    _frozenFrameBuffer = newBuffer; // Move to new buffer
-                }
-
-                FrozenFrames++;
+                // First frame, just record the time and return
+                _lastFrameEndTime = now;
                 return;
             }
 
-            // Slow frame detection logic
-            var slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
-            slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
-
-            if (frameTime > slowFrameThreshold)
+            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
+            TotalFrames++;
+            if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
-                SlowFrames++;
+                var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
+                if (!_frozenFrameBuffer.Add(frozenFrame))
+                {
+                    var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
+                    newBuffer.Add(frozenFrame);
+                    _frozenFrameBuffer = newBuffer;
+                }
+                FrozenFrames++;
             }
+            else
+            {
+                float slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0
+                    ? Application.targetFrameRate
+                    : 60.0f);
+                slowFrameThreshold *= (1.0f + DEFAULT_SLOW_FRAME_TOLERANCE);
+
+                if (frameTime > slowFrameThreshold)
+                {
+                    SlowFrames++;
+                }
+            }
+
+            _lastFrameEndTime = now;
         }
+
 
         public FrameMetricsSnapshot TakeSnapshot()
         {
