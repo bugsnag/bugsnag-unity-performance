@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BugsnagNetworking;
 
 namespace BugsnagUnityPerformance
@@ -32,9 +33,10 @@ namespace BugsnagUnityPerformance
         private int _customAttributeCount;
         private int _maxCustomAttributes;
         private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
+        internal bool IsFrozenFrameSpan;
 
-        public Span(string name, SpanKind kind, string id, 
-        string traceId, string parentSpanId, DateTimeOffset startTime, 
+        public Span(string name, SpanKind kind, string id,
+        string traceId, string parentSpanId, DateTimeOffset startTime,
         bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes,
         FrameMetricsSnapshot startFrameRateMetricsSnapshot)
         {
@@ -231,7 +233,28 @@ namespace BugsnagUnityPerformance
             {
                 return;
             }
-            SetAttributeInternal(FROZEN_FRAMES_KEY, endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames);
+            var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
+            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
+            for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            {
+                if (i >= frozenFrameDurations.Count)
+                {
+                    break;
+                }
+                var frameTimes = frozenFrameDurations[i];
+                var options = new SpanOptions
+                {
+                    ParentContext = this,
+                    IsFirstClass = false,
+                    MakeCurrentContext = false,
+                    StartTime = frameTimes.StartTime
+                };
+                var span = BugsnagPerformance.StartSpan("FrozenFrame", options);
+                span.IsFrozenFrameSpan = true;
+                span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
+                span.End(frameTimes.EndTime);
+            }
+            SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
             SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
             SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
         }
