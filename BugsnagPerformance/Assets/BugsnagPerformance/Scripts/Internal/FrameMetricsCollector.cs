@@ -117,29 +117,22 @@ namespace BugsnagUnityPerformance
 
         private void OnUnityUpdate()
         {
-            // Capture current clock time
             var now = DateTimeOffset.UtcNow;
 
-            // If it's our first frame, just initialize the timestamp and skip
             if (_lastFrameEndTime == default)
             {
+                // First frame, just record the time and return
                 _lastFrameEndTime = now;
                 return;
             }
 
-            // Calculate how long this frame took based on the system clock
             float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
-
             TotalFrames++;
-
-            // Check if this is a frozen frame (>= 700ms by default)
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
-                // Record frozen frame from _lastFrameEndTime to now
                 var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
                 if (!_frozenFrameBuffer.Add(frozenFrame))
                 {
-                    // Buffer is full, create a new one and add
                     var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
                     newBuffer.Add(frozenFrame);
                     _frozenFrameBuffer = newBuffer;
@@ -148,8 +141,6 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                // Slow-frame logic:
-                // Default threshold is 1.0 / targetFrameRate; then add 5% tolerance
                 float slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0
                     ? Application.targetFrameRate
                     : 60.0f);
@@ -161,7 +152,6 @@ namespace BugsnagUnityPerformance
                 }
             }
 
-            // Update our "end of last frame" time to now
             _lastFrameEndTime = now;
         }
 
