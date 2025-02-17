@@ -10,11 +10,10 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset StartTime;
         public DateTimeOffset EndTime;
 
-        public FrozenFrame(float duration)
+        public FrozenFrame(DateTimeOffset start, DateTimeOffset end)
         {
-            var now = DateTimeOffset.Now;
-            StartTime = now.AddSeconds(-duration);
-            EndTime = now;
+            StartTime = start;
+            EndTime = end;
         }
     }
 
@@ -93,7 +92,9 @@ namespace BugsnagUnityPerformance
         private PlayerLoopSystem _playerUpdateCallback;
         private bool _isEnabled = true;
         private bool _callbackActive = false;
-        private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer(); 
+        private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer();
+        private DateTimeOffset _lastFrameEndTime;
+
 
         public FrameMetricsCollector()
         {
@@ -116,32 +117,54 @@ namespace BugsnagUnityPerformance
 
         private void OnUnityUpdate()
         {
-            TotalFrames++;
-            float frameTime = Time.unscaledDeltaTime;
+            // Capture current clock time
+            var now = DateTimeOffset.UtcNow;
 
-            if (frameTime >= FROZEN_FRAME_THRESHOLD)
+            // If it's our first frame, just initialize the timestamp and skip
+            if (_lastFrameEndTime == default)
             {
-                if (!_frozenFrameBuffer.Add(new FrozenFrame(frameTime)))
-                {
-                    // Buffer full, create a new one and append
-                    var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
-                    newBuffer.Add(new FrozenFrame(frameTime));
-                    _frozenFrameBuffer = newBuffer; // Move to new buffer
-                }
-
-                FrozenFrames++;
+                _lastFrameEndTime = now;
                 return;
             }
 
-            // Slow frame detection logic
-            var slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0 ? Application.targetFrameRate : 60.0f);
-            slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
+            // Calculate how long this frame took based on the system clock
+            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
 
-            if (frameTime > slowFrameThreshold)
+            TotalFrames++;
+
+            // Check if this is a frozen frame (>= 700ms by default)
+            if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
-                SlowFrames++;
+                // Record frozen frame from _lastFrameEndTime to now
+                var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
+                if (!_frozenFrameBuffer.Add(frozenFrame))
+                {
+                    // Buffer is full, create a new one and add
+                    var newBuffer = _frozenFrameBuffer.AppendNewBuffer();
+                    newBuffer.Add(frozenFrame);
+                    _frozenFrameBuffer = newBuffer;
+                }
+                FrozenFrames++;
             }
+            else
+            {
+                // Slow-frame logic:
+                // Default threshold is 1.0 / targetFrameRate; then add 5% tolerance
+                float slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0
+                    ? Application.targetFrameRate
+                    : 60.0f);
+                slowFrameThreshold *= (1.0f + DEFAULT_SLOW_FRAME_TOLERANCE);
+
+                if (frameTime > slowFrameThreshold)
+                {
+                    SlowFrames++;
+                }
+            }
+
+            // Update our "end of last frame" time to now
+            _lastFrameEndTime = now;
         }
+
 
         public FrameMetricsSnapshot TakeSnapshot()
         {
