@@ -20,6 +20,7 @@ namespace BugsnagUnityPerformance
         internal const int DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
         private const int MAXIMUM_ATTRIBUTE_COUNT_LIMIT = 1000;
 
+
         public PerformanceConfiguration(string apiKey)
         {
             ApiKey = apiKey;
@@ -89,7 +90,7 @@ namespace BugsnagUnityPerformance
         public string ApiKey;
 
         public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
-
+        public bool AutoInstrumentRendering = false;
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
@@ -99,7 +100,6 @@ namespace BugsnagUnityPerformance
         public string[] EnabledReleaseStages;
 
         public string Endpoint = string.Empty;
-
 
         public Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> NetworkRequestCallback;
 

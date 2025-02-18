@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BugsnagNetworking;
 
 namespace BugsnagUnityPerformance
@@ -8,6 +9,11 @@ namespace BugsnagUnityPerformance
 
     public class Span : ISpanContext
     {
+
+        private const string FROZEN_FRAMES_KEY = "bugsnag.rendering.frozen_frames";
+        private const string SLOW_FRAMES_KEY = "bugsnag.rendering.slow_frames";
+        private const string TOTAL_FRAMES_KEY = "bugsnag.rendering.total_frames";
+
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
         public string SpanId { get; }
@@ -26,10 +32,15 @@ namespace BugsnagUnityPerformance
         internal int DroppedAttributesCount;
         private int _customAttributeCount;
         private int _maxCustomAttributes;
+        private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
+        internal bool IsFrozenFrameSpan;
 
-        public Span(string name, SpanKind kind, string id, string traceId, string parentSpanId, DateTimeOffset startTime, bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes)
+        public Span(string name, SpanKind kind, string id,
+        string traceId, string parentSpanId, DateTimeOffset startTime,
+        bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes,
+        FrameMetricsSnapshot startFrameRateMetricsSnapshot)
         {
-            Name = name;
+            Name = name ?? string.Empty;
             Kind = kind;
             SpanId = id;
             TraceId = traceId;
@@ -41,6 +52,7 @@ namespace BugsnagUnityPerformance
             {
                 SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
             }
+            _startFrameRateMetricsSnapshot = startFrameRateMetricsSnapshot;
             _onSpanEnd = onSpanEnd;
         }
 
@@ -213,6 +225,45 @@ namespace BugsnagUnityPerformance
         internal void SetCallbackComplete()
         {
             _callbackComplete = true;
+        }
+
+        internal void CalculateFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
+        {
+            if (_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
+            {
+                return;
+            }
+            var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
+            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
+            for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            {
+                if (i >= frozenFrameDurations.Count)
+                {
+                    break;
+                }
+                var frameTimes = frozenFrameDurations[i];
+                var options = new SpanOptions
+                {
+                    ParentContext = this,
+                    IsFirstClass = false,
+                    MakeCurrentContext = false,
+                    StartTime = frameTimes.StartTime
+                };
+                var span = BugsnagPerformance.StartSpan("FrozenFrame", options);
+                span.IsFrozenFrameSpan = true;
+                span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
+                span.End(frameTimes.EndTime);
+            }
+            SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
+            SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
+            SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
+        }
+
+        internal void RemoveFrameRateMetrics()
+        {
+            _attributes.Remove(FROZEN_FRAMES_KEY);
+            _attributes.Remove(SLOW_FRAMES_KEY);
+            _attributes.Remove(TOTAL_FRAMES_KEY);
         }
     }
 }

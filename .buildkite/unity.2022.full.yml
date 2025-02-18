@@ -1,5 +1,5 @@
 aliases:
-  - &2022 "2022.3.22f1"
+  - &2022 "2022.3.57f1"
 
 agents:
   queue: macos-14
@@ -8,7 +8,7 @@ steps:
   - group: ":hammer: Build Unity 2022 Test Fixtures"
     steps:
       - label: ':macos: Build macos test fixture for Unity 2022'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 20
         key: build-macos-fixture-2022
         depends_on: build-artifacts
         env:
@@ -52,7 +52,7 @@ steps:
               limit: 1
 
       - label: ':android: Build Android test fixture for Unity 2022'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-android-fixture-2022
         depends_on: build-artifacts
         env:
@@ -74,7 +74,7 @@ steps:
               limit: 1
 
       - label: ':ios: Generate Xcode project - Unity 2022'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: generate-fixture-project-2022
         depends_on: build-artifacts
         env:
@@ -96,7 +96,7 @@ steps:
               limit: 1
 
       - label: ':ios: Build iOS test fixture for Unity 2022'
-        timeout_in_minutes: 30
+        timeout_in_minutes: 10
         key: build-ios-fixture-2022
         depends_on: generate-fixture-project-2022
         env:
@@ -121,7 +121,7 @@ steps:
   - group: ":test_tube: E2E Tests Unity 2022"
     steps:
       - label: Run MacOS e2e tests for Unity 2022
-        timeout_in_minutes: 60
+        timeout_in_minutes: 30
         depends_on: build-macos-fixture-2022
         env:
           UNITY_PERFORMANCE_VERSION: *2022

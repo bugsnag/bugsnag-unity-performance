@@ -9,6 +9,8 @@ public class BugsnagPerformanceEditor : EditorWindow
 
     public Texture DarkIcon, LightIcon;
 
+    bool _showEnabledMetrics;
+
     private void OnEnable()
     {
         titleContent.text = "BugSnag Performance";
@@ -103,6 +105,7 @@ public class BugsnagPerformanceEditor : EditorWindow
         DrawIntPropertyWithDefault(so, "AttributeArrayLengthLimit", "AttributeArrayLengthLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeCountLimit", "AttributeCountLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_COUNT_LIMIT);
         DrawIntPropertyWithDefault(so, "AttributeStringValueLimit", "AttributeStringValueLimit", PerformanceConfiguration.DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT);
+        EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentRendering"));
         EditorGUILayout.PropertyField(so.FindProperty("AutoInstrumentAppStart"));
         EditorGUILayout.PropertyField(so.FindProperty("Endpoint"));
         EditorGUILayout.PropertyField(so.FindProperty("ServiceName"));

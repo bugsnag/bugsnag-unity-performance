@@ -9,6 +9,7 @@ namespace BugsnagUnityPerformance
     internal class Tracer : IPhasedStartup
     {
         private PerformanceConfiguration _config;
+        private FrameMetricsCollector _frameMetricsCollector;
         private List<Span> _finishedSpanQueue = new List<Span>();
         private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
         private object _queueLock = new object();
@@ -19,10 +20,11 @@ namespace BugsnagUnityPerformance
         private Delivery _delivery;
         private bool _started;
 
-        public Tracer(Sampler sampler, Delivery delivery)
+        public Tracer(Sampler sampler, Delivery delivery, FrameMetricsCollector frameMetricsCollector)
         {
             _sampler = sampler;
             _delivery = delivery;
+            _frameMetricsCollector = frameMetricsCollector;
         }
 
         public void Configure(PerformanceConfiguration config)
@@ -60,6 +62,17 @@ namespace BugsnagUnityPerformance
                     {
                         continue;
                     }
+                    if(!_config.AutoInstrumentRendering)
+                    {
+                        if(span.IsFrozenFrameSpan)
+                        {
+                            span.Discard();
+                        }
+                        else
+                        {
+                            span.RemoveFrameRateMetrics();
+                        }
+                    }
                     Sample(span);
                 }
             }
@@ -79,6 +92,7 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
+            ApplyFrameRateMetrics(span);
             if (!_started)
             {
                 lock (_prestartLock)
@@ -91,6 +105,11 @@ namespace BugsnagUnityPerformance
             {
                 Sample(span);
             }
+        }
+
+        private void ApplyFrameRateMetrics(Span span)
+        {
+            span.CalculateFrameRateMetrics(_frameMetricsCollector.TakeSnapshot());
         }
 
         public void RunOnEndCallbacks(Span span)
