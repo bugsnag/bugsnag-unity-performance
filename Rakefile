@@ -57,8 +57,17 @@ def dev_project_path
 end
 
 def build_upm_package
+  version_file_path = File.join("BugsnagPerformance", "Assets", "BugsnagPerformance", "Scripts", "Internal", "Version.cs")
+  version_match = File.read(version_file_path).match(/public const string VersionString = "(\d+\.\d+\.\d+)"/)
+
+  unless version_match
+    raise "Could not extract version from #{version_file_path}"
+  end
+
+  version = version_match[1]
+
   script = File.join("upm", "scripts", "build-upm-package.sh")
-  command = "#{script} 1.2.3"
+  command = "#{script} #{version}"
   unless system command
     raise 'build upm package failed'
   end
