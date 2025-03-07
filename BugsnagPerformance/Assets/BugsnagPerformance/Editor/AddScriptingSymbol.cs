@@ -8,29 +8,34 @@ public class AddScriptingSymbol : MonoBehaviour
 
     private const string DEFINE_SYMBOL = "BUGSNAG_PERFORMANCE";
 
-    private static BuildTargetGroup[] _supportedPlatforms = { BuildTargetGroup.Android, BuildTargetGroup.Standalone, BuildTargetGroup.iOS, BuildTargetGroup.WebGL};
+    private static BuildTargetGroup[] _supportedPlatforms = { BuildTargetGroup.Android, BuildTargetGroup.Standalone, BuildTargetGroup.iOS, BuildTargetGroup.WebGL };
 
-    static AddScriptingSymbol()
-    {
-        foreach (var target in _supportedPlatforms)
+        static AddScriptingSymbol()
         {
-            try
+            foreach (var target in _supportedPlatforms)
             {
-                SetScriptingSymbol(target);
-            }
-            catch
-            {
-                // Some users might not have a platform installed, in that case ignore the error
+                try
+                {
+                    SetScriptingSymbol(target);
+                }
+                catch
+                {
+                    // Some users might not have a platform installed, in that case ignore the error
+                }
             }
         }
-    }
 
-    static void SetScriptingSymbol(BuildTargetGroup buildTargetGroup)
-    {
-        var existingSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-        if (!existingSymbols.Contains(DEFINE_SYMBOL))
+        static void SetScriptingSymbol(BuildTargetGroup buildTargetGroup)
         {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,existingSymbols + ";" + DEFINE_SYMBOL);
+            var existingSymbols = BugsnagPlayerSettingsCompat.GetScriptingDefineSymbols(buildTargetGroup);
+            if (string.IsNullOrEmpty(existingSymbols))
+            {
+                existingSymbols = DEFINE_SYMBOL;
+            }
+            else if (!existingSymbols.Contains(DEFINE_SYMBOL))
+            {
+                existingSymbols += ";" + DEFINE_SYMBOL;
+            }
+            BugsnagPlayerSettingsCompat.SetScriptingDefineSymbols(buildTargetGroup, existingSymbols);
         }
-    }
 }
