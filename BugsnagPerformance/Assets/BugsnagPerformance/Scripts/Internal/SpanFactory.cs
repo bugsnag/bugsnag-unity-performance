@@ -113,13 +113,16 @@ namespace BugsnagUnityPerformance
 
             var newSpan = new Span(name, kind, spanId, 
             traceId, parentSpanId, spanOptions.StartTime, 
-            spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes, 
-            spanOptions.InstrumentRendering.Value ? _frameMetricsCollector.TakeSnapshot() : null);
+            spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes);
             if (spanOptions.MakeCurrentContext)
             {
                 AddToContextStack(newSpan);
             }
             newSpan.SetAttributeInternal("net.host.connection.type", _currentConnectionType);
+            if(spanOptions.InstrumentRendering != null && spanOptions.InstrumentRendering.Value)
+            {
+                _frameMetricsCollector.OnSpanStart(newSpan);
+            }
             return newSpan;
         }
 

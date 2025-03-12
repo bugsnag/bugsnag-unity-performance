@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
@@ -15,6 +16,14 @@ namespace BugsnagUnityPerformance
             StartTime = start;
             EndTime = end;
         }
+    }
+
+    public class SpanRenderingMetrics
+    {
+        public float MinFrameRate;
+        public float MaxFrameRate;
+        public FrameMetricsSnapshot BeginningMetrics;
+        public FrameMetricsSnapshot EndingMetrics;
     }
 
     internal class FrozenFrameBuffer
@@ -94,11 +103,31 @@ namespace BugsnagUnityPerformance
         private bool _callbackActive = false;
         private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer();
         private DateTimeOffset _lastFrameEndTime;
-
+        private double _frameTimeSum = 0;
+        private ConditionalWeakTable<Span, SpanRenderingMetrics> _activeInstrumentedSpans = new ConditionalWeakTable<Span, SpanRenderingMetrics>();
 
         public FrameMetricsCollector()
         {
             BeginCollectingMetrics();
+        }
+
+        public void OnSpanStart(Span span)
+        {
+            Debug.Log("OnSpanStart");
+            _activeInstrumentedSpans.Add(span, new SpanRenderingMetrics(){BeginningMetrics = TakeSnapshot()});
+        }
+
+        public void OnSpanEnd(Span span)
+        {
+            if (_activeInstrumentedSpans.TryGetValue(span, out var metrics))
+            {
+                metrics.EndingMetrics = TakeSnapshot();
+                span.CalculateFrameRateMetrics(metrics);
+                _activeInstrumentedSpans.Remove(span);
+            }else
+            {
+                Debug.LogError("Span not found in minMaxFrameTimes");
+            }
         }
 
         private void BeginCollectingMetrics()
@@ -128,6 +157,7 @@ namespace BugsnagUnityPerformance
 
             float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
             TotalFrames++;
+            _frameTimeSum += frameTime;
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
                 var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
@@ -156,7 +186,7 @@ namespace BugsnagUnityPerformance
         }
 
 
-        public FrameMetricsSnapshot TakeSnapshot()
+        private FrameMetricsSnapshot TakeSnapshot()
         {
             if (!_isEnabled || !_callbackActive)
             {
@@ -168,7 +198,8 @@ namespace BugsnagUnityPerformance
                 FrozenFrameBuffer = _frozenFrameBuffer,
                 TotalFrames = TotalFrames,
                 SlowFrames = SlowFrames,
-                FrozenFrames = FrozenFrames
+                FrozenFrames = FrozenFrames,
+                FrameTimeSum = _frameTimeSum
             };
         }
 
@@ -203,6 +234,10 @@ namespace BugsnagUnityPerformance
         public int TotalFrames { get; set; }
         public int SlowFrames { get; set; }
         public int FrozenFrames { get; set; }
+        public float MinimumFrameRate;
+        public float MaximumFrameRate;
+        public double FrameTimeSum;
+        public float TargetFrameRate;
 
     }
 }

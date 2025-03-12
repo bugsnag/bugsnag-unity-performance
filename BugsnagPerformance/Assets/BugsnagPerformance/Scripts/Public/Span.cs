@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using BugsnagNetworking;
 
@@ -13,6 +14,11 @@ namespace BugsnagUnityPerformance
         private const string FROZEN_FRAMES_KEY = "bugsnag.rendering.frozen_frames";
         private const string SLOW_FRAMES_KEY = "bugsnag.rendering.slow_frames";
         private const string TOTAL_FRAMES_KEY = "bugsnag.rendering.total_frames";
+        private const string FPS_MAX_KEY = "bugsnag.rendering.fps_maximum";
+        private const string FPS_MIN_KEY = "bugsnag.rendering.fps_minimum";
+        private const string FPS_AVERAGE_KEY = "bugsnag.rendering.fps_average";
+        private const string FPS_TARGET_KEY = "bugsnag.rendering.fps_target";
+
 
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
@@ -32,13 +38,11 @@ namespace BugsnagUnityPerformance
         internal int DroppedAttributesCount;
         private int _customAttributeCount;
         private int _maxCustomAttributes;
-        private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
         internal bool IsFrozenFrameSpan;
 
         public Span(string name, SpanKind kind, string id,
         string traceId, string parentSpanId, DateTimeOffset startTime,
-        bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes,
-        FrameMetricsSnapshot startFrameRateMetricsSnapshot)
+        bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes)
         {
             Name = name ?? string.Empty;
             Kind = kind;
@@ -52,7 +56,6 @@ namespace BugsnagUnityPerformance
             {
                 SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
             }
-            _startFrameRateMetricsSnapshot = startFrameRateMetricsSnapshot;
             _onSpanEnd = onSpanEnd;
         }
 
@@ -227,15 +230,13 @@ namespace BugsnagUnityPerformance
             _callbackComplete = true;
         }
 
-        internal void CalculateFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
+        internal void CalculateFrameRateMetrics(SpanRenderingMetrics metrics)
         {
-            if (_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
-            {
-                return;
-            }
-            var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
-            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
-            for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            var beginning = metrics.BeginningMetrics;
+            var end = metrics.EndingMetrics;
+            var numFrozenFrames = end.FrozenFrames - beginning.FrozenFrames;
+            var frozenFrameDurations = end.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
+            for (int i = 0; i < end.FrozenFrames; i++)
             {
                 if (i >= frozenFrameDurations.Count)
                 {
@@ -254,9 +255,16 @@ namespace BugsnagUnityPerformance
                 span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
                 span.End(frameTimes.EndTime);
             }
+
+            var totalFrames = end.TotalFrames - beginning.TotalFrames;
+            var sumFrametime = end.FrameTimeSum - beginning.FrameTimeSum; 
+            var averageFps = (int)(1.0f / (sumFrametime / totalFrames));
+
+            SetAttributeInternal(FPS_AVERAGE_KEY, averageFps);
             SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
-            SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
-            SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
+            SetAttributeInternal(SLOW_FRAMES_KEY, end.SlowFrames - beginning.SlowFrames);
+            SetAttributeInternal(TOTAL_FRAMES_KEY, totalFrames);
+            UnityEngine.Debug.Log("Should be applied");
         }
 
         internal void RemoveFrameRateMetrics()
