@@ -20,8 +20,8 @@ namespace BugsnagUnityPerformance
 
     public class SpanRenderingMetrics
     {
-        public float MinFrameRate;
-        public float MaxFrameRate;
+        public int MinFrameRate = int.MaxValue;
+        public int MaxFrameRate = int.MinValue;
         public FrameMetricsSnapshot BeginningMetrics;
         public FrameMetricsSnapshot EndingMetrics;
     }
@@ -113,7 +113,10 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanStart(Span span)
         {
-            Debug.Log("OnSpanStart");
+            if(!_isEnabled)
+            {
+                return;
+            }
             _activeInstrumentedSpans.Add(span, new SpanRenderingMetrics(){BeginningMetrics = TakeSnapshot()});
         }
 
@@ -154,9 +157,14 @@ namespace BugsnagUnityPerformance
                 _lastFrameEndTime = now;
                 return;
             }
-
-            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
             TotalFrames++;
+            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
+            if (frameTime < 0)
+            {
+                // Time went backwards, ignore this frame
+                _lastFrameEndTime = now;
+                return;
+            }
             _frameTimeSum += frameTime;
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
@@ -182,6 +190,13 @@ namespace BugsnagUnityPerformance
                 }
             }
 
+            int frameRate = (int)(1.0f / frameTime);
+            foreach (var pair in _activeInstrumentedSpans)
+            {
+                pair.Value.MinFrameRate = Mathf.Min(pair.Value.MinFrameRate, frameRate);
+                pair.Value.MaxFrameRate = Mathf.Max(pair.Value.MaxFrameRate, frameRate);
+            }
+
             _lastFrameEndTime = now;
         }
 
@@ -199,7 +214,8 @@ namespace BugsnagUnityPerformance
                 TotalFrames = TotalFrames,
                 SlowFrames = SlowFrames,
                 FrozenFrames = FrozenFrames,
-                FrameTimeSum = _frameTimeSum
+                FrameTimeSum = _frameTimeSum,
+                TargetFrameRate = Application.targetFrameRate
             };
         }
 
@@ -234,8 +250,6 @@ namespace BugsnagUnityPerformance
         public int TotalFrames { get; set; }
         public int SlowFrames { get; set; }
         public int FrozenFrames { get; set; }
-        public float MinimumFrameRate;
-        public float MaximumFrameRate;
         public double FrameTimeSum;
         public float TargetFrameRate;
 
