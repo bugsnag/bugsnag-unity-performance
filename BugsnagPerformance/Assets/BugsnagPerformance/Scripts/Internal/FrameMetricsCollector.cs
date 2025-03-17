@@ -24,6 +24,12 @@ namespace BugsnagUnityPerformance
         public int MaxFrameRate = int.MinValue;
         public FrameMetricsSnapshot BeginningMetrics;
         public FrameMetricsSnapshot EndingMetrics;
+
+        public void UpdateFrameRate(int newFrameRate)
+        {
+            MinFrameRate = Mathf.Min(MinFrameRate, newFrameRate);
+            MaxFrameRate = Mathf.Max(MaxFrameRate, newFrameRate);
+        }
     }
 
     internal class FrozenFrameBuffer
@@ -110,14 +116,23 @@ namespace BugsnagUnityPerformance
         {
             BeginCollectingMetrics();
         }
+        
+        public void Configure(PerformanceConfiguration config)
+        {
+            _isEnabled = config.AutoInstrumentRendering;
+            if (!_isEnabled)
+            {
+                RemoveUpdateCallback();
+            }
+        }
 
         public void OnSpanStart(Span span)
         {
-            if(!_isEnabled)
+            if (!_isEnabled)
             {
                 return;
             }
-            _activeInstrumentedSpans.Add(span, new SpanRenderingMetrics(){BeginningMetrics = TakeSnapshot()});
+            _activeInstrumentedSpans.Add(span, new SpanRenderingMetrics() { BeginningMetrics = TakeSnapshot() });
         }
 
         public void OnSpanEnd(Span span)
@@ -127,9 +142,6 @@ namespace BugsnagUnityPerformance
                 metrics.EndingMetrics = TakeSnapshot();
                 span.CalculateFrameRateMetrics(metrics);
                 _activeInstrumentedSpans.Remove(span);
-            }else
-            {
-                Debug.LogError("Span not found in minMaxFrameTimes");
             }
         }
 
@@ -166,6 +178,15 @@ namespace BugsnagUnityPerformance
                 return;
             }
             _frameTimeSum += frameTime;
+
+            DetectSlowOrFrozenFrames(frameTime, now);
+            UpdateInstrumentedSpans(frameTime);
+
+            _lastFrameEndTime = now;
+        }
+
+        private void DetectSlowOrFrozenFrames(float frameTime, DateTimeOffset now)
+        {
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
                 var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
@@ -189,17 +210,16 @@ namespace BugsnagUnityPerformance
                     SlowFrames++;
                 }
             }
+        }
 
+        private void UpdateInstrumentedSpans(float frameTime)
+        {
             int frameRate = (int)(1.0f / frameTime);
             foreach (var pair in _activeInstrumentedSpans)
             {
-                pair.Value.MinFrameRate = Mathf.Min(pair.Value.MinFrameRate, frameRate);
-                pair.Value.MaxFrameRate = Mathf.Max(pair.Value.MaxFrameRate, frameRate);
+                pair.Value.UpdateFrameRate(frameRate);
             }
-
-            _lastFrameEndTime = now;
         }
-
 
         private FrameMetricsSnapshot TakeSnapshot()
         {
@@ -217,15 +237,6 @@ namespace BugsnagUnityPerformance
                 FrameTimeSum = _frameTimeSum,
                 TargetFrameRate = Application.targetFrameRate
             };
-        }
-
-        public void Configure(PerformanceConfiguration config)
-        {
-            _isEnabled = config.AutoInstrumentRendering;
-            if (!_isEnabled)
-            {
-                RemoveUpdateCallback();
-            }
         }
 
         private void RemoveUpdateCallback()
