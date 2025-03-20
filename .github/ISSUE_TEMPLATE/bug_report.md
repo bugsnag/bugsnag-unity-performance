@@ -24,7 +24,7 @@ A clear and concise description of what the bug is.
 * Unity version:
 * iOS/Android/macOS/Windows/browser version:
 * simulator/emulator or physical device:
-* Initializing bugsnag performance via a Unity GameObject or in code?:
+* Initializing BugSnag Performance via a Unity GameObject or in code?:
 * Player Settings:
     * Scripting backend (Mono or IL2CPP):
     * API compatibility level for .NET:
