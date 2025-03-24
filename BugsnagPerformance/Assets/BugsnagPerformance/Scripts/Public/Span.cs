@@ -234,6 +234,10 @@ namespace BugsnagUnityPerformance
         {
             var beginningMetrics = metrics.BeginningMetrics;
             var endMetrics = metrics.EndingMetrics;
+            if (beginningMetrics == null || endMetrics == null)
+            {
+                return;
+            }
             var numFrozenFrames = endMetrics.FrozenFrames - beginningMetrics.FrozenFrames;
             var frozenFrameDurations = endMetrics.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
             for (int i = 0; i < endMetrics.FrozenFrames; i++)
