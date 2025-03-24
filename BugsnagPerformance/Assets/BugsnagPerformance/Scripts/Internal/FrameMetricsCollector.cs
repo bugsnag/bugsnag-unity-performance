@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
@@ -110,13 +109,13 @@ namespace BugsnagUnityPerformance
         private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer();
         private DateTimeOffset _lastFrameEndTime;
         private double _frameTimeSum = 0;
-        private ConditionalWeakTable<Span, SpanRenderingMetrics> _activeInstrumentedSpans = new ConditionalWeakTable<Span, SpanRenderingMetrics>();
+        private Dictionary<WeakReference<Span>, SpanRenderingMetrics> _instrumentedSpans = new Dictionary<WeakReference<Span>, SpanRenderingMetrics>();
 
         public FrameMetricsCollector()
         {
             BeginCollectingMetrics();
         }
-        
+
         public void Configure(PerformanceConfiguration config)
         {
             _isEnabled = config.AutoInstrumentRendering;
@@ -132,17 +131,50 @@ namespace BugsnagUnityPerformance
             {
                 return;
             }
-            _activeInstrumentedSpans.Add(span, new SpanRenderingMetrics() { BeginningMetrics = TakeSnapshot() });
+
+            var spanRef = new WeakReference<Span>(span);
+            var metrics = new SpanRenderingMetrics
+            {
+                BeginningMetrics = TakeSnapshot()
+            };
+            _instrumentedSpans[spanRef] = metrics;
         }
 
         public void OnSpanEnd(Span span)
         {
-            if (_activeInstrumentedSpans.TryGetValue(span, out var metrics))
+            SpanRenderingMetrics spanMetrics = GetSpanMetrics(span);
+
+            if (spanMetrics == null)
             {
-                metrics.EndingMetrics = TakeSnapshot();
-                span.CalculateFrameRateMetrics(metrics);
-                _activeInstrumentedSpans.Remove(span);
+                return;
             }
+            spanMetrics.EndingMetrics = TakeSnapshot();
+            span.CalculateFrameRateMetrics(spanMetrics);
+        }
+
+        private SpanRenderingMetrics GetSpanMetrics(Span span)
+        {
+            SpanRenderingMetrics spanMetrics = null;
+            List<WeakReference<Span>> toRemove = new List<WeakReference<Span>>();
+            foreach (var pair in _instrumentedSpans)
+            {
+                //if a span is no longer alive, remove it from the list
+                if (!pair.Key.TryGetTarget(out var spanRef))
+                {
+                    toRemove.Add(pair.Key);
+                }
+                else if (spanRef == span)
+                {
+                    spanMetrics = pair.Value;
+                    toRemove.Add(pair.Key);
+                    break;
+                }
+            }
+            foreach (var key in toRemove)
+            {
+                _instrumentedSpans.Remove(key);
+            }
+            return spanMetrics;
         }
 
         private void BeginCollectingMetrics()
@@ -203,7 +235,7 @@ namespace BugsnagUnityPerformance
                 float slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0
                     ? Application.targetFrameRate
                     : 60.0f);
-                slowFrameThreshold *= (1.0f + DEFAULT_SLOW_FRAME_TOLERANCE);
+                slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
 
                 if (frameTime > slowFrameThreshold)
                 {
@@ -215,10 +247,10 @@ namespace BugsnagUnityPerformance
         private void UpdateInstrumentedSpans(float frameTime)
         {
             int frameRate = (int)(1.0f / frameTime);
-            foreach (var pair in _activeInstrumentedSpans)
+            foreach (var pair in _instrumentedSpans)
             {
                 pair.Value.UpdateFrameRate(frameRate);
-            }
+            }            
         }
 
         private FrameMetricsSnapshot TakeSnapshot()
