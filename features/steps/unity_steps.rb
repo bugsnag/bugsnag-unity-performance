@@ -91,31 +91,13 @@ When('I wait for requests to persist') do
 end
 
 When('I relaunch the app') do
-  platform = Maze::Helper.get_current_platform
-  case platform
-  when 'android', 'ios'
-    Maze.driver.launch_app
-  end
+  next unless Maze.config.device
+  Maze::Api::Appium::AppManager.new.launch
   sleep 3
 end
 
 When('I close the Unity app') do
   execute_command('close_application')
-end
-
-When("I clear any error dialogue") do
-  click_if_present 'android:id/button1'
-  click_if_present 'android:id/aerr_close'
-  click_if_present 'android:id/aerr_restart'
-end
-
-def click_if_present(element)
-  return false unless Maze.driver.wait_for_element(element, 1)
-
-  Maze.driver.click_element_if_present(element)
-rescue Selenium::WebDriver::Error::UnknownError
-  # Ignore Appium errors (e.g. during an ANR)
-  return false
 end
 
 Then("the span named {string} has a minimum duration of {int}") do |span_name,duration|
