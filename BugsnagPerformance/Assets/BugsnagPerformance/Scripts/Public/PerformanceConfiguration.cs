@@ -8,6 +8,14 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
+    [Serializable]
+    public class EnabledMetrics
+    {
+        public bool Rendering = false;
+        public bool CPU = false;
+        public bool Memory = false;
+    }
+
     public class PerformanceConfiguration
     {
 
@@ -90,7 +98,6 @@ namespace BugsnagUnityPerformance
         public string ApiKey;
 
         public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
-        public bool AutoInstrumentRendering = false;
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
@@ -98,6 +105,8 @@ namespace BugsnagUnityPerformance
         public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
+
+        public EnabledMetrics EnabledMetrics = new EnabledMetrics();
 
         public string Endpoint = string.Empty;
 

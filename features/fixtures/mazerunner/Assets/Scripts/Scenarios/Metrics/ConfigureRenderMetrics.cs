@@ -11,7 +11,7 @@ public class ConfigureRenderMetrics : Scenario
     {
         base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(1);
-        Configuration.AutoInstrumentRendering = false;
+        Configuration.EnabledMetrics.Rendering = false;
     }
 
     public override void StartBugsnag()
