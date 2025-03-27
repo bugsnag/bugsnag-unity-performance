@@ -8,7 +8,7 @@ public class AddScriptingSymbol : MonoBehaviour
 
     private const string DEFINE_SYMBOL = "BUGSNAG_PERFORMANCE";
 
-    private static BuildTargetGroup[] _supportedPlatforms = { BuildTargetGroup.Android, BuildTargetGroup.Standalone, BuildTargetGroup.iOS, BuildTargetGroup.WebGL};
+    private static BuildTargetGroup[] _supportedPlatforms = { BuildTargetGroup.Android, BuildTargetGroup.Standalone, BuildTargetGroup.iOS, BuildTargetGroup.WebGL };
 
     static AddScriptingSymbol()
     {
@@ -27,10 +27,15 @@ public class AddScriptingSymbol : MonoBehaviour
 
     static void SetScriptingSymbol(BuildTargetGroup buildTargetGroup)
     {
-        var existingSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-        if (!existingSymbols.Contains(DEFINE_SYMBOL))
+        var existingSymbols = BugsnagPlayerSettingsCompat.GetScriptingDefineSymbols(buildTargetGroup);
+        if (string.IsNullOrEmpty(existingSymbols))
         {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,existingSymbols + ";" + DEFINE_SYMBOL);
+            existingSymbols = DEFINE_SYMBOL;
         }
+        else if (!existingSymbols.Contains(DEFINE_SYMBOL))
+        {
+            existingSymbols += ";" + DEFINE_SYMBOL;
+        }
+        BugsnagPlayerSettingsCompat.SetScriptingDefineSymbols(buildTargetGroup, existingSymbols);
     }
 }

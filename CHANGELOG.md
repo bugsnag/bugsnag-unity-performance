@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.1 (2025-03-27)
+
+### Bug Fixes
+
+- Fix issue where scripting symbols were not always correctly set in batch mode. [#164](https://github.com/bugsnag/bugsnag-unity-performance/pull/164)
+
 ## v1.8.0 (2025-02-05)
 
 ### Additions
