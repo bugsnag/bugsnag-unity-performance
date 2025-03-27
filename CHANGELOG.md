@@ -1,6 +1,6 @@
 # Changelog
 
-##  TBD
+## v1.8.1 (2025-03-27)
 
 ### Bug Fixes
 
