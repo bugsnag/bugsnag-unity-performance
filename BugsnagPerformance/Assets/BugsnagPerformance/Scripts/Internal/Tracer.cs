@@ -114,7 +114,7 @@ namespace BugsnagUnityPerformance
 
         private void ApplyFrameRateMetrics(Span span)
         {
-            span.CalculateFrameRateMetrics(_frameMetricsCollector.TakeSnapshot());
+            _frameMetricsCollector.OnSpanEnd(span);
         }
 
         public void RunOnEndCallbacks(Span span)

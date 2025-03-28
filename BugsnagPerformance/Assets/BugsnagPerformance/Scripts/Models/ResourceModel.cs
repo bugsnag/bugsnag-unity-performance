@@ -26,7 +26,9 @@ namespace BugsnagUnityPerformance
                 new AttributeModel("service.version", string.IsNullOrEmpty(config.AppVersion) ? Application.version : config.AppVersion),
                 new AttributeModel("service.name", GetServiceName(config)),
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
-                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion)
+                new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
+                new AttributeModel("device.screen_resolution.width", Screen.width),
+                new AttributeModel("device.screen_resolution.height", Screen.height)
             };
             AddNonNullAttribute(GetNativeVersionInfo(config));
             AddNonNullAttribute(GetManufacturer());

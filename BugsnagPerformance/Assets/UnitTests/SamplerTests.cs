@@ -52,8 +52,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
 
             Assert.AreEqual(1.0, sampler.Probability);
             Assert.IsTrue(sampler.Sampled(span));
@@ -92,8 +91,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
 
             Assert.IsTrue(sampler.Sampled(span));
         }
@@ -113,8 +111,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
 
             Assert.IsFalse(sampler.Sampled(span));
         }
@@ -134,8 +131,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
 
             Assert.IsFalse(sampler.Sampled(span));
 
@@ -147,8 +143,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
             Assert.IsTrue(sampler.Sampled(span));
 
         }
@@ -168,8 +163,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
 
             Assert.IsTrue(sampler.Sampled(span));
 
@@ -181,8 +175,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
             Assert.IsTrue(sampler.Sampled(span));
 
             span = new Span("test",
@@ -193,8 +186,7 @@ namespace Tests
                 DateTimeOffset.Now,
                 true,
                 OnSpanEnd,
-                128,
-                null);
+                128);
             Assert.IsFalse(sampler.Sampled(span));
 
         }
