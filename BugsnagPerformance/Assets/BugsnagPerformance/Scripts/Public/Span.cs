@@ -261,13 +261,18 @@ namespace BugsnagUnityPerformance
             }
 
             var totalFrames = endMetrics.TotalFrames - beginningMetrics.TotalFrames;
+            SetAttributeInternal(TOTAL_FRAMES_KEY, totalFrames);
+            
+            if (totalFrames == 0)
+            {
+                return;
+            }
             var sumFrametime = endMetrics.FrameTimeSum - beginningMetrics.FrameTimeSum; 
             var averageFps = (int)(1.0f / (sumFrametime / totalFrames));
 
             SetAttributeInternal(FPS_AVERAGE_KEY, averageFps);
             SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
             SetAttributeInternal(SLOW_FRAMES_KEY, endMetrics.SlowFrames - beginningMetrics.SlowFrames);
-            SetAttributeInternal(TOTAL_FRAMES_KEY, totalFrames);
             SetAttributeInternal(FPS_MAX_KEY, metrics.MaxFrameRate);
             SetAttributeInternal(FPS_MIN_KEY, metrics.MinFrameRate);
             SetAttributeInternal(FPS_TARGET_KEY, beginningMetrics.TargetFrameRate);

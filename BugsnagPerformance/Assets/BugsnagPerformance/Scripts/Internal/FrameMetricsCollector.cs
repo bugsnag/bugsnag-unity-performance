@@ -251,7 +251,7 @@ namespace BugsnagUnityPerformance
             foreach (var pair in _instrumentedSpans)
             {
                 pair.Value.UpdateFrameRate(frameRate);
-            }            
+            }   
         }
 
         private FrameMetricsSnapshot TakeSnapshot()
