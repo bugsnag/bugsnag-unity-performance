@@ -116,9 +116,10 @@ namespace BugsnagUnityPerformance
             BeginCollectingMetrics();
         }
 
+
         public void Configure(PerformanceConfiguration config)
         {
-            _isEnabled = config.AutoInstrumentRendering;
+            _isEnabled = config.EnabledMetrics.Rendering;
             if (!_isEnabled)
             {
                 RemoveUpdateCallback();

@@ -18,7 +18,7 @@ public class RenderMetrics : Scenario
     {
         base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(4);
-        Configuration.AutoInstrumentRendering = true;
+        Configuration.EnabledMetrics.Rendering = true;
     }
 
     public override void Run()
