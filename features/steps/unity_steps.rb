@@ -190,3 +190,29 @@ Then('the span named {string} starts and ends before the span named {string} end
   Maze.check.true(span1_end_time < span2_end_time, "Expected span '#{span1_name}' to end before span '#{span2_name}' ends")
   Maze.check.true(duration_nanos >= min_duration_nanos, "Expected span '#{span1_name}' to last at least 1 second, but it lasted #{duration_nanos} nanoseconds")
 end
+
+Then('the span named {string} is first class') do |span_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+  span = spans.find { |s| s['name'].eql?(span_name) }
+  raise Test::Unit::AssertionFailedError.new "No span found with the name #{span_name}" if span.nil?
+
+  # Find the 'bugsnag.span.first_class' attribute
+  first_class_attr = span['attributes'].find { |attr| attr['key'] == 'bugsnag.span.first_class' }
+  raise Test::Unit::AssertionFailedError.new "No attribute 'bugsnag.span.first_class' found for #{span_name}" if first_class_attr.nil?
+
+  # Verify that boolValue is true
+  Maze.check.true(first_class_attr['value']['boolValue'] == true, "Expected '#{span_name}' to be first class")
+end
+
+Then('the span named {string} is not first class') do |span_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+  span = spans.find { |s| s['name'].eql?(span_name) }
+  raise Test::Unit::AssertionFailedError.new "No span found with the name #{span_name}" if span.nil?
+
+  # Find the 'bugsnag.span.first_class' attribute
+  first_class_attr = span['attributes'].find { |attr| attr['key'] == 'bugsnag.span.first_class' }
+  raise Test::Unit::AssertionFailedError.new "No attribute 'bugsnag.span.first_class' found for #{span_name}" if first_class_attr.nil?
+
+  # Verify that boolValue is false
+  Maze.check.true(first_class_attr['value']['boolValue'] == false, "Expected '#{span_name}' not to be first class")
+end

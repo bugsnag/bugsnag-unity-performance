@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Deprecations
+
+- SpanOptions.InstrumentRendering has been removed in favor of the new SpanOptions.SpanMetrics option. [#172](https://github.com/bugsnag/bugsnag-unity-performance/pull/172)
+
 ## v1.8.1 (2025-03-27)
 
 ### Bug Fixes
