@@ -102,5 +102,32 @@ namespace BugsnagUnityPerformance
 #pragma warning restore CS0162 // Unreachable code detected
         }
 
+        public static SystemMetricsSnapshot GetSystemMetricsSnapshot()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            var snapshot = new SystemMetricsSnapshot();
+            using (var activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                var context = activity.GetStatic<AndroidJavaObject>("currentActivity");
+                var memoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
+                var activityManager = context.Call<AndroidJavaObject>("getSystemService", "activity");
+                activityManager.Call("getMemoryInfo", memoryInfo);
+                snapshot.FreeMemory = memoryInfo.Get<long>("availMem");
+                snapshot.TotalMemory = memoryInfo.Get<long>("totalMem");
+                snapshot.MaxMemory = memoryInfo.Get<long>("threshold");
+            }
+            return snapshot;
+#endif
+#pragma warning disable CS0162 // Unreachable code detected
+            // return dummy value
+            return new SystemMetricsSnapshot
+            {
+                FreeMemory = 111,
+                TotalMemory = 222,
+                MaxMemory = 333
+            };
+#pragma warning restore CS0162 // Unreachable code detected
+        }
+
     }
 }

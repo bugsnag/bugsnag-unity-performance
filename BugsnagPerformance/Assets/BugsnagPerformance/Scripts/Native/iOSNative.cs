@@ -46,5 +46,23 @@ namespace BugsnagUnityPerformance
 #endif
             return null;
         }
+
+        public static SystemMetricsSnapshot GetSystemMetricsSnapshot()
+        {
+#if UNITY_IOS && !UNITY_EDITOR
+            var snapshot = new SystemMetricsSnapshot();
+            snapshot.CpuUsage = GetCpuUsage();
+            snapshot.MemoryUsage = GetMemoryUsage();
+            return snapshot;
+#endif
+#pragma warning disable CS0162 // Unreachable code detected
+            return new SystemMetricsSnapshot
+            {
+                FreeMemory = null,
+                TotalMemory = null,
+                MaxMemory = null
+            };
+#pragma warning restore CS0162 // Unreachable code detected
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace BugsnagUnityPerformance
     {
         private PerformanceConfiguration _config;
         private FrameMetricsCollector _frameMetricsCollector;
+        private SystemMetricsCollector _systemMetricsCollector;
         private List<Span> _finishedSpanQueue = new List<Span>();
         private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
         private object _queueLock = new object();
@@ -20,11 +21,12 @@ namespace BugsnagUnityPerformance
         private Delivery _delivery;
         private bool _started;
 
-        public Tracer(Sampler sampler, Delivery delivery, FrameMetricsCollector frameMetricsCollector)
+        public Tracer(Sampler sampler, Delivery delivery, FrameMetricsCollector frameMetricsCollector, SystemMetricsCollector systemMetricsCollector)
         {
             _sampler = sampler;
             _delivery = delivery;
             _frameMetricsCollector = frameMetricsCollector;
+            _systemMetricsCollector = systemMetricsCollector;
         }
 
         public void Configure(PerformanceConfiguration config)
@@ -98,6 +100,7 @@ namespace BugsnagUnityPerformance
         public void OnSpanEnd(Span span)
         {
             ApplyFrameRateMetrics(span);
+            ApplySystemMetrics(span);
             if (!_started)
             {
                 lock (_prestartLock)
@@ -115,6 +118,11 @@ namespace BugsnagUnityPerformance
         private void ApplyFrameRateMetrics(Span span)
         {
             _frameMetricsCollector.OnSpanEnd(span);
+        }
+
+        private void ApplySystemMetrics(Span span)
+        {
+            _systemMetricsCollector.OnSpanEnd(span);
         }
 
         public void RunOnEndCallbacks(Span span)

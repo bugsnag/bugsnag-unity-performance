@@ -7,7 +7,6 @@ namespace BugsnagUnityPerformance
     internal class SpanModel
     {
         private const int MAXIMUM_ATTRIBUTE_KEY_LENGTH_LIMIT = 128;
-        static readonly DateTimeOffset _unixStart = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
         public string name;
         public int kind;
         public string spanId;
@@ -25,8 +24,8 @@ namespace BugsnagUnityPerformance
             spanId = span.SpanId;
             traceId = span.TraceId.Replace("-", string.Empty);
             parentSpanId = span.ParentSpanId;
-            startTimeUnixNano = GetNanoSeconds(span.StartTime);
-            endTimeUnixNano = GetNanoSeconds(span.EndTime);
+            startTimeUnixNano = BugsnagPerformanceUtil.GetNanoSeconds(span.StartTime).ToString();
+            endTimeUnixNano = BugsnagPerformanceUtil.GetNanoSeconds(span.EndTime).ToString();
 
             foreach (var attr in span.GetAttributes())
             {
@@ -105,12 +104,6 @@ namespace BugsnagUnityPerformance
                 return strValue.Substring(0, limit) + $"*** {truncatedLength} CHARS TRUNCATED";
             }
             return strValue;
-        }
-
-        private string GetNanoSeconds(DateTimeOffset time)
-        {
-            var duration = time - _unixStart;
-            return (duration.Ticks * 100).ToString();
         }
 
         // This method tells Json.NET whether to serialize the droppedAttributesCount or not.
