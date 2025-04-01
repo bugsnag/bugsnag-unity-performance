@@ -73,13 +73,10 @@ namespace BugsnagUnityPerformance
 
         internal Span StartCustomSpan(string name, SpanOptions spanOptions)
         {
+            spanOptions ??= new SpanOptions();
             if (spanOptions.IsFirstClass == null)
             {
                 spanOptions.IsFirstClass = true;
-            }
-            if(spanOptions.InstrumentRendering == null)
-            {
-                spanOptions.InstrumentRendering = spanOptions.IsFirstClass.Value;
             }
             var span = CreateSpan(name, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
             span.SetAttributeInternal("bugsnag.span.category", "custom");
@@ -91,7 +88,12 @@ namespace BugsnagUnityPerformance
             string parentSpanId = null;
             string traceId;
             string spanId = GetNewSpanId();
-
+            // At this point span options should never be null
+            if(spanOptions.SpanMetrics == null)
+            {
+                spanOptions.SpanMetrics = new SpanMetrics();
+                spanOptions.SpanMetrics.Rendering = spanOptions.IsFirstClass ?? false;
+            }
             if (spanOptions.ParentContext != null)
             {
                 traceId = spanOptions.ParentContext.TraceId;
@@ -119,7 +121,7 @@ namespace BugsnagUnityPerformance
                 AddToContextStack(newSpan);
             }
             newSpan.SetAttributeInternal("net.host.connection.type", _currentConnectionType);
-            if(spanOptions.InstrumentRendering != null && spanOptions.InstrumentRendering.Value)
+            if(spanOptions.SpanMetrics != null && spanOptions.SpanMetrics.Rendering)
             {
                 _frameMetricsCollector.OnSpanStart(newSpan);
             }
@@ -129,11 +131,9 @@ namespace BugsnagUnityPerformance
         internal Span CreateAutomaticNetworkSpan(BugsnagUnityWebRequest request, string url)
         {
             var verb = request.method.ToUpper();
-
             // as most code is running on the same thread and we want to avoid any spans
             // starting while the network call is inflight becoming children of the network span.
-            var spanOptions = new SpanOptions { MakeCurrentContext = false, InstrumentRendering = true };
-
+            var spanOptions = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true};
             var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, spanOptions);
             span.SetAttributeInternal("bugsnag.span.category", "network");
             span.SetAttributeInternal("http.url", url);
@@ -152,7 +152,7 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                options = new SpanOptions { MakeCurrentContext = false, InstrumentRendering = true };
+                options = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true};
             }
             var span = CreateSpan("HTTP/" + httpVerb, SpanKind.SPAN_KIND_CLIENT, options);
             span.SetAttributeInternal("bugsnag.span.category", "network");
@@ -185,7 +185,7 @@ namespace BugsnagUnityPerformance
         internal Span CreateAutomaticSceneLoadSpan()
         {
             // Scene load spans are always first class
-            var spanOptions = new SpanOptions { IsFirstClass = true, InstrumentRendering = true };
+            var spanOptions = new SpanOptions { IsFirstClass = true };
             var span = CreateSpan(string.Empty, SpanKind.SPAN_KIND_INTERNAL, spanOptions);
             return span;
         }
@@ -199,7 +199,7 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                options = new SpanOptions { IsFirstClass = true, InstrumentRendering = true };
+                options = new SpanOptions { IsFirstClass = true };
             }
             var span = CreateSpan("[ViewLoad/UnityScene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, options);
             span.SetAttributeInternal("bugsnag.span.category", "view_load");
@@ -254,9 +254,13 @@ namespace BugsnagUnityPerformance
             _contextStack.Push(new WeakReference<ISpanContext>(spanContext));
         }
 
-        internal Span CreateAutoAppStartSpan(string name, string category)
+        internal Span CreateAutoAppStartSpan(string name, string category, bool isMainSppStartSpan)
         {
-            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT, new SpanOptions(){InstrumentRendering = true});
+            var spanOptions = new SpanOptions
+            {
+                IsFirstClass = isMainSppStartSpan
+            };
+            var span = CreateSpan(name, SpanKind.SPAN_KIND_CLIENT, spanOptions);
             span.SetAttributeInternal("bugsnag.span.category", category);
             span.SetAttributeInternal("bugsnag.app_start.type", "UnityRuntime");
             span.IsAppStartSpan = true;

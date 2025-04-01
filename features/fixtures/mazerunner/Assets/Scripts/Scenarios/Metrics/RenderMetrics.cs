@@ -47,7 +47,7 @@ public class RenderMetrics : Scenario
             _testInitialised = true;
              _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
             _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
-            _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
+            _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { SpanMetrics = new SpanMetrics { Rendering = false } });
         }
         if (_slowFramesDone < NUM_SLOW_FRAMES_TO_DO)
         {
