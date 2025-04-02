@@ -46,7 +46,7 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(Worker());
+                MainThreadDispatchBehaviour.Enqueue(Worker());
             }
             catch
             {
@@ -83,6 +83,14 @@ namespace BugsnagUnityPerformance
                     span.RemoveFrameRateMetrics();
                 }
             }
+            if (!_config.EnabledMetrics.CPU)
+            {
+                span.RemoveSystemCPUMetrics();
+            }
+            if (!_config.EnabledMetrics.Memory)
+            {
+                span.RemoveSystemMemoryMetrics();
+            }
         }
 
         private IEnumerator Worker()
@@ -99,6 +107,13 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
+            // Delay the span end processing to allow for any additional metrics to be collected
+            MainThreadDispatchBehaviour.Enqueue(DelayedOnSpanEnd(span));
+        }
+
+        private IEnumerator DelayedOnSpanEnd(Span span)
+        {
+            yield return new WaitForSeconds(2.0f);
             ApplyFrameRateMetrics(span);
             ApplySystemMetrics(span);
             if (!_started)
@@ -107,7 +122,7 @@ namespace BugsnagUnityPerformance
                 {
                     _preStartSpans.Add(new WeakReference<Span>(span));
                 }
-                return;
+                yield break;
             }
             else
             {
@@ -143,7 +158,7 @@ namespace BugsnagUnityPerformance
                     }
                     catch (Exception e)
                     {
-                        MainThreadDispatchBehaviour.Instance().LogWarning("Error running OnSpanEndCallback: " + e.Message);
+                        MainThreadDispatchBehaviour.LogWarning("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
                 var duration = DateTimeOffset.UtcNow - startTime;

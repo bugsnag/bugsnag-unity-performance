@@ -54,7 +54,7 @@ namespace BugsnagUnityPerformance
             {
                 if (IsStarted)
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning(ALREADY_STARTED_WARNING);
+                    MainThreadDispatchBehaviour.LogWarning(ALREADY_STARTED_WARNING);
                     return;
                 }
                 IsStarted = true;
@@ -68,7 +68,7 @@ namespace BugsnagUnityPerformance
 
             if (ReleaseStageEnabled(configuration))
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(() =>
+                MainThreadDispatchBehaviour.Enqueue(() =>
                 {
                     CreateAppLifecycleListener();
                 });

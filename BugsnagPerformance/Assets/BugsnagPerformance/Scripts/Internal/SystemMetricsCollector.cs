@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BugsnagUnityPerformance;
 using UnityEngine;
 namespace BugsnagUnityPerformance
 {
@@ -66,7 +65,7 @@ namespace BugsnagUnityPerformance
 
         private void StartPollingForMetrics()
         {
-            MainThreadDispatchBehaviour.Instance().StartCoroutine(PollForMetrics());
+            MainThreadDispatchBehaviour.Enqueue(PollForMetrics());
         }
 
         private IEnumerator PollForMetrics()
@@ -83,7 +82,7 @@ namespace BugsnagUnityPerformance
                     _snapshots.Add(snapshot.Value);
                     if (_snapshots.Count > MAX_SNAPSHOTS)
                     {
-                        _snapshots.RemoveAt(0); // Ring-buffer behavior
+                        _snapshots.RemoveAt(0);
                     }
                 }
 
@@ -101,7 +100,10 @@ namespace BugsnagUnityPerformance
             {
                 return iOSNative.GetSystemMetricsSnapshot();
             }
-            return GetDummyData(); // Unsupported platform
+            return null; // Unsupported platform
+
+            // Uncomment for testing data in the unity editor
+            //return GetTestingMetrics(); 
         }
 
         public void OnSpanEnd(Span span)
@@ -132,98 +134,37 @@ namespace BugsnagUnityPerformance
 
             relevantSnapshots.AddRange(duringAndAfter);
 
-            // If still fewer than 2, grab the last 2 available
-            if (relevantSnapshots.Count < 2)
-            {
-                //hold span until we have 2
-            }
-
-            // Must be 2 by now, maybe this check is not needed
             if (relevantSnapshots.Count > 0)
             {
-                MetricsFormatter.AttachMetricsToSpan(span, relevantSnapshots);
+                if(_cpuMetricsEnabled)
+                {
+                    span.CalculateCPUMetrics(relevantSnapshots);
+                }
+                if(_memoryMetricsEnabled)
+                {
+                    span.CalculateMemoryMetrics(relevantSnapshots);
+                }
             }
         }
 
-        private SystemMetricsSnapshot GetDummyData()
+        private SystemMetricsSnapshot GetTestingMetrics()
         {
             return new SystemMetricsSnapshot
             {
                 Timestamp = BugsnagPerformanceUtil.GetNanoSeconds(DateTimeOffset.UtcNow),
-                ProcessCPUPercent = 0.5,
-                MainThreadCPUPercent = 0.6,
-                MonitorThreadCPUPercent = 0.7,
-                FreeMemory = 111,
-                TotalMemory = 222,
-                MaxMemory = 333,
-                PSS = 444,
-                PhysicalMemoryInUse = 555,
-                TotalDeviceMemory = 666
+                ProcessCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
+                MainThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
+                MonitorThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
+                FreeMemory = UnityEngine.Random.Range(0, 1000),
+                TotalMemory = UnityEngine.Random.Range(0, 1000),
+                MaxMemory = UnityEngine.Random.Range(0, 1000),
+                PSS = UnityEngine.Random.Range(0, 1000),
+                PhysicalMemoryInUse = UnityEngine.Random.Range(0, 1000),
+                TotalDeviceMemory = UnityEngine.Random.Range(0, 1000)
             };
         }
 
 
     }
 
-    internal static class MetricsFormatter
-    {
-        public static void AttachMetricsToSpan(Span span, List<SystemMetricsSnapshot> snapshots)
-        {
-            if (snapshots == null || snapshots.Count == 0)
-                return;
-
-            // === Timestamps ===
-            var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
-            span.SetAttribute("bugsnag.system.cpu_measures_timestamps", timestamps);
-            span.SetAttribute("bugsnag.system.memory.timestamps", timestamps);
-
-            // === CPU ===
-            var processCpu = snapshots.Select(s => s.ProcessCPUPercent).ToArray();
-            var mainThreadCpu = snapshots.Select(s => s.MainThreadCPUPercent).ToArray();
-            var monitorThreadCpu = snapshots.Select(s => s.MonitorThreadCPUPercent).ToArray();
-
-            span.SetAttribute("bugsnag.system.cpu_measures_total", processCpu);
-            span.SetAttribute("bugsnag.system.cpu_measures_main_thread", mainThreadCpu);
-            span.SetAttribute("bugsnag.system.cpu_measures_overhead", monitorThreadCpu);
-
-            span.SetAttribute("bugsnag.metrics.cpu_mean_total", processCpu.Average());
-            span.SetAttribute("bugsnag.system.cpu_mean_main_thread", mainThreadCpu.Average());
-
-            // === Memory ===
-            // Android Java Heap
-            if (snapshots.Any(s => s.TotalMemory.HasValue))
-            {
-                var totalDeviceMemory = snapshots.FirstOrDefault(s => s.TotalMemory.HasValue).TotalMemory ?? 0;
-
-                span.SetAttribute("bugsnag.device.physical_device_memory", totalDeviceMemory);
-
-                var used = snapshots.Select(s => (s.TotalMemory ?? 0) - (s.FreeMemory ?? 0)).ToArray();
-                var size = snapshots.Max(s => s.TotalMemory ?? 0);
-
-                span.SetAttribute("bugsnag.system.memory.spaces.space_names", new[] { "art", "device" });
-
-                span.SetAttribute("bugsnag.system.memory.spaces.device.size", size);
-                span.SetAttribute("bugsnag.system.memory.spaces.device.used", used);
-                span.SetAttribute("bugsnag.system.memory.spaces.device.mean", (long)used.Average());
-
-                span.SetAttribute("bugsnag.system.memory.spaces.art.size", size);
-                span.SetAttribute("bugsnag.system.memory.spaces.art.used", used);
-                span.SetAttribute("bugsnag.system.memory.spaces.art.mean", (long)used.Average());
-            }
-
-            // iOS Physical Memory
-            if (snapshots.Any(s => s.PhysicalMemoryInUse.HasValue))
-            {
-                var physicalUsed = snapshots.Select(s => s.PhysicalMemoryInUse ?? 0).ToArray();
-                var physicalTotal = snapshots.FirstOrDefault(s => s.TotalDeviceMemory.HasValue).TotalDeviceMemory ?? 0;
-
-                span.SetAttribute("bugsnag.device.physical_device_memory", physicalTotal);
-
-                span.SetAttribute("bugsnag.system.memory.spaces.space_names", new[] { "device" });
-                span.SetAttribute("bugsnag.system.memory.spaces.device.size", physicalTotal);
-                span.SetAttribute("bugsnag.system.memory.spaces.device.used", physicalUsed);
-                span.SetAttribute("bugsnag.system.memory.spaces.device.mean", (long)physicalUsed.Average());
-            }
-        }
-    }
 }
