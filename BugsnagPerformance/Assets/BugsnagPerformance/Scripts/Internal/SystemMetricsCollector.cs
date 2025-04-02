@@ -100,10 +100,10 @@ namespace BugsnagUnityPerformance
             {
                 return iOSNative.GetSystemMetricsSnapshot();
             }
-            return null; // Unsupported platform
+            //return null; // Unsupported platform
 
             // Uncomment for testing data in the unity editor
-            //return GetTestingMetrics(); 
+            return GetTestingMetrics(); 
         }
 
         public void OnSpanEnd(Span span)
