@@ -144,7 +144,6 @@ namespace BugsnagUnityPerformance
         public void OnSpanEnd(Span span)
         {
             SpanRenderingMetrics spanMetrics = GetSpanMetrics(span);
-
             if (spanMetrics == null)
             {
                 return;
@@ -250,14 +249,6 @@ namespace BugsnagUnityPerformance
             int frameRate = (int)(1.0f / frameTime);
             foreach (var pair in _instrumentedSpans)
             {
-                if (!pair.Key.TryGetTarget(out var spanRef))
-                {
-                    continue; // Span no longer exists
-                }
-                if(spanRef.Ended)
-                {
-                    continue; // Span has ended
-                }
                 pair.Value.UpdateFrameRate(frameRate);
             }   
         }

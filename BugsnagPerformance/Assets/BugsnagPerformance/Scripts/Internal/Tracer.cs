@@ -60,10 +60,6 @@ namespace BugsnagUnityPerformance
             {
                 if (weakRef.TryGetTarget(out var span))
                 {
-                    if (span.IsAppStartSpan && _config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
-                    {
-                        continue;
-                    }
                     RemoveDisabledMetricsFromPreStartSpan(span);
                     Sample(span);
                 }
@@ -107,6 +103,7 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
+            ApplyFrameRateMetrics(span);
             // Delay the span end processing to allow for any additional metrics to be collected
             MainThreadDispatchBehaviour.Enqueue(DelayedOnSpanEnd(span));
         }
@@ -114,7 +111,6 @@ namespace BugsnagUnityPerformance
         private IEnumerator DelayedOnSpanEnd(Span span)
         {
             yield return new WaitForSeconds(2.0f);
-            ApplyFrameRateMetrics(span);
             ApplySystemMetrics(span);
             if (!_started)
             {
@@ -169,6 +165,10 @@ namespace BugsnagUnityPerformance
 
         private void Sample(Span span)
         {
+            if (span.IsAppStartSpan && _config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
+            {
+                return;
+            }
             if (_sampler.Sampled(span))
             {
                 RunOnEndCallbacks(span);
