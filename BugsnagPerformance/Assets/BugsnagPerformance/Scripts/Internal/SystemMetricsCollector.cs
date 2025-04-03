@@ -92,6 +92,7 @@ namespace BugsnagUnityPerformance
 
         private SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
+            return GetTestingMetrics(); 
             if (_platform == RuntimePlatform.Android)
             {
                 return AndroidNative.GetSystemMetricsSnapshot();
@@ -100,10 +101,6 @@ namespace BugsnagUnityPerformance
             {
                 return iOSNative.GetSystemMetricsSnapshot();
             }
-            //return null; // Unsupported platform
-
-            // Uncomment for testing data in the unity editor
-            return GetTestingMetrics(); 
         }
 
         public void OnSpanEnd(Span span)
