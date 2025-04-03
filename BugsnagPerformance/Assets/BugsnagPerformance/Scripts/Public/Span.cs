@@ -365,6 +365,7 @@ namespace BugsnagUnityPerformance
 
         internal void RemoveSystemMemoryMetrics()
         {
+            _attributes.Remove(PHYSICAL_DEVICE_MEMORY_KEY);
             _attributes.Remove(MEMORY_TIMESTAMPS_KEY);
             _attributes.Remove(MEMORY_SPACES_SPACE_NAMES_KEY);
             _attributes.Remove(MEMORY_SPACES_DEVICE_SIZE_KEY);
