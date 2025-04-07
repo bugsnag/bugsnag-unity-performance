@@ -163,8 +163,5 @@ namespace BugsnagUnityPerformance
                 TotalDeviceMemory = UnityEngine.Random.Range(0, 1000)
             };
         }
-
-
     }
-
 }
