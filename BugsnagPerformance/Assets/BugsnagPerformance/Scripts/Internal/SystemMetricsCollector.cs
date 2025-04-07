@@ -8,28 +8,37 @@ namespace BugsnagUnityPerformance
     internal struct SystemMetricsSnapshot
     {
         public long Timestamp;
-        //CPU usage
+
+        // CPU usage
         public double ProcessCPUPercent;
         public double MainThreadCPUPercent;
         public double MonitorThreadCPUPercent;
 
-        //Android specifics
-        // Free memory (bytes) on the Java heap.
-        public long? FreeMemory;
-        // Total memory (bytes) on the Java heap.
-        public long? TotalMemory;
-        // Max memory (bytes) for the Java heap.
-        public long? MaxMemory;
-        // Proportional Set Size (bytes).
-        public long? PSS;
+        // Platform-specific memory metrics
+        public AndroidMemoryMetrics? AndroidMetrics;
+        public iOSMemoryMetrics? iOSMetrics;
+    }
 
-        //iOS
+    internal struct AndroidMemoryMetrics
+    {
+        // Free memory (bytes) available to the process.
+        public long? FreeMemory;
+        // Total memory (bytes) currently allocated to the process.
+        public long? TotalMemory;
+        // Max memory (bytes) that can be used by the process.
+        public long? MaxMemory;
+        // Proportional Set Size (bytes) used by the process.
+        public long? PSS;
+    }
+
+    internal struct iOSMemoryMetrics
+    {
         // The current physical memory usage by this process (bytes).
         public long? PhysicalMemoryInUse;
         // The total physical memory on the device (bytes).
         public long? TotalDeviceMemory;
     }
-    
+
     internal class SystemMetricsCollector : IPhasedStartup
     {
         private bool _cpuMetricsEnabled = true;
@@ -44,7 +53,7 @@ namespace BugsnagUnityPerformance
             _platform = Application.platform;
             StartPollingForMetrics();
         }
-        
+
         public void Configure(PerformanceConfiguration config)
         {
             if (config.EnabledMetrics != null)
@@ -93,7 +102,8 @@ namespace BugsnagUnityPerformance
 
         private SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
-            return GetTestingMetrics(); 
+            //TODO Swap this out for the real android and iOS implementations
+            return GetTestingMetrics();
             if (_platform == RuntimePlatform.Android)
             {
                 return AndroidNative.GetSystemMetricsSnapshot();
@@ -136,11 +146,11 @@ namespace BugsnagUnityPerformance
 
             if (relevantSnapshots.Count > 0)
             {
-                if(_cpuMetricsEnabled)
+                if (_cpuMetricsEnabled)
                 {
                     span.CalculateCPUMetrics(relevantSnapshots);
                 }
-                if(_memoryMetricsEnabled)
+                if (_memoryMetricsEnabled)
                 {
                     span.CalculateMemoryMetrics(relevantSnapshots);
                 }
@@ -155,12 +165,18 @@ namespace BugsnagUnityPerformance
                 ProcessCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
                 MainThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
                 MonitorThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                FreeMemory = UnityEngine.Random.Range(0, 1000),
-                TotalMemory = UnityEngine.Random.Range(0, 1000),
-                MaxMemory = UnityEngine.Random.Range(0, 1000),
-                PSS = UnityEngine.Random.Range(0, 1000),
-                PhysicalMemoryInUse = UnityEngine.Random.Range(0, 1000),
-                TotalDeviceMemory = UnityEngine.Random.Range(0, 1000)
+                AndroidMetrics = new AndroidMemoryMetrics
+                {
+                    FreeMemory = UnityEngine.Random.Range(0, 1000),
+                    TotalMemory = UnityEngine.Random.Range(0, 1000),
+                    MaxMemory = UnityEngine.Random.Range(0, 1000),
+                    PSS = UnityEngine.Random.Range(0, 1000),
+                },
+                iOSMetrics = new iOSMemoryMetrics
+                {
+                    PhysicalMemoryInUse = UnityEngine.Random.Range(0, 1000),
+                    TotalDeviceMemory = UnityEngine.Random.Range(0, 1000),
+                }
             };
         }
     }

@@ -322,30 +322,36 @@ namespace BugsnagUnityPerformance
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
             SetAttribute(MEMORY_TIMESTAMPS_KEY, timestamps);
 
-            // Memory
-            // Android Java Heap
-            if (snapshots.Any(s => s.TotalMemory.HasValue))
+            // Android
+            var androidSnapshots = snapshots
+                .Where(s => s.AndroidMetrics.HasValue)
+                .Select(s => s.AndroidMetrics.Value)
+                .ToList();
+
+            if (androidSnapshots.Count > 0)
             {
-                var totalDeviceMemory = snapshots.FirstOrDefault(s => s.TotalMemory.HasValue).TotalMemory ?? 0;
-                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, totalDeviceMemory);
+                var totalMemory = androidSnapshots.Select(m => m.TotalMemory ?? 0).ToArray();
+                var freeMemory = androidSnapshots.Select(m => m.FreeMemory ?? 0).ToArray();
+                var used = totalMemory.Zip(freeMemory, (t, f) => t - f).ToArray();
+                var maxSize = totalMemory.Max();
 
-                var used = snapshots.Select(s => (s.TotalMemory ?? 0) - (s.FreeMemory ?? 0)).ToArray();
-                var size = snapshots.Max(s => s.TotalMemory ?? 0);
-
+                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, totalMemory.FirstOrDefault());
                 SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
-                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, size);
+                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, maxSize);
                 SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, used);
                 SetAttribute(MEMORY_SPACES_DEVICE_MEAN_KEY, (long)used.Average());
             }
 
-            // iOS Physical Memory
-            if (snapshots.Any(s => s.PhysicalMemoryInUse.HasValue))
+            // iOS
+            var iosSnapshots = snapshots
+                .Where(s => s.iOSMetrics.HasValue)
+                .Select(s => s.iOSMetrics.Value)
+                .ToList();
+            if (iosSnapshots.Count > 0)
             {
-                var physicalUsed = snapshots.Select(s => s.PhysicalMemoryInUse ?? 0).ToArray();
-                var physicalTotal = snapshots.FirstOrDefault(s => s.TotalDeviceMemory.HasValue).TotalDeviceMemory ?? 0;
-
+                var physicalUsed = iosSnapshots.Select(m => m.PhysicalMemoryInUse ?? 0).ToArray();
+                var physicalTotal = iosSnapshots.FirstOrDefault().TotalDeviceMemory ?? 0;
                 SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, physicalTotal);
-
                 SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
                 SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, physicalTotal);
                 SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, physicalUsed);

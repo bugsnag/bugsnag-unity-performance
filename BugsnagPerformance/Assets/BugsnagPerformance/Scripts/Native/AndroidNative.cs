@@ -122,9 +122,7 @@ namespace BugsnagUnityPerformance
             // return dummy value
             return new SystemMetricsSnapshot
             {
-                FreeMemory = 111,
-                TotalMemory = 222,
-                MaxMemory = 333
+                
             };
 #pragma warning restore CS0162 // Unreachable code detected
         }
