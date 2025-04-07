@@ -28,8 +28,8 @@ namespace BugsnagUnityPerformance
         public long? PhysicalMemoryInUse;
         // The total physical memory on the device (bytes).
         public long? TotalDeviceMemory;
-
     }
+    
     internal class SystemMetricsCollector : IPhasedStartup
     {
         private bool _cpuMetricsEnabled = true;
