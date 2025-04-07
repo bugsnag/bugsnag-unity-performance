@@ -111,7 +111,9 @@ namespace BugsnagUnityPerformance
                 return;
             }
             if (_snapshots == null || _snapshots.Count == 0)
+            {
                 return;
+            }
 
             long startNs = BugsnagPerformanceUtil.GetNanoSeconds(span.StartTime);
             long endNs = BugsnagPerformanceUtil.GetNanoSeconds(span.EndTime);
