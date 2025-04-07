@@ -44,6 +44,7 @@ namespace BugsnagUnityPerformance
             _platform = Application.platform;
             StartPollingForMetrics();
         }
+        
         public void Configure(PerformanceConfiguration config)
         {
             if (config.EnabledMetrics != null)
