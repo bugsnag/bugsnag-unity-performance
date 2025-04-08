@@ -30,7 +30,7 @@ namespace BugsnagUnityPerformance
         {
             _onSpanEnd = onSpanEnd;
             _frameMetricsCollector = frameMetricsCollector;
-            MainThreadDispatchBehaviour.Instance().StartCoroutine(GetConnectionType());
+            MainThreadDispatchBehaviour.Enqueue(GetConnectionType());
         }
 
         public void Configure(PerformanceConfiguration config)

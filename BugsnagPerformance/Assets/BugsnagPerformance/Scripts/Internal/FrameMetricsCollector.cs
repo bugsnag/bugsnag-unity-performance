@@ -144,7 +144,6 @@ namespace BugsnagUnityPerformance
         public void OnSpanEnd(Span span)
         {
             SpanRenderingMetrics spanMetrics = GetSpanMetrics(span);
-
             if (spanMetrics == null)
             {
                 return;

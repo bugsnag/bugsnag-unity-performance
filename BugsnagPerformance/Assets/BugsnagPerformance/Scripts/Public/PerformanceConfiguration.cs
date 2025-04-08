@@ -55,7 +55,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT);
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeArrayLengthLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeArrayLengthLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
 
                 }
             }
@@ -90,7 +90,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeCountLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_COUNT_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeCountLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_COUNT_LIMIT);
                 }
             }
         }

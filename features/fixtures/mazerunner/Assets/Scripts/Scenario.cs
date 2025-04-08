@@ -5,6 +5,7 @@ using System;
 using BugsnagUnityPerformance;
 using System.Reflection;
 using BugsnagUnity;
+using System.Collections;
 
 public class Scenario : MonoBehaviour
 {
@@ -54,6 +55,18 @@ public class Scenario : MonoBehaviour
     public virtual void Run()
     {
 
+    }
+
+    public void DoSpan(string name,float duration)
+    {
+        StartCoroutine(DoSpanWithDuration(name, duration));
+    }
+
+    private IEnumerator DoSpanWithDuration(string name, float duration)
+    {
+        var span = BugsnagPerformance.StartSpan(name);
+        yield return new WaitForSeconds(duration);
+        span.End();
     }
 
     public void DoMultipleSpans(int num)

@@ -1018,8 +1018,12 @@ GameObject:
   - component: {fileID: 1124192953}
   - component: {fileID: 1124192954}
   - component: {fileID: 1124192955}
+  - component: {fileID: 1124192956}
+  - component: {fileID: 1124192957}
+  - component: {fileID: 1124192959}
+  - component: {fileID: 1124192958}
   m_Layer: 0
-  m_Name: RenderingMetrics
+  m_Name: Metrics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1063,6 +1067,57 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb1e5e240fc2429482d20d392b88135, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
+--- !u!114 &1124192956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124192952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c113ce13910b243a2816ae49d09bcbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
+--- !u!114 &1124192957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124192952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771eb92f9120d40eebe7331f7fe7083f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
+--- !u!114 &1124192958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124192952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef6b6638c32824cd09e5bc90ba6c791c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1124192959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124192952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31195cb4a65c4458eb5d46cb119e51bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1294582013

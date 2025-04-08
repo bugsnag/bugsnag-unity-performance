@@ -46,5 +46,10 @@ namespace BugsnagUnityPerformance
 #endif
             return null;
         }
+
+        public static SystemMetricsSnapshot GetSystemMetricsSnapshot()
+        {
+            return new SystemMetricsSnapshot();
+        }
     }
 }

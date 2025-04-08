@@ -11,6 +11,8 @@ public class RenderMetrics : Scenario
 
     const int NUM_SLOW_FRAMES_TO_DO = 10;
     const int NUM_FROZEN_FRAMES_TO_DO = 1;
+    const int TOTAL_FRAMES_TO_DO = 100;
+
 
     int _frameCount;
 
@@ -64,7 +66,7 @@ public class RenderMetrics : Scenario
             _frozenFramesDone++;
             return;
         }
-        if (_frameCount < (100 - NUM_SLOW_FRAMES_TO_DO - NUM_FROZEN_FRAMES_TO_DO))
+        if (_frameCount < (TOTAL_FRAMES_TO_DO - NUM_SLOW_FRAMES_TO_DO - NUM_FROZEN_FRAMES_TO_DO))
         {
             _frameCount++;
             return;

@@ -68,7 +68,7 @@ namespace BugsnagUnityPerformance
         {
             if (_config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.FULL)
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(CheckForAppStartCompletion());
+                MainThreadDispatchBehaviour.Enqueue(CheckForAppStartCompletion());
             }
         }
 

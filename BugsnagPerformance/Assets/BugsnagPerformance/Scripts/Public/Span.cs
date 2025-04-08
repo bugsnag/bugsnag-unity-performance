@@ -18,7 +18,18 @@ namespace BugsnagUnityPerformance
         private const string FPS_MIN_KEY = "bugsnag.rendering.fps_minimum";
         private const string FPS_AVERAGE_KEY = "bugsnag.rendering.fps_average";
         private const string FPS_TARGET_KEY = "bugsnag.rendering.fps_target";
-
+        private const string CPU_MEASURES_TIMESTAMPS_KEY = "bugsnag.system.cpu_measures_timestamps";
+        private const string MEMORY_TIMESTAMPS_KEY = "bugsnag.system.memory.timestamps";
+        private const string CPU_MEASURES_TOTAL_KEY = "bugsnag.system.cpu_measures_total";
+        private const string CPU_MEASURES_MAIN_THREAD_KEY = "bugsnag.system.cpu_measures_main_thread";
+        private const string CPU_MEASURES_OVERHEAD_KEY = "bugsnag.system.cpu_measures_overhead";
+        private const string CPU_MEAN_TOTAL_KEY = "bugsnag.metrics.cpu_mean_total";
+        private const string CPU_MEAN_MAIN_THREAD_KEY = "bugsnag.system.cpu_mean_main_thread";
+        private const string PHYSICAL_DEVICE_MEMORY_KEY = "bugsnag.device.physical_device_memory";
+        private const string MEMORY_SPACES_SPACE_NAMES_KEY = "bugsnag.system.memory.spaces.space_names";
+        private const string MEMORY_SPACES_DEVICE_SIZE_KEY = "bugsnag.system.memory.spaces.device.size";
+        private const string MEMORY_SPACES_DEVICE_USED_KEY = "bugsnag.system.memory.spaces.device.used";
+        private const string MEMORY_SPACES_DEVICE_MEAN_KEY = "bugsnag.system.memory.spaces.device.mean";
 
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
@@ -61,7 +72,7 @@ namespace BugsnagUnityPerformance
 
         void LogSpanEndingWarning()
         {
-            MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+            MainThreadDispatchBehaviour.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
         }
 
         public void End(DateTimeOffset? endTime = null)
@@ -196,7 +207,7 @@ namespace BugsnagUnityPerformance
         {
             if (_callbackComplete)
             {
-                MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
+                MainThreadDispatchBehaviour.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
 
@@ -262,12 +273,12 @@ namespace BugsnagUnityPerformance
 
             var totalFrames = endMetrics.TotalFrames - beginningMetrics.TotalFrames;
             SetAttributeInternal(TOTAL_FRAMES_KEY, totalFrames);
-            
+
             if (totalFrames == 0)
             {
                 return;
             }
-            var sumFrametime = endMetrics.FrameTimeSum - beginningMetrics.FrameTimeSum; 
+            var sumFrametime = endMetrics.FrameTimeSum - beginningMetrics.FrameTimeSum;
             var averageFps = (int)(1.0f / (sumFrametime / totalFrames));
 
             SetAttributeInternal(FPS_AVERAGE_KEY, averageFps);
@@ -287,6 +298,85 @@ namespace BugsnagUnityPerformance
             _attributes.Remove(FPS_MIN_KEY);
             _attributes.Remove(FPS_AVERAGE_KEY);
             _attributes.Remove(FPS_TARGET_KEY);
+        }
+
+        internal void CalculateCPUMetrics(List<SystemMetricsSnapshot> snapshots)
+        {
+            // Timestamps
+            var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
+            SetAttribute(CPU_MEASURES_TIMESTAMPS_KEY, timestamps);
+            // CPU
+            var processCpu = snapshots.Select(s => s.ProcessCPUPercent).ToArray();
+            var mainThreadCpu = snapshots.Select(s => s.MainThreadCPUPercent).ToArray();
+            var monitorThreadCpu = snapshots.Select(s => s.MonitorThreadCPUPercent).ToArray();
+
+            SetAttribute(CPU_MEASURES_TOTAL_KEY, processCpu);
+            SetAttribute(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
+            SetAttribute(CPU_MEASURES_OVERHEAD_KEY, monitorThreadCpu);
+            SetAttribute(CPU_MEAN_TOTAL_KEY, processCpu.Average());
+            SetAttribute(CPU_MEAN_MAIN_THREAD_KEY, mainThreadCpu.Average());
+        }
+        internal void CalculateMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
+        {
+            // Timestamps
+            var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
+            SetAttribute(MEMORY_TIMESTAMPS_KEY, timestamps);
+
+            // Android
+            var androidSnapshots = snapshots
+                .Where(s => s.AndroidMetrics.HasValue)
+                .Select(s => s.AndroidMetrics.Value)
+                .ToList();
+
+            if (androidSnapshots.Count > 0)
+            {
+                var totalMemory = androidSnapshots.Select(m => m.TotalMemory ?? 0).ToArray();
+                var freeMemory = androidSnapshots.Select(m => m.FreeMemory ?? 0).ToArray();
+                var used = totalMemory.Zip(freeMemory, (t, f) => t - f).ToArray();
+                var maxSize = totalMemory.Max();
+
+                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, totalMemory.FirstOrDefault());
+                SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
+                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, maxSize);
+                SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, used);
+                SetAttribute(MEMORY_SPACES_DEVICE_MEAN_KEY, (long)used.Average());
+            }
+
+            // iOS
+            var iosSnapshots = snapshots
+                .Where(s => s.iOSMetrics.HasValue)
+                .Select(s => s.iOSMetrics.Value)
+                .ToList();
+            if (iosSnapshots.Count > 0)
+            {
+                var physicalUsed = iosSnapshots.Select(m => m.PhysicalMemoryInUse ?? 0).ToArray();
+                var physicalTotal = iosSnapshots.FirstOrDefault().TotalDeviceMemory ?? 0;
+                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, physicalTotal);
+                SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
+                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, physicalTotal);
+                SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, physicalUsed);
+                SetAttribute(MEMORY_SPACES_DEVICE_MEAN_KEY, (long)physicalUsed.Average());
+            }
+        }
+
+        internal void RemoveSystemCPUMetrics()
+        {
+            _attributes.Remove(CPU_MEASURES_TIMESTAMPS_KEY);
+            _attributes.Remove(CPU_MEASURES_TOTAL_KEY);
+            _attributes.Remove(CPU_MEASURES_MAIN_THREAD_KEY);
+            _attributes.Remove(CPU_MEASURES_OVERHEAD_KEY);
+            _attributes.Remove(CPU_MEAN_TOTAL_KEY);
+            _attributes.Remove(CPU_MEAN_MAIN_THREAD_KEY);
+        }
+
+        internal void RemoveSystemMemoryMetrics()
+        {
+            _attributes.Remove(PHYSICAL_DEVICE_MEMORY_KEY);
+            _attributes.Remove(MEMORY_TIMESTAMPS_KEY);
+            _attributes.Remove(MEMORY_SPACES_SPACE_NAMES_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_SIZE_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_USED_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_MEAN_KEY);
         }
     }
 }
