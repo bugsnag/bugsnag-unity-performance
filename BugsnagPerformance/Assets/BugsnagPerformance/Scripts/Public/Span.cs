@@ -26,10 +26,12 @@ namespace BugsnagUnityPerformance
         private const string CPU_MEAN_TOTAL_KEY = "bugsnag.metrics.cpu_mean_total";
         private const string CPU_MEAN_MAIN_THREAD_KEY = "bugsnag.system.cpu_mean_main_thread";
         private const string PHYSICAL_DEVICE_MEMORY_KEY = "bugsnag.device.physical_device_memory";
-        private const string MEMORY_SPACES_SPACE_NAMES_KEY = "bugsnag.system.memory.spaces.space_names";
         private const string MEMORY_SPACES_DEVICE_SIZE_KEY = "bugsnag.system.memory.spaces.device.size";
         private const string MEMORY_SPACES_DEVICE_USED_KEY = "bugsnag.system.memory.spaces.device.used";
         private const string MEMORY_SPACES_DEVICE_MEAN_KEY = "bugsnag.system.memory.spaces.device.mean";
+        private const string MEMORY_SPACES_ART_SIZE_KEY = "bugsnag.system.memory.spaces.art.size";
+        private const string MEMORY_SPACES_ART_USED_KEY = "bugsnag.system.memory.spaces.art.used";
+        private const string MEMORY_SPACES_ART_MEAN_KEY = "bugsnag.system.memory.spaces.art.mean";
 
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
@@ -178,7 +180,10 @@ namespace BugsnagUnityPerformance
             }
         }
 
-
+        internal void SetAttributeInternal(string key, long[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, double[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, bool[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, string[] value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, long value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, string value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, double value) => SetAttributeWithoutChecks(key, value);
@@ -318,9 +323,8 @@ namespace BugsnagUnityPerformance
         }
         internal void CalculateMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
         {
-            // Timestamps
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
-            SetAttribute(MEMORY_TIMESTAMPS_KEY, timestamps);
+            SetAttributeInternal(MEMORY_TIMESTAMPS_KEY, timestamps);
 
             // Android
             var androidSnapshots = snapshots
@@ -330,32 +334,61 @@ namespace BugsnagUnityPerformance
 
             if (androidSnapshots.Count > 0)
             {
-                var totalMemory = androidSnapshots.Select(m => m.TotalMemory ?? 0).ToArray();
-                var freeMemory = androidSnapshots.Select(m => m.FreeMemory ?? 0).ToArray();
-                var used = totalMemory.Zip(freeMemory, (t, f) => t - f).ToArray();
-                var maxSize = totalMemory.Max();
+                // Device Memory 
+                long devicePhysical = androidSnapshots.First().TotalMemory.GetValueOrDefault(0);
+                SetAttributeInternal(PHYSICAL_DEVICE_MEMORY_KEY, devicePhysical);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_SIZE_KEY, devicePhysical);
 
-                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, totalMemory.FirstOrDefault());
-                SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
-                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, maxSize);
-                SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, used);
-                SetAttribute(MEMORY_SPACES_DEVICE_MEAN_KEY, (long)used.Average());
+                var pssValues = androidSnapshots
+                    .Select(a => a.PSS.GetValueOrDefault(0L))
+                    .ToArray();
+                long sumPss = pssValues.Sum();
+                long meanPss = pssValues.Length > 0 ? sumPss / pssValues.Length : 0;
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_USED_KEY, pssValues);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_MEAN_KEY, meanPss);
+
+                // ART 
+                long artMax = androidSnapshots.Max(a => a.JavaMaxMemory.GetValueOrDefault(0L));
+                SetAttributeInternal(MEMORY_SPACES_ART_SIZE_KEY, artMax);
+
+                var artUsedValues = androidSnapshots
+                    .Select(a =>
+                    {
+                        long t = a.JavaTotalMemory.GetValueOrDefault(0L);
+                        long f = a.JavaFreeMemory.GetValueOrDefault(0L);
+                        return (t - f); // current usage
+                    })
+                    .ToArray();
+                long sumArtUsed = artUsedValues.Sum();
+                long meanArtUsed = artUsedValues.Length > 0 ? sumArtUsed / artUsedValues.Length : 0;
+
+                SetAttributeInternal(MEMORY_SPACES_ART_USED_KEY, artUsedValues);
+                SetAttributeInternal(MEMORY_SPACES_ART_MEAN_KEY, meanArtUsed);
             }
 
-            // iOS
+            //ios
             var iosSnapshots = snapshots
                 .Where(s => s.iOSMetrics.HasValue)
                 .Select(s => s.iOSMetrics.Value)
                 .ToList();
+
             if (iosSnapshots.Count > 0)
             {
-                var physicalUsed = iosSnapshots.Select(m => m.PhysicalMemoryInUse ?? 0).ToArray();
-                var physicalTotal = iosSnapshots.FirstOrDefault().TotalDeviceMemory ?? 0;
-                SetAttribute(PHYSICAL_DEVICE_MEMORY_KEY, physicalTotal);
-                SetAttribute(MEMORY_SPACES_SPACE_NAMES_KEY, new[] { "device" });
-                SetAttribute(MEMORY_SPACES_DEVICE_SIZE_KEY, physicalTotal);
-                SetAttribute(MEMORY_SPACES_DEVICE_USED_KEY, physicalUsed);
-                SetAttribute(MEMORY_SPACES_DEVICE_MEAN_KEY, (long)physicalUsed.Average());
+                var physicalUsed = iosSnapshots
+                    .Select(m => m.PhysicalMemoryInUse ?? 0)
+                    .ToArray();
+                long sumPhysicalUsed = physicalUsed.Sum();
+                long meanPhysicalUsed = physicalUsed.Length > 0
+                    ? sumPhysicalUsed / physicalUsed.Length
+                    : 0;
+
+                long totalDeviceMemory = iosSnapshots.FirstOrDefault()
+                    .TotalDeviceMemory ?? 0;
+
+                SetAttributeInternal(PHYSICAL_DEVICE_MEMORY_KEY, totalDeviceMemory);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_SIZE_KEY, totalDeviceMemory);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_USED_KEY, physicalUsed);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_MEAN_KEY, meanPhysicalUsed);
             }
         }
 
@@ -373,10 +406,12 @@ namespace BugsnagUnityPerformance
         {
             _attributes.Remove(PHYSICAL_DEVICE_MEMORY_KEY);
             _attributes.Remove(MEMORY_TIMESTAMPS_KEY);
-            _attributes.Remove(MEMORY_SPACES_SPACE_NAMES_KEY);
             _attributes.Remove(MEMORY_SPACES_DEVICE_SIZE_KEY);
             _attributes.Remove(MEMORY_SPACES_DEVICE_USED_KEY);
             _attributes.Remove(MEMORY_SPACES_DEVICE_MEAN_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_SIZE_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_USED_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_MEAN_KEY);
         }
     }
 }

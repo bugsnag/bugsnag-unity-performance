@@ -21,14 +21,16 @@ namespace BugsnagUnityPerformance
 
     internal struct AndroidMemoryMetrics
     {
-        // Free memory (bytes) available to the process.
-        public long? FreeMemory;
-        // Total memory (bytes) currently allocated to the process.
-        public long? TotalMemory;
-        // Max memory (bytes) that can be used by the process.
-        public long? MaxMemory;
-        // Proportional Set Size (bytes) used by the process.
-        public long? PSS;
+        // Device-level memory:
+        public long? FreeMemory;        // from ActivityManager.MemoryInfo.availMem
+        public long? TotalMemory;       // from ActivityManager.MemoryInfo.totalMem (physical device RAM)
+        public long? MaxMemory;         // from ActivityManager.MemoryInfo.threshold
+        // PSS
+        public long? PSS;               // from Debug.MemoryInfo.getTotalPss()
+        // Java heap usage
+        public long? JavaMaxMemory;     // from Runtime.getRuntime().maxMemory()
+        public long? JavaTotalMemory;   // from Runtime.getRuntime().totalMemory()
+        public long? JavaFreeMemory;    // from Runtime.getRuntime().freeMemory()
     }
 
     internal struct iOSMemoryMetrics
@@ -102,8 +104,6 @@ namespace BugsnagUnityPerformance
 
         private SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
-            //TODO Swap this out for the real android and iOS implementations
-            return GetTestingMetrics();
             if (_platform == RuntimePlatform.Android)
             {
                 return AndroidNative.GetSystemMetricsSnapshot();
@@ -112,6 +112,7 @@ namespace BugsnagUnityPerformance
             {
                 return iOSNative.GetSystemMetricsSnapshot();
             }
+            return null;
         }
 
         public void OnSpanEnd(Span span)
@@ -124,7 +125,6 @@ namespace BugsnagUnityPerformance
             {
                 return;
             }
-
             long startNs = BugsnagPerformanceUtil.GetNanoSeconds(span.StartTime);
             long endNs = BugsnagPerformanceUtil.GetNanoSeconds(span.EndTime);
 
@@ -143,7 +143,6 @@ namespace BugsnagUnityPerformance
             }
 
             relevantSnapshots.AddRange(duringAndAfter);
-
             if (relevantSnapshots.Count > 0)
             {
                 if (_cpuMetricsEnabled)

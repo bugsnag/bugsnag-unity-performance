@@ -105,25 +105,57 @@ namespace BugsnagUnityPerformance
         public static SystemMetricsSnapshot GetSystemMetricsSnapshot()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            var snapshot = new SystemMetricsSnapshot();
-            // using (var activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-            // {
-            //     var context = activity.GetStatic<AndroidJavaObject>("currentActivity");
-            //     var memoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
-            //     var activityManager = context.Call<AndroidJavaObject>("getSystemService", "activity");
-            //     activityManager.Call("getMemoryInfo", memoryInfo);
-            //     snapshot.FreeMemory = memoryInfo.Get<long>("availMem");
-            //     snapshot.TotalMemory = memoryInfo.Get<long>("totalMem");
-            //     snapshot.MaxMemory = memoryInfo.Get<long>("threshold");
-            // }
-            return snapshot;
+             var snapshot = new SystemMetricsSnapshot();
+    snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
+
+    using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+    {
+        // 1) get Activity & ActivityManager
+        var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        var activityMgr = activity.Call<AndroidJavaObject>("getSystemService", "activity");
+
+        // 2) get MemoryInfo
+        var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
+        activityMgr.Call("getMemoryInfo", amMemoryInfo);
+
+        // 3) get Debug.MemoryInfo for PSS
+        var processClass = new AndroidJavaClass("android.os.Process");
+        int pid = processClass.CallStatic<int>("myPid");
+        var memInfoArray = activityMgr.Call<AndroidJavaObject[]>(
+            "getProcessMemoryInfo",
+            new object[] { new int[] { pid } }
+        );
+        var debugMemInfo = memInfoArray[0];
+        var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
+
+        // 4) get Java Runtime info
+        var runtimeClass = new AndroidJavaClass("java.lang.Runtime");
+        var runtime = runtimeClass.CallStatic<AndroidJavaObject>("getRuntime");
+        long javaMax = runtime.Call<long>("maxMemory");
+        long javaTotal = runtime.Call<long>("totalMemory");
+        long javaFree = runtime.Call<long>("freeMemory");
+
+        // 5) store everything in snapshot
+        snapshot.AndroidMetrics = new AndroidMemoryMetrics
+        {
+            // device memory info
+            FreeMemory  = amMemoryInfo.Get<long>("availMem"),
+            TotalMemory = amMemoryInfo.Get<long>("totalMem"), // total physical RAM
+            MaxMemory   = amMemoryInfo.Get<long>("threshold"),
+
+            // PSS
+            PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
+
+            // Java runtime usage
+            JavaMaxMemory   = javaMax,
+            JavaTotalMemory = javaTotal,
+            JavaFreeMemory  = javaFree
+        };
+    }
+    return snapshot;
 #endif
 #pragma warning disable CS0162 // Unreachable code detected
-            // return dummy value
-            return new SystemMetricsSnapshot
-            {
-                
-            };
+            return new SystemMetricsSnapshot { };
 #pragma warning restore CS0162 // Unreachable code detected
         }
 
