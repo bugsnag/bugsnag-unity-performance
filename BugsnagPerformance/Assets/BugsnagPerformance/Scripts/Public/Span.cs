@@ -335,7 +335,7 @@ namespace BugsnagUnityPerformance
             if (androidSnapshots.Count > 0)
             {
                 // Device Memory 
-                long devicePhysical = androidSnapshots.First().TotalMemory.GetValueOrDefault(0);
+                long devicePhysical = androidSnapshots.First().DeviceTotalMemory.GetValueOrDefault(0);
                 SetAttributeInternal(PHYSICAL_DEVICE_MEMORY_KEY, devicePhysical);
                 SetAttributeInternal(MEMORY_SPACES_DEVICE_SIZE_KEY, devicePhysical);
 
@@ -348,14 +348,14 @@ namespace BugsnagUnityPerformance
                 SetAttributeInternal(MEMORY_SPACES_DEVICE_MEAN_KEY, meanPss);
 
                 // ART 
-                long artMax = androidSnapshots.Max(a => a.JavaMaxMemory.GetValueOrDefault(0L));
+                long artMax = androidSnapshots.Max(a => a.ArtMaxMemory.GetValueOrDefault(0L));
                 SetAttributeInternal(MEMORY_SPACES_ART_SIZE_KEY, artMax);
 
                 var artUsedValues = androidSnapshots
                     .Select(a =>
                     {
-                        long t = a.JavaTotalMemory.GetValueOrDefault(0L);
-                        long f = a.JavaFreeMemory.GetValueOrDefault(0L);
+                        long t = a.ArtTotalMemory.GetValueOrDefault(0L);
+                        long f = a.ArtFreeMemory.GetValueOrDefault(0L);
                         return (t - f); // current usage
                     })
                     .ToArray();

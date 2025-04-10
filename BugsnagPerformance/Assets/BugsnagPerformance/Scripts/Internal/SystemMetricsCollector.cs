@@ -21,23 +21,17 @@ namespace BugsnagUnityPerformance
 
     internal struct AndroidMemoryMetrics
     {
-        // Device-level memory:
-        public long? FreeMemory;        // from ActivityManager.MemoryInfo.availMem
-        public long? TotalMemory;       // from ActivityManager.MemoryInfo.totalMem (physical device RAM)
-        public long? MaxMemory;         // from ActivityManager.MemoryInfo.threshold
-        // PSS
-        public long? PSS;               // from Debug.MemoryInfo.getTotalPss()
-        // Java heap usage
-        public long? JavaMaxMemory;     // from Runtime.getRuntime().maxMemory()
-        public long? JavaTotalMemory;   // from Runtime.getRuntime().totalMemory()
-        public long? JavaFreeMemory;    // from Runtime.getRuntime().freeMemory()
+        public long? DeviceFreeMemory; // The amount of free memory on the device.       
+        public long? DeviceTotalMemory; // The total amount of memory on the device.
+        public long? PSS; // The amount of memory allocated to this process.
+        public long? ArtMaxMemory; // The maximum heap memory your app is allowed to use.
+        public long? ArtTotalMemory; // The amount of heap memory currently allocated by the runtime.
+        public long? ArtFreeMemory; // The amount of heap memory currently free and available for allocation.
     }
 
     internal struct iOSMemoryMetrics
     {
-        // The current physical memory usage by this process (bytes).
         public long? PhysicalMemoryInUse;
-        // The total physical memory on the device (bytes).
         public long? TotalDeviceMemory;
     }
 
@@ -154,29 +148,6 @@ namespace BugsnagUnityPerformance
                     span.CalculateMemoryMetrics(relevantSnapshots);
                 }
             }
-        }
-
-        private SystemMetricsSnapshot GetTestingMetrics()
-        {
-            return new SystemMetricsSnapshot
-            {
-                Timestamp = BugsnagPerformanceUtil.GetNanoSeconds(DateTimeOffset.UtcNow),
-                ProcessCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                MainThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                MonitorThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                AndroidMetrics = new AndroidMemoryMetrics
-                {
-                    FreeMemory = UnityEngine.Random.Range(0, 1000),
-                    TotalMemory = UnityEngine.Random.Range(0, 1000),
-                    MaxMemory = UnityEngine.Random.Range(0, 1000),
-                    PSS = UnityEngine.Random.Range(0, 1000),
-                },
-                iOSMetrics = new iOSMemoryMetrics
-                {
-                    PhysicalMemoryInUse = UnityEngine.Random.Range(0, 1000),
-                    TotalDeviceMemory = UnityEngine.Random.Range(0, 1000),
-                }
-            };
         }
     }
 }

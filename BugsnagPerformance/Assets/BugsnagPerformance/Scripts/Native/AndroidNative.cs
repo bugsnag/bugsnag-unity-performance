@@ -6,41 +6,158 @@ namespace BugsnagUnityPerformance
 {
     internal class AndroidNative
     {
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private static AndroidJavaClass _unityPlayerClass;
+        private static AndroidJavaClass UnityPlayerClass
+        {
+            get
+            {
+                if (_unityPlayerClass == null)
+                {
+                    _unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                }
+                return _unityPlayerClass;
+            }
+        }
+
+        private static AndroidJavaObject _activity;
+        private static AndroidJavaObject Activity
+        {
+            get
+            {
+                if (_activity == null)
+                {
+                    _activity = UnityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+                }
+                return _activity;
+            }
+        }
+
+        private static AndroidJavaClass _buildClass;
+        private static AndroidJavaClass BuildClass
+        {
+            get
+            {
+                if (_buildClass == null)
+                {
+                    _buildClass = new AndroidJavaClass("android.os.Build");
+                }
+                return _buildClass;
+            }
+        }
+        private static AndroidJavaClass _versionClass;
+        private static AndroidJavaClass VersionClass
+        {
+            get
+            {
+                if (_versionClass == null)
+                {
+                    _versionClass = new AndroidJavaClass("android.os.Build$VERSION");
+                }
+                return _versionClass;
+            }
+        }
+
+        private static AndroidJavaClass _processClass;
+        private static AndroidJavaClass ProcessClass
+        {
+            get
+            {
+                if (_processClass == null)
+                {
+                    _processClass = new AndroidJavaClass("android.os.Process");
+                }
+                return _processClass;
+            }
+        }
+
+        private static AndroidJavaClass _runtimeClass;
+        private static AndroidJavaClass RuntimeClass
+        {
+            get
+            {
+                if (_runtimeClass == null)
+                {
+                    _runtimeClass = new AndroidJavaClass("java.lang.Runtime");
+                }
+                return _runtimeClass;
+            }
+        }
+
+        private static AndroidJavaObject _runtimeInstance;
+        private static AndroidJavaObject RuntimeInstance
+        {
+            get
+            {
+                if (_runtimeInstance == null)
+                {
+                    _runtimeInstance = RuntimeClass.CallStatic<AndroidJavaObject>("getRuntime");
+                }
+                return _runtimeInstance;
+            }
+        }
+
+        private static int _androidActivityPid = -1;
+        private static int AndroidActivityPid
+        {
+            get
+            {
+                if (_androidActivityPid < 0)
+                {
+                    _androidActivityPid = ProcessClass.CallStatic<int>("myPid");
+                }
+                return _androidActivityPid;
+            }
+        }
+
+        private static AndroidJavaObject _activityManager;
+        private static AndroidJavaObject ActivityManager
+        {
+            get
+            {
+                if (_activityManager == null)
+                {
+                    _activityManager = Activity.Call<AndroidJavaObject>("getSystemService", "activity");
+                }
+                return _activityManager;
+            }
+        }
+
+        private static long _maxArtMemory = -1;
+#endif
+
         public static string GetVersionCode()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            var playerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            var activity = playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            var context = activity.Call<AndroidJavaObject>("getApplicationContext");
+            // only called once so no need to cache these native objects
+            var context = Activity.Call<AndroidJavaObject>("getApplicationContext");
             var packageManager = context.Call<AndroidJavaObject>("getPackageManager");
             var packageName = context.Call<AndroidJavaObject>("getPackageName");
             var packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, 0);
             return packageInfo.Get<int>("versionCode").ToString();
-#endif
+#else
             return null;
+#endif
         }
 
         public static int GetAndroidSDKInt()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-
-            using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
-            {
-                return version.GetStatic<int>("SDK_INT");
-            }
-#endif
+            return VersionClass.GetStatic<int>("SDK_INT");
+#else
             return 0;
+#endif
         }
 
         public static string GetArch()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
 
-            var build = new AndroidJavaClass("android.os.Build");
 
             if (GetAndroidSDKInt() >= 21)
             {
-                var abis = build.GetStatic<string[]>("SUPPORTED_ABIS");
+                var abis = BuildClass.GetStatic<string[]>("SUPPORTED_ABIS");
                 if (abis != null && abis.Length > 0)
                 {
                     return AbiToArchitecture(abis[0]);
@@ -48,31 +165,29 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                var abi = build.GetStatic<string>("CPU_ABI");
+                var abi = BuildClass.GetStatic<string>("CPU_ABI");
                 if (!string.IsNullOrEmpty(abi))
                 {
                     return AbiToArchitecture(abi);
                 }
             }
 #endif
-            return string.Empty;
+            return null;
         }
 
         public static string GetManufacturer()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-
-            var build = new AndroidJavaClass("android.os.Build");
-            return build.GetStatic<string>("MANUFACTURER");
-#endif
+            return BuildClass.GetStatic<string>("MANUFACTURER");
+#else
             return null;
+#endif
         }
 
 
         private static string AbiToArchitecture(string input)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-
             switch (input.ToLower())
             {
                 case "arm64-v8a":
@@ -91,72 +206,43 @@ namespace BugsnagUnityPerformance
 
         public static string GetOsVersion()
         {
-#if UNITY_ANDROID
-            using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
-            {
-                return version.GetStatic<string>("RELEASE");
-            }
+#if UNITY_ANDROID && !UNITY_EDITOR
+            return VersionClass.GetStatic<string>("RELEASE");
+#else
+            return null;
 #endif
-#pragma warning disable CS0162 // Unreachable code detected
-            return string.Empty;
-#pragma warning restore CS0162 // Unreachable code detected
         }
 
-        public static SystemMetricsSnapshot GetSystemMetricsSnapshot()
+        public static SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-             var snapshot = new SystemMetricsSnapshot();
-    snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
+            var snapshot = new SystemMetricsSnapshot();
+            snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
 
-    using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-    {
-        // 1) get Activity & ActivityManager
-        var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        var activityMgr = activity.Call<AndroidJavaObject>("getSystemService", "activity");
+            var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
+            ActivityManager.Call("getMemoryInfo", amMemoryInfo);
 
-        // 2) get MemoryInfo
-        var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
-        activityMgr.Call("getMemoryInfo", amMemoryInfo);
+            var memInfoArray = ActivityManager.Call<AndroidJavaObject[]>(
+                "getProcessMemoryInfo",
+                new object[] { new int[] { AndroidActivityPid } }
+            );
+            var debugMemInfo = memInfoArray[0];
+            var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
 
-        // 3) get Debug.MemoryInfo for PSS
-        var processClass = new AndroidJavaClass("android.os.Process");
-        int pid = processClass.CallStatic<int>("myPid");
-        var memInfoArray = activityMgr.Call<AndroidJavaObject[]>(
-            "getProcessMemoryInfo",
-            new object[] { new int[] { pid } }
-        );
-        var debugMemInfo = memInfoArray[0];
-        var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
+            snapshot.AndroidMetrics = new AndroidMemoryMetrics
+            {
+                DeviceFreeMemory = amMemoryInfo.Get<long>("availMem"),
+                DeviceTotalMemory = amMemoryInfo.Get<long>("totalMem"),
+                PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
+                ArtMaxMemory = _maxArtMemory,
+                ArtTotalMemory = RuntimeInstance.Call<long>("totalMemory"),
+                ArtFreeMemory = RuntimeInstance.Call<long>("freeMemory")
+            };
 
-        // 4) get Java Runtime info
-        var runtimeClass = new AndroidJavaClass("java.lang.Runtime");
-        var runtime = runtimeClass.CallStatic<AndroidJavaObject>("getRuntime");
-        long javaMax = runtime.Call<long>("maxMemory");
-        long javaTotal = runtime.Call<long>("totalMemory");
-        long javaFree = runtime.Call<long>("freeMemory");
-
-        // 5) store everything in snapshot
-        snapshot.AndroidMetrics = new AndroidMemoryMetrics
-        {
-            // device memory info
-            FreeMemory  = amMemoryInfo.Get<long>("availMem"),
-            TotalMemory = amMemoryInfo.Get<long>("totalMem"), // total physical RAM
-            MaxMemory   = amMemoryInfo.Get<long>("threshold"),
-
-            // PSS
-            PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
-
-            // Java runtime usage
-            JavaMaxMemory   = javaMax,
-            JavaTotalMemory = javaTotal,
-            JavaFreeMemory  = javaFree
-        };
-    }
-    return snapshot;
+            return snapshot;
+#else
+            return null;
 #endif
-#pragma warning disable CS0162 // Unreachable code detected
-            return new SystemMetricsSnapshot { };
-#pragma warning restore CS0162 // Unreachable code detected
         }
 
     }
