@@ -235,7 +235,6 @@ namespace BugsnagUnityPerformance
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             var snapshot = new SystemMetricsSnapshot();
-            snapshot.AndroidMetrics = new AndroidMemoryMetrics();
             snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
             if (sampleMemory)
             {
@@ -301,8 +300,7 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                string[] parts = File.ReadAllText(_path).Split(' ');
-
+                string[] parts = File.ReadAllText(_path).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 long utime = long.Parse(parts[13]);
                 long stime = long.Parse(parts[14]);
                 long cutime = long.Parse(parts[15]);
