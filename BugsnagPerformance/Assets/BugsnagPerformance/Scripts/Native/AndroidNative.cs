@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace BugsnagUnityPerformance
@@ -7,7 +9,7 @@ namespace BugsnagUnityPerformance
     internal class AndroidNative
     {
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID //&& !UNITY_EDITOR
         private static AndroidJavaClass _unityPlayerClass;
         private static AndroidJavaClass UnityPlayerClass
         {
@@ -111,6 +113,18 @@ namespace BugsnagUnityPerformance
             }
         }
 
+        private static int MainThreadTid
+        {
+            get
+            {
+                if (_mainThreadTid < 0)
+                {
+                    _mainThreadTid = ProcessClass.CallStatic<int>("myTid");
+                }
+                return _mainThreadTid;
+            }
+        }
+
         private static AndroidJavaObject _activityManager;
         private static AndroidJavaObject ActivityManager
         {
@@ -126,6 +140,11 @@ namespace BugsnagUnityPerformance
 
         private static long _maxArtMemory = -1;
 #endif
+        private static ProcStatReader _processCpuReader;
+        private static ProcStatReader _mainThreadCpuReader;
+        private static int _mainThreadTid = -1;
+
+
 
         public static string GetVersionCode()
         {
@@ -215,7 +234,7 @@ namespace BugsnagUnityPerformance
 
         public static SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID// && !UNITY_EDITOR
             var snapshot = new SystemMetricsSnapshot();
             snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
 
@@ -239,11 +258,85 @@ namespace BugsnagUnityPerformance
                 ArtFreeMemory = RuntimeInstance.Call<long>("freeMemory")
             };
 
+            if (_processCpuReader == null)
+            {
+                _processCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/stat");
+            }
+
+            if (_mainThreadCpuReader == null)
+            {
+                _mainThreadCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/task/{MainThreadTid}/stat");
+            }
+
+            snapshot.ProcessCPUPercent = _processCpuReader.SampleCpuPercent();
+            snapshot.MainThreadCPUPercent = _mainThreadCpuReader.SampleCpuPercent();
+
             return snapshot;
 #else
             return null;
 #endif
         }
 
+    }
+    internal static class SystemConfig
+    {
+        public static readonly double ClockTickHz = 100.0; // Typically 100 on most devices
+
+        public static readonly int NumCores = Environment.ProcessorCount;
+    }
+    internal class ProcStatReader
+    {
+        private readonly string _path;
+        private long _lastTotalTime;
+        private double _lastUptime;
+
+        public ProcStatReader(string statPath)
+        {
+            _path = statPath;
+        }
+
+        public double SampleCpuPercent()
+        {
+            try
+            {
+                string[] parts = File.ReadAllText(_path).Split(' ');
+
+                long utime = long.Parse(parts[13]);
+                long stime = long.Parse(parts[14]);
+                long cutime = long.Parse(parts[15]);
+                long cstime = long.Parse(parts[16]);
+
+                long totalTime = utime + stime + cutime + cstime;
+                double uptime = GetSystemUptimeSeconds();
+
+                double deltaCpu = totalTime - _lastTotalTime;
+                double deltaTime = uptime - _lastUptime;
+
+                _lastTotalTime = totalTime;
+                _lastUptime = uptime;
+
+                if (deltaTime <= 0.0) return 0.0;
+
+                return 100.0 * (deltaCpu / SystemConfig.ClockTickHz) / deltaTime / SystemConfig.NumCores;
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogWarning($"[Bugsnag] Failed to read CPU stat: {e}");
+                return -1.0;
+            }
+        }
+
+        private double GetSystemUptimeSeconds()
+{
+#if UNITY_ANDROID && !UNITY_EDITOR
+    using (var systemClock = new AndroidJavaClass("android.os.SystemClock"))
+    {
+        long uptimeMs = systemClock.CallStatic<long>("elapsedRealtime");
+        return uptimeMs / 1000.0;
+    }
+#else
+    return Environment.TickCount / 1000.0;
+#endif
+}
     }
 }

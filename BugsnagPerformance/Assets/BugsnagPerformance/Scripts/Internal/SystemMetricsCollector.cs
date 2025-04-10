@@ -12,7 +12,6 @@ namespace BugsnagUnityPerformance
         // CPU usage
         public double ProcessCPUPercent;
         public double MainThreadCPUPercent;
-        public double MonitorThreadCPUPercent;
 
         // Platform-specific memory metrics
         public AndroidMemoryMetrics? AndroidMetrics;

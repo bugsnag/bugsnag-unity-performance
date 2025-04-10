@@ -22,7 +22,6 @@ namespace BugsnagUnityPerformance
         private const string MEMORY_TIMESTAMPS_KEY = "bugsnag.system.memory.timestamps";
         private const string CPU_MEASURES_TOTAL_KEY = "bugsnag.system.cpu_measures_total";
         private const string CPU_MEASURES_MAIN_THREAD_KEY = "bugsnag.system.cpu_measures_main_thread";
-        private const string CPU_MEASURES_OVERHEAD_KEY = "bugsnag.system.cpu_measures_overhead";
         private const string CPU_MEAN_TOTAL_KEY = "bugsnag.metrics.cpu_mean_total";
         private const string CPU_MEAN_MAIN_THREAD_KEY = "bugsnag.system.cpu_mean_main_thread";
         private const string PHYSICAL_DEVICE_MEMORY_KEY = "bugsnag.device.physical_device_memory";
@@ -313,11 +312,9 @@ namespace BugsnagUnityPerformance
             // CPU
             var processCpu = snapshots.Select(s => s.ProcessCPUPercent).ToArray();
             var mainThreadCpu = snapshots.Select(s => s.MainThreadCPUPercent).ToArray();
-            var monitorThreadCpu = snapshots.Select(s => s.MonitorThreadCPUPercent).ToArray();
 
             SetAttribute(CPU_MEASURES_TOTAL_KEY, processCpu);
             SetAttribute(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
-            SetAttribute(CPU_MEASURES_OVERHEAD_KEY, monitorThreadCpu);
             SetAttribute(CPU_MEAN_TOTAL_KEY, processCpu.Average());
             SetAttribute(CPU_MEAN_MAIN_THREAD_KEY, mainThreadCpu.Average());
         }
@@ -397,7 +394,6 @@ namespace BugsnagUnityPerformance
             _attributes.Remove(CPU_MEASURES_TIMESTAMPS_KEY);
             _attributes.Remove(CPU_MEASURES_TOTAL_KEY);
             _attributes.Remove(CPU_MEASURES_MAIN_THREAD_KEY);
-            _attributes.Remove(CPU_MEASURES_OVERHEAD_KEY);
             _attributes.Remove(CPU_MEAN_TOTAL_KEY);
             _attributes.Remove(CPU_MEAN_MAIN_THREAD_KEY);
         }
