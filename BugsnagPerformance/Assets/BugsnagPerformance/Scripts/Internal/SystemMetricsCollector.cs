@@ -99,7 +99,7 @@ namespace BugsnagUnityPerformance
         {
             if (_platform == RuntimePlatform.Android)
             {
-                return AndroidNative.GetSystemMetricsSnapshot();
+                return AndroidNative.GetSystemMetricsSnapshot(_cpuMetricsEnabled, _memoryMetricsEnabled);
             }
             else if (_platform == RuntimePlatform.IPhonePlayer)
             {
@@ -110,10 +110,6 @@ namespace BugsnagUnityPerformance
 
         public void OnSpanEnd(Span span)
         {
-            if (!_cpuMetricsEnabled && !_memoryMetricsEnabled)
-            {
-                return;
-            }
             if (_snapshots == null || _snapshots.Count == 0)
             {
                 return;

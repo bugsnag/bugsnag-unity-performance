@@ -9,7 +9,7 @@ namespace BugsnagUnityPerformance
     internal class AndroidNative
     {
 
-#if UNITY_ANDROID //&& !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
         private static AndroidJavaClass _unityPlayerClass;
         private static AndroidJavaClass UnityPlayerClass
         {
@@ -231,45 +231,49 @@ namespace BugsnagUnityPerformance
 #endif
         }
 
-        public static SystemMetricsSnapshot? GetSystemMetricsSnapshot()
+        public static SystemMetricsSnapshot? GetSystemMetricsSnapshot(bool sampleCpu, bool sampleMemory)
         {
-#if UNITY_ANDROID// && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
             var snapshot = new SystemMetricsSnapshot();
+            snapshot.AndroidMetrics = new AndroidMemoryMetrics();
             snapshot.Timestamp = BugsnagPerformanceUtil.GetNanoSecondsNow();
-
-            var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
-            ActivityManager.Call("getMemoryInfo", amMemoryInfo);
-
-            var memInfoArray = ActivityManager.Call<AndroidJavaObject[]>(
-                "getProcessMemoryInfo",
-                new object[] { new int[] { AndroidActivityPid } }
-            );
-            var debugMemInfo = memInfoArray[0];
-            var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
-
-            snapshot.AndroidMetrics = new AndroidMemoryMetrics
+            if (sampleMemory)
             {
-                DeviceFreeMemory = amMemoryInfo.Get<long>("availMem"),
-                DeviceTotalMemory = amMemoryInfo.Get<long>("totalMem"),
-                PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
-                ArtMaxMemory = RuntimeInstance.Call<long>("maxMemory"),
-                ArtTotalMemory = RuntimeInstance.Call<long>("totalMemory"),
-                ArtFreeMemory = RuntimeInstance.Call<long>("freeMemory")
-            };
+                var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
+                ActivityManager.Call("getMemoryInfo", amMemoryInfo);
 
-            if (_processCpuReader == null)
-            {
-                _processCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/stat");
+                var memInfoArray = ActivityManager.Call<AndroidJavaObject[]>(
+                    "getProcessMemoryInfo",
+                    new object[] { new int[] { AndroidActivityPid } }
+                );
+                var debugMemInfo = memInfoArray[0];
+                var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
+
+                snapshot.AndroidMetrics = new AndroidMemoryMetrics
+                {
+                    DeviceFreeMemory = amMemoryInfo.Get<long>("availMem"),
+                    DeviceTotalMemory = amMemoryInfo.Get<long>("totalMem"),
+                    PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
+                    ArtMaxMemory = RuntimeInstance.Call<long>("maxMemory"),
+                    ArtTotalMemory = RuntimeInstance.Call<long>("totalMemory"),
+                    ArtFreeMemory = RuntimeInstance.Call<long>("freeMemory")
+                };
             }
-
-            if (_mainThreadCpuReader == null)
+            if (sampleCpu)
             {
-                _mainThreadCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/task/{MainThreadTid}/stat");
+                if (_processCpuReader == null)
+                {
+                    _processCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/stat");
+                }
+
+                if (_mainThreadCpuReader == null)
+                {
+                    _mainThreadCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/task/{MainThreadTid}/stat");
+                }
+
+                snapshot.ProcessCPUPercent = _processCpuReader.SampleCpuPercent();
+                snapshot.MainThreadCPUPercent = _mainThreadCpuReader.SampleCpuPercent();
             }
-
-            snapshot.ProcessCPUPercent = _processCpuReader.SampleCpuPercent();
-            snapshot.MainThreadCPUPercent = _mainThreadCpuReader.SampleCpuPercent();
-
             return snapshot;
 #else
             return null;
@@ -319,7 +323,7 @@ namespace BugsnagUnityPerformance
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogWarning($"[Bugsnag] Failed to read CPU stat: {e}");
+                Debug.LogWarning($"[Bugsnag] Failed to read CPU stat: {e}");
                 return -1.0;
             }
         }
