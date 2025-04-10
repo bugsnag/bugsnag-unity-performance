@@ -310,13 +310,13 @@ namespace BugsnagUnityPerformance
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
             SetAttribute(CPU_MEASURES_TIMESTAMPS_KEY, timestamps);
             // CPU
-            var processCpu = snapshots.Select(s => s.ProcessCPUPercent).ToArray();
-            var mainThreadCpu = snapshots.Select(s => s.MainThreadCPUPercent).ToArray();
+            var processCpu = snapshots.Select(s => Math.Round(s.ProcessCPUPercent,2)).ToArray();
+            var mainThreadCpu = snapshots.Select(s => Math.Round(s.MainThreadCPUPercent,2)).ToArray();
 
             SetAttribute(CPU_MEASURES_TOTAL_KEY, processCpu);
             SetAttribute(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
-            SetAttribute(CPU_MEAN_TOTAL_KEY, processCpu.Average());
-            SetAttribute(CPU_MEAN_MAIN_THREAD_KEY, mainThreadCpu.Average());
+            SetAttribute(CPU_MEAN_TOTAL_KEY, Math.Round(processCpu.Average(),2));
+            SetAttribute(CPU_MEAN_MAIN_THREAD_KEY, Math.Round(mainThreadCpu.Average(),2));
         }
         internal void CalculateMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
         {

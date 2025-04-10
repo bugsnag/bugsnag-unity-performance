@@ -138,7 +138,6 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        private static long _maxArtMemory = -1;
 #endif
         private static ProcStatReader _processCpuReader;
         private static ProcStatReader _mainThreadCpuReader;
@@ -253,7 +252,7 @@ namespace BugsnagUnityPerformance
                 DeviceFreeMemory = amMemoryInfo.Get<long>("availMem"),
                 DeviceTotalMemory = amMemoryInfo.Get<long>("totalMem"),
                 PSS = totalPss * 1024L, // getTotalPss is in KB, multiply by 1024 for bytes if needed
-                ArtMaxMemory = _maxArtMemory,
+                ArtMaxMemory = RuntimeInstance.Call<long>("maxMemory"),
                 ArtTotalMemory = RuntimeInstance.Call<long>("totalMemory"),
                 ArtFreeMemory = RuntimeInstance.Call<long>("freeMemory")
             };
@@ -281,7 +280,6 @@ namespace BugsnagUnityPerformance
     internal static class SystemConfig
     {
         public static readonly double ClockTickHz = 100.0; // Typically 100 on most devices
-
         public static readonly int NumCores = Environment.ProcessorCount;
     }
     internal class ProcStatReader
@@ -327,16 +325,16 @@ namespace BugsnagUnityPerformance
         }
 
         private double GetSystemUptimeSeconds()
-{
+        {
 #if UNITY_ANDROID && !UNITY_EDITOR
-    using (var systemClock = new AndroidJavaClass("android.os.SystemClock"))
-    {
-        long uptimeMs = systemClock.CallStatic<long>("elapsedRealtime");
-        return uptimeMs / 1000.0;
-    }
+            using (var systemClock = new AndroidJavaClass("android.os.SystemClock"))
+            {
+                long uptimeMs = systemClock.CallStatic<long>("elapsedRealtime");
+                return uptimeMs / 1000.0;
+            }
 #else
-    return Environment.TickCount / 1000.0;
+            return Environment.TickCount / 1000.0;
 #endif
-}
+        }
     }
 }
