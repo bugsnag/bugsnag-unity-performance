@@ -8,12 +8,8 @@ namespace BugsnagUnityPerformance
     internal struct SystemMetricsSnapshot
     {
         public long Timestamp;
-
-        // CPU usage
         public double ProcessCPUPercent;
         public double MainThreadCPUPercent;
-
-        // Platform-specific memory metrics
         public AndroidMemoryMetrics? AndroidMetrics;
         public iOSMemoryMetrics? iOSMetrics;
     }

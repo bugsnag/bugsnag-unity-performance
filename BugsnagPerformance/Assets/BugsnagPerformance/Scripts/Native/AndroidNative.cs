@@ -48,6 +48,7 @@ namespace BugsnagUnityPerformance
                 return _buildClass;
             }
         }
+
         private static AndroidJavaClass _versionClass;
         private static AndroidJavaClass VersionClass
         {
@@ -143,8 +144,6 @@ namespace BugsnagUnityPerformance
         private static ProcStatReader _mainThreadCpuReader;
         private static int _mainThreadTid = -1;
 
-
-
         public static string GetVersionCode()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -171,8 +170,6 @@ namespace BugsnagUnityPerformance
         public static string GetArch()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-
-
             if (GetAndroidSDKInt() >= 21)
             {
                 var abis = BuildClass.GetStatic<string[]>("SUPPORTED_ABIS");
@@ -219,7 +216,6 @@ namespace BugsnagUnityPerformance
             }
 #endif
             return string.Empty;
-
         }
 
         public static string GetOsVersion()
@@ -240,14 +236,12 @@ namespace BugsnagUnityPerformance
             {
                 var amMemoryInfo = new AndroidJavaObject("android.app.ActivityManager$MemoryInfo");
                 ActivityManager.Call("getMemoryInfo", amMemoryInfo);
-
                 var memInfoArray = ActivityManager.Call<AndroidJavaObject[]>(
                     "getProcessMemoryInfo",
                     new object[] { new int[] { AndroidActivityPid } }
                 );
                 var debugMemInfo = memInfoArray[0];
                 var totalPss = (long)debugMemInfo.Call<int>("getTotalPss");
-
                 snapshot.AndroidMetrics = new AndroidMemoryMetrics
                 {
                     DeviceFreeMemory = amMemoryInfo.Get<long>("availMem"),
@@ -264,12 +258,10 @@ namespace BugsnagUnityPerformance
                 {
                     _processCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/stat");
                 }
-
                 if (_mainThreadCpuReader == null)
                 {
                     _mainThreadCpuReader = new ProcStatReader($"/proc/{AndroidActivityPid}/task/{MainThreadTid}/stat");
                 }
-
                 snapshot.ProcessCPUPercent = _processCpuReader.SampleCpuPercent();
                 snapshot.MainThreadCPUPercent = _mainThreadCpuReader.SampleCpuPercent();
             }
