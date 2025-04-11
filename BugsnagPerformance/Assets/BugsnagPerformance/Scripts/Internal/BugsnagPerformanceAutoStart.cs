@@ -9,7 +9,7 @@ internal class BugsnagPerformanceAutoStart : MonoBehaviour
         var settings = Resources.Load<BugsnagPerformanceSettingsObject>("Bugsnag/BugsnagPerformanceSettingsObject");
         if (settings != null)
         {
-            var config = settings.GetConfig();           
+            var config = settings.GetConfig();
             if (settings.StartAutomaticallyAtLaunch)
             {
                 if (string.IsNullOrEmpty(config.ApiKey))

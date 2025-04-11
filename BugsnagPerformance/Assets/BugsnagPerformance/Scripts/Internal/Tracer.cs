@@ -62,9 +62,9 @@ namespace BugsnagUnityPerformance
                     {
                         continue;
                     }
-                    if(!_config.AutoInstrumentRendering)
+                    if (!_config.AutoInstrumentRendering)
                     {
-                        if(span.IsFrozenFrameSpan)
+                        if (span.IsFrozenFrameSpan)
                         {
                             span.Discard();
                         }
