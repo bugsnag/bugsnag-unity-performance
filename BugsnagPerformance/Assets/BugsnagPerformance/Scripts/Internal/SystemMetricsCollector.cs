@@ -8,34 +8,25 @@ namespace BugsnagUnityPerformance
     internal struct SystemMetricsSnapshot
     {
         public long Timestamp;
-
-        // CPU usage
         public double ProcessCPUPercent;
         public double MainThreadCPUPercent;
-        public double MonitorThreadCPUPercent;
-
-        // Platform-specific memory metrics
         public AndroidMemoryMetrics? AndroidMetrics;
         public iOSMemoryMetrics? iOSMetrics;
     }
 
     internal struct AndroidMemoryMetrics
     {
-        // Free memory (bytes) available to the process.
-        public long? FreeMemory;
-        // Total memory (bytes) currently allocated to the process.
-        public long? TotalMemory;
-        // Max memory (bytes) that can be used by the process.
-        public long? MaxMemory;
-        // Proportional Set Size (bytes) used by the process.
-        public long? PSS;
+        public long? DeviceFreeMemory; // The amount of free memory on the device.       
+        public long? DeviceTotalMemory; // The total amount of memory on the device.
+        public long? PSS; // The amount of memory allocated to this process.
+        public long? ArtMaxMemory; // The maximum heap memory your app is allowed to use.
+        public long? ArtTotalMemory; // The amount of heap memory currently allocated by the runtime.
+        public long? ArtFreeMemory; // The amount of heap memory currently free and available for allocation.
     }
 
     internal struct iOSMemoryMetrics
     {
-        // The current physical memory usage by this process (bytes).
         public long? PhysicalMemoryInUse;
-        // The total physical memory on the device (bytes).
         public long? TotalDeviceMemory;
     }
 
@@ -102,29 +93,23 @@ namespace BugsnagUnityPerformance
 
         private SystemMetricsSnapshot? GetSystemMetricsSnapshot()
         {
-            //TODO Swap this out for the real android and iOS implementations
-            return GetTestingMetrics();
             if (_platform == RuntimePlatform.Android)
             {
-                return AndroidNative.GetSystemMetricsSnapshot();
+                return AndroidNative.GetSystemMetricsSnapshot(_cpuMetricsEnabled, _memoryMetricsEnabled);
             }
             else if (_platform == RuntimePlatform.IPhonePlayer)
             {
                 return iOSNative.GetSystemMetricsSnapshot();
             }
+            return null;
         }
 
         public void OnSpanEnd(Span span)
         {
-            if (!_cpuMetricsEnabled && !_memoryMetricsEnabled)
-            {
-                return;
-            }
             if (_snapshots == null || _snapshots.Count == 0)
             {
                 return;
             }
-
             long startNs = BugsnagPerformanceUtil.GetNanoSeconds(span.StartTime);
             long endNs = BugsnagPerformanceUtil.GetNanoSeconds(span.EndTime);
 
@@ -143,7 +128,6 @@ namespace BugsnagUnityPerformance
             }
 
             relevantSnapshots.AddRange(duringAndAfter);
-
             if (relevantSnapshots.Count > 0)
             {
                 if (_cpuMetricsEnabled)
@@ -155,29 +139,6 @@ namespace BugsnagUnityPerformance
                     span.CalculateMemoryMetrics(relevantSnapshots);
                 }
             }
-        }
-
-        private SystemMetricsSnapshot GetTestingMetrics()
-        {
-            return new SystemMetricsSnapshot
-            {
-                Timestamp = BugsnagPerformanceUtil.GetNanoSeconds(DateTimeOffset.UtcNow),
-                ProcessCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                MainThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                MonitorThreadCPUPercent = UnityEngine.Random.Range(0.0f, 100.0f),
-                AndroidMetrics = new AndroidMemoryMetrics
-                {
-                    FreeMemory = UnityEngine.Random.Range(0, 1000),
-                    TotalMemory = UnityEngine.Random.Range(0, 1000),
-                    MaxMemory = UnityEngine.Random.Range(0, 1000),
-                    PSS = UnityEngine.Random.Range(0, 1000),
-                },
-                iOSMetrics = new iOSMemoryMetrics
-                {
-                    PhysicalMemoryInUse = UnityEngine.Random.Range(0, 1000),
-                    TotalDeviceMemory = UnityEngine.Random.Range(0, 1000),
-                }
-            };
         }
     }
 }

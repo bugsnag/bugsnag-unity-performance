@@ -11,4 +11,11 @@ internal class BugsnagPerformanceUtil
         var duration = time - _unixStart;
         return duration.Ticks * 100; // 1 tick = 100 nanoseconds
     }
+
+    public static long GetNanoSecondsNow()
+    {
+        var time = DateTimeOffset.UtcNow;
+        var duration = time - _unixStart;
+        return duration.Ticks * 100; // 1 tick = 100 nanoseconds
+    }
 }
