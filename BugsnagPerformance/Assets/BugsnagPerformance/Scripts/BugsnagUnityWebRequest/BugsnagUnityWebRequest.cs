@@ -67,18 +67,18 @@ namespace BugsnagNetworking
         }
 
         // Post
-    #if UNITY_2022_2_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
         public static BugsnagUnityWebRequest PostWwwForm(string uri, string form)
         {
             return new BugsnagUnityWebRequest(UnityWebRequest.PostWwwForm(uri, form));
         }
-    #else
+#else
         public static BugsnagUnityWebRequest Post(string uri, string postData)
         {
             return new BugsnagUnityWebRequest(UnityWebRequest.Post(uri, postData));
         }
-    #endif
-        
+#endif
+
 
         public static BugsnagUnityWebRequest Post(string uri, WWWForm formData)
         {
@@ -95,18 +95,18 @@ namespace BugsnagNetworking
             return new BugsnagUnityWebRequest(UnityWebRequest.Post(uri, formFields));
         }
 
-    #if UNITY_2022_2_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
         public static BugsnagUnityWebRequest PostWwwForm(Uri uri, string form)
         {
             return new BugsnagUnityWebRequest(UnityWebRequest.PostWwwForm(uri, form));
         }
-    #else
+#else
         public static BugsnagUnityWebRequest Post(Uri uri, string postData)
         {
             return new BugsnagUnityWebRequest(UnityWebRequest.Post(uri, postData));
         }
-    #endif
-       
+#endif
+
 
         public static BugsnagUnityWebRequest Post(Uri uri, WWWForm formData)
         {
@@ -355,7 +355,7 @@ namespace BugsnagNetworking
         public long responseCode => UnityWebRequest.responseCode;
 
         public float uploadProgress => UnityWebRequest.uploadProgress;
-        
+
 
     }
 

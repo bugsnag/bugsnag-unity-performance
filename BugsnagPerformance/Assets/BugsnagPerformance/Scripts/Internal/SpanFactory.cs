@@ -19,7 +19,7 @@ namespace BugsnagUnityPerformance
         private const string CONNECTION_TYPE_UNAVAILABLE = "unavailable";
         private const string CONNECTION_TYPE_CELL = "cell";
         private const string CONNECTION_TYPE_WIFI = "wifi";
-    
+
         private string _currentConnectionType = CONNECTION_TYPE_UNAVAILABLE;
 
         private WaitForSeconds _connectionPollRate = new WaitForSeconds(1);
@@ -89,7 +89,7 @@ namespace BugsnagUnityPerformance
             string traceId;
             string spanId = GetNewSpanId();
             // At this point span options should never be null
-            if(spanOptions.SpanMetrics == null)
+            if (spanOptions.SpanMetrics == null)
             {
                 spanOptions.SpanMetrics = new SpanMetrics();
                 spanOptions.SpanMetrics.Rendering = spanOptions.IsFirstClass ?? false;
@@ -113,15 +113,15 @@ namespace BugsnagUnityPerformance
                 }
             }
 
-            var newSpan = new Span(name, kind, spanId, 
-            traceId, parentSpanId, spanOptions.StartTime, 
+            var newSpan = new Span(name, kind, spanId,
+            traceId, parentSpanId, spanOptions.StartTime,
             spanOptions.IsFirstClass, _onSpanEnd, _maxCustomAttributes);
             if (spanOptions.MakeCurrentContext)
             {
                 AddToContextStack(newSpan);
             }
             newSpan.SetAttributeInternal("net.host.connection.type", _currentConnectionType);
-            if(spanOptions.SpanMetrics != null && spanOptions.SpanMetrics.Rendering)
+            if (spanOptions.SpanMetrics != null && spanOptions.SpanMetrics.Rendering)
             {
                 _frameMetricsCollector.OnSpanStart(newSpan);
             }
@@ -133,7 +133,7 @@ namespace BugsnagUnityPerformance
             var verb = request.method.ToUpper();
             // as most code is running on the same thread and we want to avoid any spans
             // starting while the network call is inflight becoming children of the network span.
-            var spanOptions = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true};
+            var spanOptions = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true };
             var span = CreateSpan("HTTP/" + verb, SpanKind.SPAN_KIND_CLIENT, spanOptions);
             span.SetAttributeInternal("bugsnag.span.category", "network");
             span.SetAttributeInternal("http.url", url);
@@ -152,7 +152,7 @@ namespace BugsnagUnityPerformance
             }
             else
             {
-                options = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true};
+                options = new SpanOptions { MakeCurrentContext = false, IsFirstClass = true };
             }
             var span = CreateSpan("HTTP/" + httpVerb, SpanKind.SPAN_KIND_CLIENT, options);
             span.SetAttributeInternal("bugsnag.span.category", "network");
@@ -163,7 +163,7 @@ namespace BugsnagUnityPerformance
 
         private IEnumerator GetConnectionType()
         {
-            while(true)
+            while (true)
             {
                 switch (Application.internetReachability)
                 {
@@ -204,7 +204,7 @@ namespace BugsnagUnityPerformance
             var span = CreateSpan("[ViewLoad/UnityScene]" + sceneName, SpanKind.SPAN_KIND_INTERNAL, options);
             span.SetAttributeInternal("bugsnag.span.category", "view_load");
             span.SetAttributeInternal("bugsnag.view.type", "UnityScene");
-            span.SetAttributeInternal("bugsnag.view.name", sceneName);   
+            span.SetAttributeInternal("bugsnag.view.name", sceneName);
             return span;
         }
 
@@ -218,7 +218,7 @@ namespace BugsnagUnityPerformance
             while (_contextStack.Count > 0)
             {
                 var top = _contextStack.Peek();
-                if(top == null)
+                if (top == null)
                 {
                     _contextStack.Pop();
                     continue;

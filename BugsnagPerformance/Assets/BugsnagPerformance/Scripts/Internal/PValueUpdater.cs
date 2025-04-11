@@ -30,7 +30,7 @@ namespace BugsnagUnityPerformance
         {
             MainThreadDispatchBehaviour.Enqueue(CheckPValue());
         }
-        
+
         private IEnumerator CheckPValue()
         {
 #if BUGSNAG_DEBUG

@@ -54,7 +54,7 @@ public class Main : MonoBehaviour
 
     public void LoadOtherScene()
     {
-        BugsnagSceneManager.LoadScene(1,LoadSceneMode.Additive);
+        BugsnagSceneManager.LoadScene(1, LoadSceneMode.Additive);
     }
 
     public void DoNestedSpanMainThread()
@@ -68,11 +68,12 @@ public class Main : MonoBehaviour
     public void DoNestedSpanThreaded()
     {
         var span1 = BugsnagPerformance.StartSpan("Span1");
-        new Thread(() => {
+        new Thread(() =>
+        {
             var span2 = BugsnagPerformance.StartSpan("Span2");
             span2.End();
         }).Start();
-        
+
         span1.End();
     }
 

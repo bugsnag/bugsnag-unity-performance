@@ -28,9 +28,9 @@ namespace BugsnagUnityPerformance
 
         public static Scene GetSceneByPath(string scenePath) => SceneManager.GetSceneByPath(scenePath);
 
-        public static void MergeScenes(Scene sourceScene, Scene destinationScene) => SceneManager.MergeScenes(sourceScene,destinationScene);
+        public static void MergeScenes(Scene sourceScene, Scene destinationScene) => SceneManager.MergeScenes(sourceScene, destinationScene);
 
-        public static void MoveGameObjectToScene(GameObject go, Scene scene) => SceneManager.MoveGameObjectToScene(go,scene);
+        public static void MoveGameObjectToScene(GameObject go, Scene scene) => SceneManager.MoveGameObjectToScene(go, scene);
 
         public static bool SetActiveScene(Scene scene) => SceneManager.SetActiveScene(scene);
 

@@ -155,7 +155,7 @@ namespace BugsnagUnityPerformance
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
-            if(!config.IsFixedSamplingProbability)
+            if (!config.IsFixedSamplingProbability)
             {
                 _pValueUpdater.Configure(config);
             }
@@ -172,9 +172,9 @@ namespace BugsnagUnityPerformance
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();
-            if(_pValueUpdater.IsConfigured)
+            if (_pValueUpdater.IsConfigured)
             {
-               _pValueUpdater.Start();
+                _pValueUpdater.Start();
             }
             _tracer.Start();
             _appStartHandler.Start();
