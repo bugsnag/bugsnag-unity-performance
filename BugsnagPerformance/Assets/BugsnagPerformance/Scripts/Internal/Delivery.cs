@@ -33,7 +33,8 @@ namespace BugsnagUnityPerformance
 
         private static RequestResult GetRequestResult(UnityWebRequest req)
         {
-            switch (req.responseCode) {
+            switch (req.responseCode)
+            {
                 case 200:
                 case 202:
                     return RequestResult.Success;
@@ -118,7 +119,8 @@ namespace BugsnagUnityPerformance
             else
             {
                 var bodyReady = false;
-                new Thread(() => {
+                new Thread(() =>
+                {
                     body = Encoding.ASCII.GetBytes(payload.GetJsonBody());
                     bodyReady = true;
                 }).Start();

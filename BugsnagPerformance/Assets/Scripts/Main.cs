@@ -39,14 +39,14 @@ public class Main : MonoBehaviour
     {
         var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
         span.SetAttribute("my string attribute", "some value");
-        span.SetAttribute("my string[] attribute", new string[]{"a","b","c"});
-        span.SetAttribute("my empty string[] attribute", new string[]{});
+        span.SetAttribute("my string[] attribute", new string[] { "a", "b", "c" });
+        span.SetAttribute("my empty string[] attribute", new string[] { });
         span.SetAttribute("my int attribute", 42);
-        span.SetAttribute("my int[] attribute", new long[]{1, 2, 3});
+        span.SetAttribute("my int[] attribute", new long[] { 1, 2, 3 });
         span.SetAttribute("my bool attribute", true);
-        span.SetAttribute("my bool[] attribute", new bool[]{true, false, true});
+        span.SetAttribute("my bool[] attribute", new bool[] { true, false, true });
         span.SetAttribute("my double attribute", 3.14);
-        span.SetAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
+        span.SetAttribute("my double[] attribute", new double[] { 1.1, 2.2, 3.3 });
 
         yield return new WaitForSeconds(1.0f);
         span.End();
@@ -54,7 +54,7 @@ public class Main : MonoBehaviour
 
     public void LoadOtherScene()
     {
-        BugsnagSceneManager.LoadScene(1,LoadSceneMode.Additive);
+        BugsnagSceneManager.LoadScene(1, LoadSceneMode.Additive);
     }
 
     public void DoNestedSpanMainThread()
@@ -68,11 +68,12 @@ public class Main : MonoBehaviour
     public void DoNestedSpanThreaded()
     {
         var span1 = BugsnagPerformance.StartSpan("Span1");
-        new Thread(() => {
+        new Thread(() =>
+        {
             var span2 = BugsnagPerformance.StartSpan("Span2");
             span2.End();
         }).Start();
-        
+
         span1.End();
     }
 
