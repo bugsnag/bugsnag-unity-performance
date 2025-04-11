@@ -12,7 +12,7 @@ namespace BugsnagUnityPerformance
     {
 
         public string PayloadId;
-        public SortedList<double, int> SamplingHistogram { get;  private set; }
+        public SortedList<double, int> SamplingHistogram { get; private set; }
         public Dictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
 
         private ResourceModel _resourceModel;
@@ -20,7 +20,7 @@ namespace BugsnagUnityPerformance
 
         private string _jsonbody;
 
-        public TracePayload(ResourceModel resourceModel, List<Span> spans, bool isFixedSamplingProbability,  int attributeArrayLengthLimit, int attributeStringValueLimit )
+        public TracePayload(ResourceModel resourceModel, List<Span> spans, bool isFixedSamplingProbability, int attributeArrayLengthLimit, int attributeStringValueLimit)
         {
             _resourceModel = resourceModel;
             if (spans != null && spans.Count > 0)
@@ -32,14 +32,14 @@ namespace BugsnagUnityPerformance
                     _spans.Add(new SpanModel(span, attributeArrayLengthLimit, attributeStringValueLimit));
                 }
                 SamplingHistogram = CalculateSamplingHistorgram(spans);
-                if(!isFixedSamplingProbability)
+                if (!isFixedSamplingProbability)
                 {
                     Headers["Bugsnag-Span-Sampling"] = BuildSamplingHistogramHeader(this);
                 }
             }
             else
             {
-                if(!isFixedSamplingProbability)
+                if (!isFixedSamplingProbability)
                 {
                     Headers["Bugsnag-Span-Sampling"] = "1:0";
                 }
@@ -83,7 +83,8 @@ namespace BugsnagUnityPerformance
                 if (_spans == null)
                 {
                     return "{\"resourceSpans\": []}";
-                } else
+                }
+                else
                 {
                     var scopeSpans = new ScopeSpanModel[] { new ScopeSpanModel(_spans.ToArray()) };
                     var resourceSpans = new ResourceSpanModel[] { new ResourceSpanModel(_resourceModel, scopeSpans) };
@@ -96,7 +97,7 @@ namespace BugsnagUnityPerformance
                         NullValueHandling = NullValueHandling.Ignore
                     });
                 }
-            }            
+            }
             return _jsonbody;
         }
 

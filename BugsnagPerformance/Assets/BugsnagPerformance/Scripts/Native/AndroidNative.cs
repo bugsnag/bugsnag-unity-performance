@@ -122,7 +122,7 @@ namespace BugsnagUnityPerformance
             // return dummy value
             return new SystemMetricsSnapshot
             {
-                
+
             };
 #pragma warning restore CS0162 // Unreachable code detected
         }

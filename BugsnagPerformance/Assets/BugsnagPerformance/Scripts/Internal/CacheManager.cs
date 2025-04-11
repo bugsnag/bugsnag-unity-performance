@@ -14,7 +14,8 @@ namespace BugsnagUnityPerformance
 
         private const string BATCH_FILE_SUFFIX = ".json";
 
-        public string PersistentStateFilePath  {
+        public string PersistentStateFilePath
+        {
             get
             {
                 return _persistentStateFilePath;
@@ -95,11 +96,13 @@ namespace BugsnagUnityPerformance
             foreach (var path in existingBatches)
             {
                 var id = Path.GetFileNameWithoutExtension(path);
-                try {
+                try
+                {
                     var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
                     var payload = TracePayload.Deserialize(id, stream);
                     payloads.Add(payload);
-                } catch
+                }
+                catch
                 {
                     // Ignore
                 }

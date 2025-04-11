@@ -26,7 +26,7 @@ namespace BugsnagUnityPerformance
         private static Span _firstSceneSpan;
         private PerformanceConfiguration _config;
         private static bool _appStartComplete;
-        private static DateTimeOffset? _defaultAppStartEndTime = null; 
+        private static DateTimeOffset? _defaultAppStartEndTime = null;
 
         private static SpanFactory _spanFactory;
 
