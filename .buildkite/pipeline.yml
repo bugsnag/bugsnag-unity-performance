@@ -38,6 +38,7 @@ steps:
         download:
           - upm-package.zip
     commands:
+      - bundle install
       - features/scripts/do_size_test.sh
 
   - label: Append Unity 2021 Basic Pipeline
