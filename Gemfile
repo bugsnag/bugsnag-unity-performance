@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rake'
 gem 'cocoapods'
+gem 'danger'
 
 unless Gem.win_platform?
   # Use official Maze Runner release
