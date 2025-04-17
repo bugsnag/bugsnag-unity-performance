@@ -1,8 +1,8 @@
 aliases:
-  - &6000 "6000.0.36f1"
+  - &6000 "6000.0.47f1"
 
 agents:
-  queue: macos-14-isolated
+  queue: macos-14
 
 steps:
   - group: ":hammer: Build Unity 6000 Test Fixtures"
@@ -121,6 +121,8 @@ steps:
   - group: ":test_tube: E2E Tests Unity 6000"
     steps:
       - label: Run MacOS e2e tests for Unity 6000
+        agents:
+          queue: macos-14-isolated
         timeout_in_minutes: 30
         depends_on: build-macos-fixture-6000
         env:
