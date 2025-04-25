@@ -1,68 +1,75 @@
 #!/usr/bin/env bash
 
-set -ex
+set -euo pipefail
+IFS=$'\n\t'
 
-if [ -z "$1" ]
-then
-  echo "Build type must be specified (dev or release)"
+# === CONFIGURATION ===
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly FIXTURES_DIR="$(cd "$SCRIPT_DIR/../fixtures" && pwd)"
+readonly PROJECT_ROOT="$FIXTURES_DIR/mazerunner"
+readonly ARCHIVE_PATH="$PROJECT_ROOT/archive/Unity-iPhone.xcarchive"
+readonly OUTPUT_DIR="$PROJECT_ROOT/output"
+
+# === USAGE CHECK ===
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <dev|release>"
   exit 1
 fi
 
-BUILD_TYPE=$1
+readonly BUILD_TYPE="$1"
 
-if [ "$BUILD_TYPE" != "dev" ] && [ "$BUILD_TYPE" != "release" ]
-then
-  echo "Invalid build type specified. Use 'dev' or 'release'."
+if [[ "$BUILD_TYPE" != "dev" && "$BUILD_TYPE" != "release" ]]; then
+  echo "Error: Invalid build type '$BUILD_TYPE'. Use 'dev' or 'release'."
   exit 1
 fi
 
-pushd "${0%/*}"
-  script_path=`pwd`
-popd
-pushd "$script_path/../fixtures"
-project_path=`pwd`/mazerunner
-
-# Clean any previous builds
-find $project_path/output/ -name "*.ipa" -exec rm '{}' \;
-
-# Determine project path based on build type
-if [ "$BUILD_TYPE" == "dev" ]; then
-  PROJECT_DIR="$project_path/mazerunner_dev_xcode"
-  IPA_NAME="mazerunner_dev"
+# === SELECT PROJECT DIR AND IPA NAME ===
+if [[ "$BUILD_TYPE" == "dev" ]]; then
+  readonly PROJECT_DIR="$PROJECT_ROOT/mazerunner_dev_xcode"
+  readonly IPA_NAME="mazerunner_dev"
 else
-  PROJECT_DIR="$project_path/mazerunner_xcode"
-  IPA_NAME="mazerunner"
+  readonly PROJECT_DIR="$PROJECT_ROOT/mazerunner_xcode"
+  readonly IPA_NAME="mazerunner"
 fi
 
-# Archive and export the project
-xcrun xcodebuild -project $PROJECT_DIR/Unity-iPhone.xcodeproj \
+# === CLEAN OLD BUILDS ===
+echo "Cleaning previous builds..."
+find "$OUTPUT_DIR" -name "*.ipa" -exec rm -f {} +
+
+# === ARCHIVE PROJECT ===
+echo "Archiving project..."
+xcrun xcodebuild -project "$PROJECT_DIR/Unity-iPhone.xcodeproj" \
                  -scheme Unity-iPhone \
                  -configuration Debug \
-                 -archivePath $project_path/archive/Unity-iPhone.xcarchive \
+                 -archivePath "$ARCHIVE_PATH" \
                  -allowProvisioningUpdates \
                  -allowProvisioningDeviceRegistration \
                  -quiet \
                  GCC_WARN_INHIBIT_ALL_WARNINGS=YES \
-                 archive
+                 archive || {
+                   echo "❌ Failed to archive project"
+                   exit 1
+                 }
 
-if [ $? -ne 0 ]
-then
-  echo "Failed to archive project"
-  exit 1
-fi
-
+# === EXPORT ARCHIVE ===
+echo "Exporting archive..."
 xcrun xcodebuild -exportArchive \
-                 -archivePath $project_path/archive/Unity-iPhone.xcarchive \
-                 -exportPath $project_path/output/ \
-                 -quiet \
-                 -exportOptionsPlist $script_path/exportOptions.plist
+                 -archivePath "$ARCHIVE_PATH" \
+                 -exportPath "$OUTPUT_DIR" \
+                 -exportOptionsPlist "$SCRIPT_DIR/exportOptions.plist" \
+                 -quiet || {
+                   echo "❌ Failed to export app"
+                   exit 1
+                 }
 
-if [ $? -ne 0 ]; then
-  echo "Failed to export app"
+# === RENAME IPA ===
+IPA_PATH="$(find "$OUTPUT_DIR" -name "*.ipa" | head -n 1)"
+if [[ -z "$IPA_PATH" ]]; then
+  echo "❌ IPA not found after export"
   exit 1
 fi
 
-# Move to known location for running (note - the name of the .ipa differs between Xcode versions)
-find $project_path/output/ -name "*.ipa" -exec mv '{}' $project_path/${IPA_NAME}_${UNITY_PERFORMANCE_VERSION:0:4}.ipa \;
+readonly FINAL_IPA="${PROJECT_ROOT}/${IPA_NAME}_${UNITY_PERFORMANCE_VERSION:0:4}.ipa"
+mv "$IPA_PATH" "$FINAL_IPA"
 
-popd
+echo "✅ Build succeeded: $FINAL_IPA"
