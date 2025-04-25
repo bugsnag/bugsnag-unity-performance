@@ -47,6 +47,11 @@ $UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod $E
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
+if [ ! -f $project_path/$APK_NAME ]; then
+  echo "APK not found at $project_path/$APK_NAME"
+  exit 1
+fi
+
 mv $project_path/$APK_NAME $project_path/${APK_NAME%.apk}_${UNITY_PERFORMANCE_VERSION:0:4}.apk
 
 popd
