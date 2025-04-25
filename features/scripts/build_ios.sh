@@ -34,7 +34,14 @@ fi
 
 # === CLEAN OLD BUILDS ===
 echo "Cleaning previous builds..."
-find "$OUTPUT_DIR" -name "*.ipa" -exec rm -f {} +
+IPA_FILES=($(find "$OUTPUT_DIR" -name "*.ipa"))
+
+if [[ ${#IPA_FILES[@]} -gt 0 ]]; then
+  rm -f "${IPA_FILES[@]}"
+  echo "Removed ${#IPA_FILES[@]} .ipa file(s)."
+else
+  echo "No .ipa files found to clean."
+fi
 
 # === ARCHIVE PROJECT ===
 echo "Archiving project..."
