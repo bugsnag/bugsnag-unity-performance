@@ -37,8 +37,8 @@ echo "Cleaning previous builds..."
 IPA_FILES=($(find "$OUTPUT_DIR" -name "*.ipa"))
 
 if [[ ${#IPA_FILES[@]} -gt 0 ]]; then
-  rm -f "${IPA_FILES[@]}"
   echo "Removed ${#IPA_FILES[@]} .ipa file(s)."
+  rm -f "${IPA_FILES[@]}"
 else
   echo "No .ipa files found to clean."
 fi
