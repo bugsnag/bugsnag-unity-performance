@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 if [ -z "$UNITY_PERFORMANCE_VERSION" ]; then
   echo "UNITY_PERFORMANCE_VERSION must be set"
