@@ -53,6 +53,8 @@ steps:
 
       - label: ':android: Build Android test fixture for Unity 2020'
         timeout_in_minutes: 30
+        agents:
+          queue: macos-14-unity-isolated
         key: build-android-fixture-2020
         depends_on: build-artifacts
         env:
