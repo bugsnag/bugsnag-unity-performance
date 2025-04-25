@@ -15,7 +15,7 @@ DEFAULT_CLI_ARGS="-quit -batchmode -nographics"
 
 project_path="features/fixtures/minimalapp"
 package_path="upm-package.zip"
-package_destination="${PROJECT_PATH}/Packages"
+package_destination="${package_path}/Packages"
 
 echo "remove existing packages"
 rm -rf "$package_destination"
