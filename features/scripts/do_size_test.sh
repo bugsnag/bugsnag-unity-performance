@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-IFS=$'\n\t'
+set -e
 
 # === CHECK ENVIRONMENT ===
 if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
