@@ -9,8 +9,8 @@ then
   exit 1
 fi
 
-readonly XCODE_PROJECT_PATH="$1"
-readonly EXPORT_NAME="$2"
+XCODE_PROJECT_PATH="$1"
+EXPORT_NAME="$2"
 
 echo "📁 Xcode Project Path: $XCODE_PROJECT_PATH"
 echo "📦 Export Name: $EXPORT_NAME"
