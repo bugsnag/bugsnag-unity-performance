@@ -13,7 +13,6 @@ PACKAGE_DESTINATION="$FIXTURE_PATH/Packages"
 BUILD_WINDOWS=false
 
 # === FUNCTIONS ===
-
 abort() {
   echo "❌ $1"
   exit 1
@@ -26,7 +25,7 @@ download_bugsnag_package() {
 
 import_package_into_unity() {
   echo "📦 Importing Bugsnag.unitypackage into $FIXTURE_PATH"
-  "$UNITY_PATH" $DEFAULT_CLI_ARGS \
+  "$UNITY_PATH" "$DEFAULT_CLI_ARGS" \
     -projectPath "$FIXTURE_PATH" \
     -ignoreCompilerErrors \
     -importPackage "$(basename "$PACKAGE_DOWNLOAD_PATH")"
@@ -39,13 +38,11 @@ unzip_upm_package() {
 }
 
 # === INPUT VALIDATION ===
-
 if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
   abort "UNITY_PERFORMANCE_VERSION must be set"
 fi
 
 # === PARSE ARGUMENTS ===
-
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --windows)
@@ -59,7 +56,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 # === SET UNITY PATH ===
-
 if [[ "$BUILD_WINDOWS" == true ]]; then
   UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Editor/Unity.exe"
 else

@@ -1,46 +1,48 @@
 #!/usr/bin/env bash
 
-if [ -z "$UNITY_PERFORMANCE_VERSION" ]
-then
-  echo "UNITY_PERFORMANCE_VERSION must be set"
+set -e
+
+# === VALIDATE ENVIRONMENT ===
+if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
+  echo "❌ UNITY_PERFORMANCE_VERSION must be set."
   exit 1
 fi
 
-if [ -z "$1" ]
-then
-  echo "Build type must be specified (dev or release)"
+# === VALIDATE INPUT ARGUMENTS ===
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <build type: dev|release>"
   exit 1
 fi
 
-BUILD_TYPE=$1
+BUILD_TYPE="$1"
 
-if [ "$BUILD_TYPE" != "dev" ] && [ "$BUILD_TYPE" != "release" ]
-then
-  echo "Invalid build type specified. Use 'dev' or 'release'."
+if [[ "$BUILD_TYPE" != "dev" && "$BUILD_TYPE" != "release" ]]; then
+  echo "❌ Invalid build type: $BUILD_TYPE"
+  echo "Allowed values: dev, release"
   exit 1
 fi
 
-UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
-
-pushd "${0%/*}"
-  script_path=`pwd`
-popd
-
-pushd "$script_path/../fixtures"
-
+# === SET PATHS ===
+UNITY_PATH="/Applications/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Unity.app/Contents/MacOS"
 DEFAULT_CLI_ARGS="-quit -nographics -batchmode -logFile generateXcodeProject.log"
 
-project_path=`pwd`/mazerunner
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIXTURES_DIR="$(cd "$SCRIPT_DIR/../fixtures" && pwd)"
+PROJECT_PATH="$FIXTURES_DIR/mazerunner"
 
-# Generate the Xcode project for iOS
-if [ "$BUILD_TYPE" == "dev" ]; then
+echo "📁 Script path: $SCRIPT_DIR"
+echo "📁 Fixtures path: $FIXTURES_DIR"
+echo "🛠️  Building Xcode project for build type: $BUILD_TYPE"
+
+# === DETERMINE BUILD METHOD ===
+if [[ "$BUILD_TYPE" == "dev" ]]; then
   EXECUTE_METHOD="Builder.IosDev"
 else
   EXECUTE_METHOD="Builder.IosRelease"
 fi
 
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod $EXECUTE_METHOD
-RESULT=$?
-if [ $RESULT -ne 0 ]; then exit $RESULT; fi
+# === RUN UNITY BUILD ===
+echo "🚀 Running Unity to generate Xcode project..."
+"$UNITY_PATH/Unity" "$DEFAULT_CLI_ARGS" -projectPath "$PROJECT_PATH" -executeMethod "$EXECUTE_METHOD"
 
-popd
+echo "✅ Xcode project generated successfully."
