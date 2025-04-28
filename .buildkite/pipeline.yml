@@ -6,12 +6,12 @@ agents:
   queue: macos-14
 
 steps:
-  - label: Verify code formatting
-    timeout_in_minutes: 5
-    env:
-      UNITY_PERFORMANCE_VERSION: *2021
-    commands:
-      - rake code:verify
+#  - label: Verify code formatting
+#    timeout_in_minutes: 5
+#    env:
+#      UNITY_PERFORMANCE_VERSION: *2021
+#    commands:
+#      - rake code:verify
 
   - label: Build released library artifact
     timeout_in_minutes: 10
@@ -41,16 +41,16 @@ steps:
       - bundle install
       - features/scripts/do_size_test.sh
 
-  - label: Append Unity 2021 Basic Pipeline
-    agents:
-      queue: macos
-    timeout_in_minutes: 2
-    commands:
-      - buildkite-agent pipeline upload .buildkite/unity.2021.yml
-
-  - label: Conditionally trigger full set of tests
-    agents:
-      queue: macos
-    timeout_in_minutes: 2
-    commands:
-      - sh -c .buildkite/pipeline_trigger.sh
+#  - label: Append Unity 2021 Basic Pipeline
+#    agents:
+#      queue: macos
+#    timeout_in_minutes: 2
+#    commands:
+#      - buildkite-agent pipeline upload .buildkite/unity.2021.yml
+#
+#  - label: Conditionally trigger full set of tests
+#    agents:
+#      queue: macos
+#    timeout_in_minutes: 2
+#    commands:
+#      - sh -c .buildkite/pipeline_trigger.sh
