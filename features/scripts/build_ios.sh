@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [ -z "$1" ]
 then
   echo "Build type must be specified (dev or release)"
