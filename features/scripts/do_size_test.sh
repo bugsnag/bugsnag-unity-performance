@@ -15,54 +15,37 @@ PROJECT_PATH="features/fixtures/minimalapp"
 PACKAGE_PATH="upm-package.zip"
 PACKAGE_DESTINATION="${PROJECT_PATH}/Packages"
 
-# === FUNCTIONS ===
-
-run_unity_build() {
-  local method=$1
-  local log_file=$2
-
-  echo "🏗️  Running Unity build: $method"
-  "$UNITY_PATH/Unity" "$DEFAULT_CLI_ARGS" \
-    -projectPath "$PROJECT_PATH" \
-    -executeMethod "$method" \
-    -logFile "$log_file"
-
-  echo "✅ Finished: $method"
-}
-
-safe_source() {
-  local script=$1
-  if [[ -f "$script" ]]; then
-    source "$script"
-  else
-    echo "⚠️  Warning: Script not found: $script"
-    exit 1
-  fi
-}
-
 # === CLEAN UP ===
 echo "🧹 Removing existing packages..."
 rm -rf "$PACKAGE_DESTINATION"
 
-# === BUILD WITHOUT BUGSNAG ===
-run_unity_build "Builder.BuildAndroidWithout" "build_android_minimal_without.log"
-run_unity_build "Builder.BuildIosWithout" "export_ios_xcode_project_minimal_without.log"
+echo "🏗️ building android without bugsnag"
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildAndroidWithout -logFile build_android_minimal_without.log
+RESULT=$?
+if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-safe_source "./features/scripts/build_xcode_project.sh" \
-  "features/fixtures/minimalapp/minimal_without_xcode" \
-  "without_bugsnag"
+echo "🏗️ building ios without bugsnag"
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildIosWithout -logFile export_ios_xcode_project_minimal_without.log
+RESULT=$?
+if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-# === IMPORT PACKAGE ===
+source ./features/scripts/build_xcode_project.sh features/fixtures/minimalapp/minimal_without_xcode without_bugsnag
+
 echo "📦 Importing package..."
 unzip -q "$PACKAGE_PATH" -d "$PACKAGE_DESTINATION"
 
-# === BUILD WITH BUGSNAG ===
-run_unity_build "Builder.BuildAndroidWith" "build_android_minimal_with.log"
-run_unity_build "Builder.BuildIosWith" "export_ios_xcode_project_minimal_with.log"
+echo "🏗️ building android with bugsnag"
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildAndroidWith -logFile build_android_minimal_with.log
+RESULT=$?
+if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
-safe_source "./features/scripts/build_xcode_project.sh" \
-  "features/fixtures/minimalapp/minimal_with_xcode" \
-  "with_bugsnag"
+echo "🏗️ building ios with bugsnag"
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildIosWith -logFile export_ios_xcode_project_minimal_with.log
+RESULT=$?
+if [ $RESULT -ne 0 ]; then exit $RESULT; fi
+ls
+
+source ./features/scripts/build_xcode_project.sh features/fixtures/minimalapp/minimal_with_xcode with_bugsnag
 
 # === DANGER CHECK ===
 echo "🚦 Running Danger checks..."
