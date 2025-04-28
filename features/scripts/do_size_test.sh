@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-set -ex
-IFS=$'\n\t'
-
-# === CHECK ENVIRONMENT ===
-if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
-  echo "❌ UNITY_PERFORMANCE_VERSION must be set"
+if [ -z "$UNITY_PERFORMANCE_VERSION" ]
+then
+  echo "UNITY_PERFORMANCE_VERSION must be set"
   exit 1
 fi
 
-# === CONFIGURATION ===
-UNITY_PATH="/Applications/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Unity.app/Contents/MacOS"
+UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
+
 DEFAULT_CLI_ARGS="-quit -batchmode -nographics"
 
-project_path="features/fixtures/minimalapp"
-package_path="upm-package.zip"
-package_destination="${package_path}/Packages"
+project_path=features/fixtures/minimalapp
+
+package_path=upm-package.zip
+
+package_destination=features/fixtures/minimalapp/Packages
+
 
 echo "remove existing packages"
 rm -rf "$package_destination"
