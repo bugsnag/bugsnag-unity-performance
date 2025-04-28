@@ -1,68 +1,91 @@
 #!/usr/bin/env bash
 
-if [ -z "$UNITY_PERFORMANCE_VERSION" ]; then
-  echo "UNITY_PERFORMANCE_VERSION must be set"
+set -e
+
+# === CONFIGURATION ===
+FIXTURE_PATH="features/fixtures/mazerunner"
+DEFAULT_CLI_ARGS="-batchmode -nographics -quit"
+BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/download/Bugsnag.unitypackage"
+PACKAGE_DOWNLOAD_PATH="$FIXTURE_PATH/Bugsnag.unitypackage"
+UPM_PACKAGE_ZIP="upm-package.zip"
+PACKAGE_DESTINATION="$FIXTURE_PATH/Packages"
+
+BUILD_WINDOWS=false
+
+# === FUNCTIONS ===
+
+abort() {
+  echo "❌ $1"
   exit 1
+}
+
+download_bugsnag_package() {
+  echo "⬇️ Downloading Bugsnag.unitypackage from $BUGSNAG_RELEASE_URL"
+  curl -L "$BUGSNAG_RELEASE_URL" -o "$PACKAGE_DOWNLOAD_PATH"
+}
+
+import_package_into_unity() {
+  echo "📦 Importing Bugsnag.unitypackage into $FIXTURE_PATH"
+  "$UNITY_PATH" $DEFAULT_CLI_ARGS \
+    -projectPath "$FIXTURE_PATH" \
+    -ignoreCompilerErrors \
+    -importPackage "$(basename "$PACKAGE_DOWNLOAD_PATH")"
+}
+
+unzip_upm_package() {
+  echo "📂 Unzipping UPM package..."
+  rm -rf "$PACKAGE_DESTINATION/package"
+  unzip -q "$UPM_PACKAGE_ZIP" -d "$PACKAGE_DESTINATION"
+}
+
+# === INPUT VALIDATION ===
+
+if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
+  abort "UNITY_PERFORMANCE_VERSION must be set"
 fi
 
-# Parse arguments
-BUILD_WINDOWS=false
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    --windows) BUILD_WINDOWS=true ;;
-    *) echo "Unknown option: $1" ;;
+# === PARSE ARGUMENTS ===
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --windows)
+      BUILD_WINDOWS=true
+      ;;
+    *)
+      abort "Unknown option: $1"
+      ;;
   esac
   shift
 done
 
-# Set Unity path based on the platform
-if [ "$BUILD_WINDOWS" = true ]; then
-  UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
-  PACKAGE_DOWNLOAD_PATH="features/fixtures/mazerunner/Bugsnag.unitypackage"
+# === SET UNITY PATH ===
+
+if [[ "$BUILD_WINDOWS" == true ]]; then
+  UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Editor/Unity.exe"
 else
-  UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS/Unity"
-  PACKAGE_DOWNLOAD_PATH="features/fixtures/mazerunner/Bugsnag.unitypackage"
+  UNITY_PATH="/Applications/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Unity.app/Contents/MacOS/Unity"
 fi
 
-FIXTURE_PATH="features/fixtures/mazerunner"
-DEFAULT_CLI_ARGS="-batchmode -nographics -quit"
-BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/download/Bugsnag.unitypackage"
-
-# Download the latest Bugsnag Unity package if it doesn't exist or override it
-echo "Downloading Bugsnag.unitypackage from $BUGSNAG_RELEASE_URL"
-curl -L "$BUGSNAG_RELEASE_URL" -o "$PACKAGE_DOWNLOAD_PATH"
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "Failed to download Bugsnag.unitypackage"
-  exit $RESULT
+if [[ ! -f "$UNITY_PATH" ]]; then
+  abort "Unity executable not found at: $UNITY_PATH"
 fi
 
-# Check if Unity path exists
-if [ ! -f "$UNITY_PATH" ]; then
-  echo "Unity executable not found at $UNITY_PATH"
-  exit 1
+echo "🛠️ Unity path set to: $UNITY_PATH"
+
+# === DOWNLOAD PACKAGE ===
+if [[ ! -f "$PACKAGE_DOWNLOAD_PATH" ]]; then
+  download_bugsnag_package
+else
+  echo "ℹ️ Using cached Bugsnag.unitypackage"
 fi
 
-# Importing the Bugsnag package into Unity project
-echo "Importing Bugsnag.unitypackage into $FIXTURE_PATH"
-"$UNITY_PATH" $DEFAULT_CLI_ARGS \
-            -projectPath $FIXTURE_PATH \
-            -ignoreCompilerErrors \
-            -importPackage "Bugsnag.unitypackage"
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "Failed to import Bugsnag.unitypackage"
-  exit $RESULT
-fi
+# === IMPORT PACKAGE ===
+import_package_into_unity
 
-echo "Bugsnag package imported successfully"
+echo "✅ Bugsnag package imported successfully."
 
-# Proceed with unzipping the main package
-root_path=$(pwd)
-destination="features/fixtures/mazerunner/Packages"
-package="$root_path/upm-package.zip"
+# === UNZIP UPM PACKAGE ===
 
-rm -rf "$destination/package"
-unzip -q "$package" -d "$destination"
+unzip_upm_package
 
-echo "Package unzipped successfully"
+echo "🎉 Package unzipped successfully into $PACKAGE_DESTINATION"
