@@ -26,7 +26,12 @@ EXPORT_NAME=$2
 echo "Xcode export name set to $EXPORT_NAME"
 
 # Clean any previous builds
-find $XCODE_PROJECT_PATH/output/ -name "*.ipa" -exec rm '{}' \;
+echo "🧹 Cleaning previous .ipa files..."
+if [[ -d "$XCODE_PROJECT_PATH/output/" ]]; then
+  find "$XCODE_PROJECT_PATH/output/" -name "*.ipa" -exec rm -f {} +
+else
+  echo "ℹ️ Output directory does not exist, skipping cleanup."
+fi
 
 # Archive and export the project
 xcrun xcodebuild -project $XCODE_PROJECT_PATH/Unity-iPhone.xcodeproj \

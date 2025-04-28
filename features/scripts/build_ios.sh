@@ -23,7 +23,12 @@ pushd "$script_path/../fixtures"
 project_path=`pwd`/mazerunner
 
 # Clean any previous builds
-find $project_path/output/ -name "*.ipa" -exec rm '{}' \;
+echo "🧹 Cleaning previous .ipa files..."
+if [[ -d "$project_path/output/" ]]; then
+  find "$project_path/output/" -name "*.ipa" -exec rm -f {} +
+else
+  echo "ℹ️ Output directory does not exist, skipping cleanup."
+fi
 
 # Determine project path based on build type
 if [ "$BUILD_TYPE" == "dev" ]; then
