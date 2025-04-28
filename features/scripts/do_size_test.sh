@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -ex
 IFS=$'\n\t'
 
 # === CHECK ENVIRONMENT ===
