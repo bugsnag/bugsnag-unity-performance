@@ -63,5 +63,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Move to known location for running (note - the name of the .ipa differs between Xcode versions)
-find $XCODE_PROJECT_PATH/output/ -name "*.ipa" -exec mv '{}' features/fixtures/minimalapp/$EXPORT_NAME.ipa \;
+# === MOVE FINAL IPA ===
+echo "🚚 Moving IPA file to final destination..."
+IPA_FILE=$(find "$XCODE_PROJECT_PATH/output/" -name "*.ipa" | head -n 1)
+FINAL_IPA_PATH="features/fixtures/minimalapp/$EXPORT_NAME.ipa"
+
+if [[ -z "$IPA_FILE" ]]; then
+  echo "❌ Error: No IPA file found after export."
+  exit 1
+fi
+
+mv -f "$IPA_FILE" "$FINAL_IPA_PATH"
+
+echo "🎉 Build complete! IPA available at: $FINAL_IPA_PATH"
