@@ -9,9 +9,11 @@ then
   exit 1
 fi
 
-XCODE_PROJECT_PATH=$1
+readonly XCODE_PROJECT_PATH="$1"
+readonly EXPORT_NAME="$2"
 
-echo "Xcode Project path set to $XCODE_PROJECT_PATH"
+echo "📁 Xcode Project Path: $XCODE_PROJECT_PATH"
+echo "📦 Export Name: $EXPORT_NAME"
 
 # Check for unity version
 if [ -z "$2" ]
@@ -19,13 +21,6 @@ then
   echo "ERROR: No export name Set"
   exit 1
 fi
-
-EXPORT_NAME=$2
-
-
-echo "Xcode export name set to $EXPORT_NAME"
-
-# Clean any previous builds
 
 # === CLEAN PREVIOUS BUILDS ===
 echo "🧹 Cleaning previous .ipa files..."
@@ -36,6 +31,8 @@ else
 fi
 
 # Archive and export the project
+echo "📦 Archiving project..."
+
 xcrun xcodebuild -project $XCODE_PROJECT_PATH/Unity-iPhone.xcodeproj \
                  -scheme Unity-iPhone \
                  -configuration Debug \
@@ -50,7 +47,12 @@ if [ $? -ne 0 ]
 then
   echo "Failed to archive project"
   exit 1
+else
+  echo "✅ Archive successful."
 fi
+
+# === EXPORT ARCHIVE ===
+echo "📤 Exporting archive..."
 
 xcrun xcodebuild -exportArchive \
                  -archivePath $XCODE_PROJECT_PATH/archive/Unity-iPhone.xcarchive \
@@ -61,6 +63,8 @@ xcrun xcodebuild -exportArchive \
 if [ $? -ne 0 ]; then
   echo "Failed to export app"
   exit 1
+else
+  echo "✅ Export successful."
 fi
 
 # === MOVE FINAL IPA ===
