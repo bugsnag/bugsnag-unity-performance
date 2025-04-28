@@ -41,12 +41,12 @@ steps:
       - bundle install
       - features/scripts/do_size_test.sh
 
-#  - label: Append Unity 2021 Basic Pipeline
-#    agents:
-#      queue: macos
-#    timeout_in_minutes: 2
-#    commands:
-#      - buildkite-agent pipeline upload .buildkite/unity.2021.yml
+  - label: Append Unity 2021 Basic Pipeline
+    agents:
+      queue: macos
+    timeout_in_minutes: 2
+    commands:
+      - buildkite-agent pipeline upload .buildkite/unity.2021.yml
 #
 #  - label: Conditionally trigger full set of tests
 #    agents:

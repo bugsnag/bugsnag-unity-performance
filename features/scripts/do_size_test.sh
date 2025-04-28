@@ -1,34 +1,32 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
-if [ -z "$UNITY_PERFORMANCE_VERSION" ]
-then
-  echo "UNITY_PERFORMANCE_VERSION must be set"
+# === CHECK ENVIRONMENT ===
+if [[ -z "${UNITY_PERFORMANCE_VERSION:-}" ]]; then
+  echo "❌ UNITY_PERFORMANCE_VERSION must be set"
   exit 1
 fi
 
-UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Unity.app/Contents/MacOS"
-
+# === CONFIGURATION ===
+UNITY_PATH="/Applications/Unity/Hub/Editor/${UNITY_PERFORMANCE_VERSION}/Unity.app/Contents/MacOS"
 DEFAULT_CLI_ARGS="-quit -batchmode -nographics"
+PROJECT_PATH="features/fixtures/minimalapp"
+PACKAGE_PATH="upm-package.zip"
+PACKAGE_DESTINATION="${PROJECT_PATH}/Packages"
 
-project_path=features/fixtures/minimalapp
-
-package_path=upm-package.zip
-
-package_destination=features/fixtures/minimalapp/Packages
-
-
-echo "remove existing packages"
-rm -rf "$package_destination"
+# === CLEAN UP ===
+echo "🧹 Removing existing packages..."
+rm -rf "$PACKAGE_DESTINATION"
 
 echo "building android without bugsnag"
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.BuildAndroidWithout -logFile build_android_minimal_without.log
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildAndroidWithout -logFile build_android_minimal_without.log
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
 echo "building ios without bugsnag"
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.BuildIosWithout -logFile export_ios_xcode_project_minimal_without.log
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildIosWithout -logFile export_ios_xcode_project_minimal_without.log
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
@@ -36,16 +34,16 @@ source ./features/scripts/build_xcode_project.sh features/fixtures/minimalapp/mi
 
 
 echo "import package"
-unzip -q "$package_path" -d "$package_destination"
+unzip -q "$PACKAGE_PATH" -d "$PACKAGE_DESTINATION"
 
 
 echo "building android with bugsnag"
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.BuildAndroidWith -logFile build_android_minimal_with.log
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildAndroidWith -logFile build_android_minimal_with.log
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 
 echo "building ios with bugsnag"
-$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $project_path -executeMethod Builder.BuildIosWith -logFile export_ios_xcode_project_minimal_with.log
+$UNITY_PATH/Unity $DEFAULT_CLI_ARGS -projectPath $PROJECT_PATH -executeMethod Builder.BuildIosWith -logFile export_ios_xcode_project_minimal_with.log
 RESULT=$?
 if [ $RESULT -ne 0 ]; then exit $RESULT; fi
 ls

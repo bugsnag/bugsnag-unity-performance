@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
 # Check for unity version
 if [ -z "$1" ]
