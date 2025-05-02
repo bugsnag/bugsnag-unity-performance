@@ -172,7 +172,7 @@ namespace BugsnagUnityPerformance
         private void AddSpanToQueue(Span span)
         {
             // Delay adding to the queue to ensure that both pre start spans and later spans have enough system metric snapshots attached.
-           MainThreadDispatchBehaviour.Enqueue(AddToQueueDelayed(span));
+            MainThreadDispatchBehaviour.Enqueue(AddToQueueDelayed(span));
         }
 
         private IEnumerator AddToQueueDelayed(Span span)
