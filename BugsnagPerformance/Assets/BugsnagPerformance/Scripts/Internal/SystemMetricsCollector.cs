@@ -128,17 +128,17 @@ namespace BugsnagUnityPerformance
             }
 
             relevantSnapshots.AddRange(duringAndAfter);
-            if (relevantSnapshots.Count > 0)
+
+            if (_memoryMetricsEnabled && relevantSnapshots.Count > 0)
             {
-                if (_cpuMetricsEnabled)
-                {
-                    span.CalculateCPUMetrics(relevantSnapshots);
-                }
-                if (_memoryMetricsEnabled)
-                {
-                    span.CalculateMemoryMetrics(relevantSnapshots);
-                }
+                span.ApplyMemoryMetrics(relevantSnapshots);
             }
+            // We require minimum 2 snapshots to calculate CPU metrics and sometimes this is not possible
+            if (_cpuMetricsEnabled && relevantSnapshots.Count > 1)
+            {
+                span.ApplyCPUMetrics(relevantSnapshots);
+            }
+
         }
     }
 }

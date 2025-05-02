@@ -304,21 +304,21 @@ namespace BugsnagUnityPerformance
             _attributes.Remove(FPS_TARGET_KEY);
         }
 
-        internal void CalculateCPUMetrics(List<SystemMetricsSnapshot> snapshots)
+        internal void ApplyCPUMetrics(List<SystemMetricsSnapshot> snapshots)
         {
             // Timestamps
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
-            SetAttribute(CPU_MEASURES_TIMESTAMPS_KEY, timestamps);
+            SetAttributeInternal(CPU_MEASURES_TIMESTAMPS_KEY, timestamps);
             // CPU
             var processCpu = snapshots.Select(s => Math.Round(s.ProcessCPUPercent, 2)).ToArray();
             var mainThreadCpu = snapshots.Select(s => Math.Round(s.MainThreadCPUPercent, 2)).ToArray();
 
-            SetAttribute(CPU_MEASURES_TOTAL_KEY, processCpu);
-            SetAttribute(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
-            SetAttribute(CPU_MEAN_TOTAL_KEY, Math.Round(processCpu.Average(), 2));
-            SetAttribute(CPU_MEAN_MAIN_THREAD_KEY, Math.Round(mainThreadCpu.Average(), 2));
+            SetAttributeInternal(CPU_MEASURES_TOTAL_KEY, processCpu);
+            SetAttributeInternal(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
+            SetAttributeInternal(CPU_MEAN_TOTAL_KEY, Math.Round(processCpu.Average(), 2));
+            SetAttributeInternal(CPU_MEAN_MAIN_THREAD_KEY, Math.Round(mainThreadCpu.Average(), 2));
         }
-        internal void CalculateMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
+        internal void ApplyMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
         {
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
             SetAttributeInternal(MEMORY_TIMESTAMPS_KEY, timestamps);
