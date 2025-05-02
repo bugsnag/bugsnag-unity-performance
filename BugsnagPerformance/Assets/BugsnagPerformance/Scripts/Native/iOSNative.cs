@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-#if UNITY_IOS //&& !UNITY_EDITOR
+#if UNITY_IOS && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
 using UnityEngine;
