@@ -12,15 +12,15 @@ Feature: CPU Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 9 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.key" equals "bugsnag.system.cpu_measures_timestamps"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.value.arrayValue.values" is an array with 5 elements
-
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.key" equals "bugsnag.system.cpu_measures_total"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.key" equals "bugsnag.system.cpu_measures_timestamps"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.value.arrayValue.values" is an array with 5 elements
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.key" equals "bugsnag.system.cpu_measures_total"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_total" contains valid percentages
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.key" equals "bugsnag.system.cpu_measures_main_thread"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values" is an array with 5 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.key" equals "bugsnag.system.cpu_measures_main_thread"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_main_thread" contains valid percentages
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.metrics.cpu_mean_total" is a valid percentage
@@ -36,15 +36,15 @@ Feature: CPU Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 9 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.key" equals "bugsnag.system.cpu_measures_timestamps"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.value.arrayValue.values" is an array with 5 elements
-
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.key" equals "bugsnag.system.cpu_measures_total"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.key" equals "bugsnag.system.cpu_measures_timestamps"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.4.value.arrayValue.values" is an array with 5 elements
+
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.key" equals "bugsnag.system.cpu_measures_total"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_total" contains valid percentages
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.key" equals "bugsnag.system.cpu_measures_main_thread"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.5.value.arrayValue.values" is an array with 5 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.key" equals "bugsnag.system.cpu_measures_main_thread"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_main_thread" contains valid percentages
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.metrics.cpu_mean_total" is a valid percentage
