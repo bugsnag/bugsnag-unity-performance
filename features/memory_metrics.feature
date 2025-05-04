@@ -43,7 +43,7 @@ Feature: Memory Metrics
 
   # Basic checks
   * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "MemoryMetrics"
-  * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 12 elements
+  * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 9 elements
   * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true
 
   * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.key" equals "bugsnag.system.memory.timestamps"
