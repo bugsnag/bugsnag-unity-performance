@@ -22,9 +22,9 @@ static inline double monotonic_seconds(void)
 }
 
 // Generic sampler that turns “total ticks” into “% since last call”
-static inline double cpu_percent(uint64_t   nowTicks,
-                                 uint64_t & lastTicks,
-                                 double   & lastWall)
+static inline double cpu_percent(uint64_t  nowTicks,
+                                 uint64_t &lastTicks,
+                                 double   &lastWall)
 {
     const double nowWall = monotonic_seconds();
 
