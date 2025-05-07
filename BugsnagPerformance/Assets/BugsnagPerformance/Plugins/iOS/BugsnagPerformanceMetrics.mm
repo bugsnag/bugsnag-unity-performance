@@ -67,9 +67,9 @@ double bugsnag_unity_performance_process_cpu_percent(void)
 
 double bugsnag_unity_performance_main_thread_cpu_percent(void)
 {
-    static thread_t  mainThread = mach_thread_self(); // captured on first call
-    static uint64_t  lastTicks  = 0;
-    static double    lastWall   = 0.0;
+    static thread_t mainThread = mach_thread_self(); // captured on first call
+    static uint64_t lastTicks  = 0;
+    static double   lastWall   = 0.0;
 
     thread_basic_info_data_t info;
     mach_msg_type_number_t   count = THREAD_BASIC_INFO_COUNT;
