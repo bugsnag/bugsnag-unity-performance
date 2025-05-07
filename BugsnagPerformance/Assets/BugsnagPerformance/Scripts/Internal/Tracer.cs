@@ -104,21 +104,12 @@ namespace BugsnagUnityPerformance
         public void OnSpanEnd(Span span)
         {
             ApplyFrameRateMetrics(span);
-            // Delay the span end processing to allow for any additional metrics to be collected
-            MainThreadDispatchBehaviour.Enqueue(DelayedOnSpanEnd(span));
-        }
-
-        private IEnumerator DelayedOnSpanEnd(Span span)
-        {
-            yield return new WaitForSeconds(2.0f);
-            ApplySystemMetrics(span);
             if (!_started)
             {
                 lock (_prestartLock)
                 {
                     _preStartSpans.Add(new WeakReference<Span>(span));
                 }
-                yield break;
             }
             else
             {
@@ -178,9 +169,16 @@ namespace BugsnagUnityPerformance
                 }
             }
         }
-
         private void AddSpanToQueue(Span span)
         {
+            // Delay adding to the queue to ensure that both pre start spans and later spans have enough system metric snapshots attached.
+            MainThreadDispatchBehaviour.Enqueue(AddToQueueDelayed(span));
+        }
+
+        private IEnumerator AddToQueueDelayed(Span span)
+        {
+            yield return new WaitForSeconds(2);
+            ApplySystemMetrics(span);
             var deliverBatch = false;
             lock (_queueLock)
             {
