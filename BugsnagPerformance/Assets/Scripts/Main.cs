@@ -14,6 +14,7 @@ public class Main : MonoBehaviour
     {
         // var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
         // BugsnagPerformance.Start(config);
+        Application.targetFrameRate = 30;
     }
 
     public void DoSpan()
@@ -23,7 +24,7 @@ public class Main : MonoBehaviour
 
     public void DoManySpans()
     {
-        for (int i = 0; i < 110; i++)
+        for (int i = 0; i < 100; i++)
         {
             StartCoroutine(SpanRoutine());
         }
@@ -37,18 +38,8 @@ public class Main : MonoBehaviour
 
     private IEnumerator SpanRoutine()
     {
-        var span = BugsnagPerformance.StartSpan("span " + Guid.NewGuid());
-        // span.SetAttribute("my string attribute", "some value");
-        // span.SetAttribute("my string[] attribute", new string[]{"a","b","c"});
-        // span.SetAttribute("my empty string[] attribute", new string[]{});
-        // span.SetAttribute("my int attribute", 42);
-        // span.SetAttribute("my int[] attribute", new long[]{1, 2, 3});
-        // span.SetAttribute("my bool attribute", true);
-        // span.SetAttribute("my bool[] attribute", new bool[]{true, false, true});
-        // span.SetAttribute("my double attribute", 3.14);
-        // span.SetAttribute("my double[] attribute", new double[]{1.1, 2.2, 3.3});
-
-        yield return new WaitForSeconds(3.0f);
+        var span = BugsnagPerformance.StartSpan("UAT v3");
+        yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 5.0f));
         span.End();
     }
 
@@ -75,6 +66,16 @@ public class Main : MonoBehaviour
         }).Start();
 
         span1.End();
+    }
+
+    private void Update()
+    {
+#if UNITY_ANDROID
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+#endif
     }
 
 }
