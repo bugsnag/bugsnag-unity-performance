@@ -37,7 +37,22 @@ namespace BugsnagUnityPerformance
         //Internal config
 
         internal int MaxBatchSize = 100;
-        internal float MaxBatchAgeSeconds = 30f;
+        private float _maxBatchAgeSeconds = 30f;
+        internal float MaxBatchAgeSeconds
+        {
+            get 
+            {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
+                return 5;
+                #else
+                return _maxBatchAgeSeconds;
+                #endif
+            } 
+            set
+            {
+                _maxBatchAgeSeconds = value;
+            }
+        }
         internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
         internal float PValueTimeoutSeconds = 86400f;
         internal float PValueCheckIntervalSeconds = 30f;
