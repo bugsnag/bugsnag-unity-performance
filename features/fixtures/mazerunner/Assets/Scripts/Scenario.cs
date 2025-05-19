@@ -92,8 +92,8 @@ public class Scenario : MonoBehaviour
 
     public void SetMaxBatchAgeSeconds(float seconds)
     {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
-        fieldInfo.SetValue(Configuration, seconds);
+        var propertyInfo = typeof(PerformanceConfiguration).GetProperty("MaxBatchAgeSeconds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        propertyInfo.SetValue(Configuration, seconds);
     }
 
     public void SetPValueTimeoutSeconds(float seconds)
