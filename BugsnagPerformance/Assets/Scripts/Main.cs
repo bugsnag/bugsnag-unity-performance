@@ -6,17 +6,16 @@ using System;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using TMPro;
 
 public class Main : MonoBehaviour
 {
 
-    public void Start()
+    public TextMeshProUGUI FPSText;
+    private void Start()
     {
-        // var config = BugsnagPerformanceSettingsObject.LoadConfiguration();
-        // BugsnagPerformance.Start(config);
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 120;
     }
-
     public void DoSpan()
     {
         StartCoroutine(SpanRoutine());
@@ -70,12 +69,18 @@ public class Main : MonoBehaviour
 
     private void Update()
     {
+        ShowFPS();
 #if UNITY_ANDROID
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
         }
 #endif
+    }
+
+    void ShowFPS()
+    {
+        FPSText.text = (1.0f / Time.deltaTime).ToString("F0");
     }
 
 }

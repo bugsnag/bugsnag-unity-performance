@@ -40,14 +40,14 @@ namespace BugsnagUnityPerformance
         private float _maxBatchAgeSeconds = 30f;
         internal float MaxBatchAgeSeconds
         {
-            get 
+            get
             {
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 return 5;
-                #else
+#else
                 return _maxBatchAgeSeconds;
-                #endif
-            } 
+#endif
+            }
             set
             {
                 _maxBatchAgeSeconds = value;
