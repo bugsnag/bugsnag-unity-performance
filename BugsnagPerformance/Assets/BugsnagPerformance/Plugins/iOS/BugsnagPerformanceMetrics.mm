@@ -88,12 +88,12 @@ void bugsnag_unity_performance_cpu_percents(double *processPct,
 
 uint64_t bugsnag_unity_performance_physical_memory_in_use(void)
 {
-    mach_task_basic_info_data_t info;
-    mach_msg_type_number_t      count = MACH_TASK_BASIC_INFO_COUNT;
-    if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
+    task_vm_info_data_t info;
+    mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+    if (task_info(mach_task_self(), TASK_VM_INFO,
                   (task_info_t)&info, &count) != KERN_SUCCESS)
         return 0;
-    return info.resident_size;
+    return info.phys_footprint;   
 }
 
 uint64_t bugsnag_unity_performance_total_device_memory(void)
