@@ -33,9 +33,17 @@ static inline double cpu_percent(uint64_t nowTicks,
                                  uint64_t *lastTicks,
                                  double    deltaWall)
 {
-    const double deltaCpu = (double)(nowTicks - *lastTicks) / 1e6; // µs → s
+      /* do the subtraction in *signed* space */
+    int64_t diff = (int64_t)nowTicks - (int64_t)*lastTicks;
+
+    /* thread(s) ended → counter shrank → diff < 0 */
+    if (diff < 0)
+        diff = 0;                        // align with native sampler
+
     *lastTicks = nowTicks;
-    return (deltaWall <= 0.0) ? 0.0 : (deltaCpu / deltaWall) * 100.0;
+
+    return (deltaWall <= 0.0) ? 0.0
+                              : ((double)diff / 1e6) / deltaWall * 100.0;
 }
 
 #pragma mark – exported C API
