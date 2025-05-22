@@ -23,7 +23,7 @@ Feature: CPU Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_main_thread" contains valid percentages
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.metrics.cpu_mean_total" is a valid percentage
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.system.cpu_mean_total" is a valid percentage
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.system.cpu_mean_main_thread" is a valid percentage
 
@@ -47,7 +47,7 @@ Feature: CPU Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.6.value.arrayValue.values" is an array with 5 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double array attribute "bugsnag.system.cpu_measures_main_thread" contains valid percentages
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.metrics.cpu_mean_total" is a valid percentage
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.system.cpu_mean_total" is a valid percentage
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" double attribute "bugsnag.system.cpu_mean_main_thread" is a valid percentage
 

@@ -22,7 +22,7 @@ namespace BugsnagUnityPerformance
         private const string MEMORY_TIMESTAMPS_KEY = "bugsnag.system.memory.timestamps";
         private const string CPU_MEASURES_TOTAL_KEY = "bugsnag.system.cpu_measures_total";
         private const string CPU_MEASURES_MAIN_THREAD_KEY = "bugsnag.system.cpu_measures_main_thread";
-        private const string CPU_MEAN_TOTAL_KEY = "bugsnag.metrics.cpu_mean_total";
+        private const string CPU_MEAN_TOTAL_KEY = "bugsnag.system.cpu_mean_total";
         private const string CPU_MEAN_MAIN_THREAD_KEY = "bugsnag.system.cpu_mean_main_thread";
         private const string PHYSICAL_DEVICE_MEMORY_KEY = "bugsnag.device.physical_device_memory";
         private const string MEMORY_SPACES_DEVICE_SIZE_KEY = "bugsnag.system.memory.spaces.device.size";
