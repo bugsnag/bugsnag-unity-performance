@@ -4,7 +4,7 @@
 
 ### Additions
 
-- Add FPS, CPU and Memory metrics to custpm spans. [#183](https://github.com/bugsnag/bugsnag-unity-performance/pull/183)
+- Add FPS, CPU and Memory metrics to custom spans. [#183](https://github.com/bugsnag/bugsnag-unity-performance/pull/183)
 
 ### Deprecations
 
