@@ -120,7 +120,8 @@ namespace BugsnagUnityPerformance
         public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
-
+        [Obsolete("AutoInstrumentRendering is deprecated and will be removed in a future version. Please use EnabledMetrics.Rendering instead.")]
+        public bool AutoInstrumentRendering { get => EnabledMetrics.Rendering; set => EnabledMetrics.Rendering = value; }
         public EnabledMetrics EnabledMetrics = new EnabledMetrics();
 
         public string Endpoint = string.Empty;
