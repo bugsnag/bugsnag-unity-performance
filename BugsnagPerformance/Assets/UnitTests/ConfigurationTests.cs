@@ -13,7 +13,10 @@ namespace Tests
     {
 
         private const string VALID_API_KEY = "227df1042bc7772c321dbde3b31a03c2";
-
+        private const string HubApiKey = "00000abcdef1234567890abcdef12345";
+        private const string LegacyDefaultEndpoint = "https://otlp.bugsnag.com/v1/traces";
+        private const string DefaultEndpointFmt = "https://{0}.otlp.bugsnag.com/v1/traces";
+        private const string HubEndpointFmt = "https://{0}.insighthub.smartbear.com/v1/traces";
         private DateTimeOffset CustomStartTime = new DateTimeOffset(1985, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
         private DateTimeOffset CustomEndTime = new DateTimeOffset(1986, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
@@ -25,32 +28,35 @@ namespace Tests
         }
 
         [Test]
-        public void TestEndpointWhenUnset()
+        public void GetEndpoint_ReturnsDefault_WhenUnset()
         {
-            var config = new PerformanceConfiguration(VALID_API_KEY);
-            var endpoint = config.GetEndpoint();
-            var expectedEndpoint = string.Format(DEFAULT_ENDPOINT_FORMAT, VALID_API_KEY);
-            Assert.AreEqual(expectedEndpoint, endpoint);
+            var cfg = new PerformanceConfiguration(VALID_API_KEY);
+            var expected = string.Format(DefaultEndpointFmt, VALID_API_KEY);
+            Assert.That(cfg.GetEndpoint(), Is.EqualTo(expected));
         }
 
         [Test]
-        public void TestEndpointWhenSetToLegacyDefault()
+        public void GetEndpoint_IgnoresLegacyConstant_WhenExplicitlyAssigned()
         {
-            var config = new PerformanceConfiguration(VALID_API_KEY);
-            config.Endpoint = LEGACY_DEFAULT_ENDPOINT;
-            var endpoint = config.GetEndpoint();
-            var expectedEndpoint = string.Format(DEFAULT_ENDPOINT_FORMAT, VALID_API_KEY);
-            Assert.AreEqual(expectedEndpoint, endpoint);
+            var cfg = new PerformanceConfiguration(VALID_API_KEY) { Endpoint = LegacyDefaultEndpoint };
+            var expected = string.Format(DefaultEndpointFmt, VALID_API_KEY);
+            Assert.That(cfg.GetEndpoint(), Is.EqualTo(expected));
         }
 
         [Test]
-        public void TestEndpointWhenSetToCustomValue()
+        public void GetEndpoint_UsesHubDomain_WhenApiKeyStartsWith00000()
         {
-            var config = new PerformanceConfiguration(VALID_API_KEY);
-            string customEndpoint = "https://custom.endpoint.com/traces";
-            config.Endpoint = customEndpoint;
-            var endpoint = config.GetEndpoint();
-            Assert.AreEqual(customEndpoint, endpoint);
+            var cfg = new PerformanceConfiguration(HubApiKey);
+            var expected = string.Format(HubEndpointFmt, HubApiKey);
+            Assert.That(cfg.GetEndpoint(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void GetEndpoint_ReturnsCustom_WhenEndpointPropertySet()
+        {
+            const string custom = "https://custom.endpoint.com/traces";
+            var cfg = new PerformanceConfiguration(VALID_API_KEY) { Endpoint = custom };
+            Assert.That(cfg.GetEndpoint(), Is.EqualTo(custom));
         }
 
         [Test]
