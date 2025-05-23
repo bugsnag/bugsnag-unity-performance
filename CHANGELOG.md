@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Additions
+
+- Set default endpoints based on API key [#184](https://github.com/bugsnag/bugsnag-unity-performance/pull/184)
+
 ## v1.8.1 (2025-03-27)
 
 ### Bug Fixes
