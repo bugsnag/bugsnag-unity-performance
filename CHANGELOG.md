@@ -2,6 +2,10 @@
 
 ## TBD
 
+### Additions
+
+- Add FPS, CPU and Memory metrics to custpm spans. [#183](https://github.com/bugsnag/bugsnag-unity-performance/pull/183)
+
 ### Deprecations
 
 - SpanOptions.InstrumentRendering has been removed in favor of the new SpanOptions.SpanMetrics option. [#172](https://github.com/bugsnag/bugsnag-unity-performance/pull/172)
