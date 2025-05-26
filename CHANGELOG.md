@@ -4,6 +4,7 @@
 
 ### Additions
 
+- Add os.type and os.name resource attributes [#185](https://github.com/bugsnag/bugsnag-unity-performance/pull/185)
 - Add FPS, CPU and Memory metrics to custom spans. [#183](https://github.com/bugsnag/bugsnag-unity-performance/pull/183)
 - Set default endpoints based on API key [#184](https://github.com/bugsnag/bugsnag-unity-performance/pull/184)
 
