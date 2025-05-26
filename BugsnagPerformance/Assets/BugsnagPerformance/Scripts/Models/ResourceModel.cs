@@ -90,9 +90,9 @@ namespace BugsnagUnityPerformance
             switch (Application.platform)
             {
                 case RuntimePlatform.IPhonePlayer:
-                    return "linux";
-                case RuntimePlatform.Android:
                     return "darwin";
+                case RuntimePlatform.Android:
+                    return "linux";
             }
             return string.Empty;
         }
