@@ -28,7 +28,9 @@ namespace BugsnagUnityPerformance
                 new AttributeModel("bugsnag.app.platform", GetPlatform()),
                 new AttributeModel("bugsnag.runtime_versions.unity", Application.unityVersion),
                 new AttributeModel("os.type", GetOsType()),
-                new AttributeModel("os.name", GetOsName())
+                new AttributeModel("os.name", GetOsName()),
+                new AttributeModel("device.screen_resolution.width", Screen.width),
+                new AttributeModel("device.screen_resolution.height", Screen.height)
             };
             AddNonNullAttribute(GetNativeVersionInfo(config));
             AddNonNullAttribute(GetManufacturer());

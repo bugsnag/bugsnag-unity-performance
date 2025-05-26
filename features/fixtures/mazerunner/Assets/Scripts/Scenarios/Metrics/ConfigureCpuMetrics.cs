@@ -1,8 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using BugsnagUnityPerformance;
 using UnityEngine;
 
-public class ConfigureRenderMetrics : Scenario
+public class ConfigureCpuMetrics : Scenario
 {
 
     Span _beforeStartSpan;
@@ -11,7 +12,7 @@ public class ConfigureRenderMetrics : Scenario
     {
         base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(1);
-        Configuration.EnabledMetrics.Rendering = false;
+        Configuration.EnabledMetrics.CPU = false;
     }
 
     public override void StartBugsnag()

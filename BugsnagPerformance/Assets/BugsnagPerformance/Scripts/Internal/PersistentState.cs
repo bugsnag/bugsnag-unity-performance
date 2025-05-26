@@ -94,7 +94,7 @@ namespace BugsnagUnityPerformance
             }
             catch (Exception e)
             {
-                MainThreadDispatchBehaviour.Instance().LogWarning("Failed to save persistent state: " + e);
+                MainThreadDispatchBehaviour.LogWarning("Failed to save persistent state: " + e);
             }
             finally
             {

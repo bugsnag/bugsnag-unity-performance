@@ -30,6 +30,10 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "device.id" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.model.identifier" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.0"
+    * the trace payload field "resourceSpans.0.resource" integer attribute "device.screen_resolution.width" is greater than 100
+    * the trace payload field "resourceSpans.0.resource" integer attribute "device.screen_resolution.height" is greater than 100
+
+
     * the trace payload field "resourceSpans.0.resource" string attribute "service.name" is one of:
       | com.bugsnag.fixtures.unity.performance.android |
       | com.bugsnag.fixtures.unity.performance.ios |
