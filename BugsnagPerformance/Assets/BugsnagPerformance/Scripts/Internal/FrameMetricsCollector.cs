@@ -17,6 +17,20 @@ namespace BugsnagUnityPerformance
         }
     }
 
+    public class SpanRenderingMetrics
+    {
+        public int MinFrameRate = int.MaxValue;
+        public int MaxFrameRate = int.MinValue;
+        public FrameMetricsSnapshot BeginningMetrics;
+        public FrameMetricsSnapshot EndingMetrics;
+
+        public void UpdateFrameRate(int newFrameRate)
+        {
+            MinFrameRate = Mathf.Min(MinFrameRate, newFrameRate);
+            MaxFrameRate = Mathf.Max(MaxFrameRate, newFrameRate);
+        }
+    }
+
     internal class FrozenFrameBuffer
     {
         private const int BUFFER_SIZE = 64;
@@ -94,11 +108,73 @@ namespace BugsnagUnityPerformance
         private bool _callbackActive = false;
         private FrozenFrameBuffer _frozenFrameBuffer = new FrozenFrameBuffer();
         private DateTimeOffset _lastFrameEndTime;
-
+        private double _frameTimeSum = 0;
+        private Dictionary<WeakReference<Span>, SpanRenderingMetrics> _instrumentedSpans = new Dictionary<WeakReference<Span>, SpanRenderingMetrics>();
 
         public FrameMetricsCollector()
         {
             BeginCollectingMetrics();
+        }
+
+
+        public void Configure(PerformanceConfiguration config)
+        {
+            _isEnabled = config.EnabledMetrics.Rendering;
+            if (!_isEnabled)
+            {
+                RemoveUpdateCallback();
+            }
+        }
+
+        public void OnSpanStart(Span span)
+        {
+            if (!_isEnabled)
+            {
+                return;
+            }
+
+            var spanRef = new WeakReference<Span>(span);
+            var metrics = new SpanRenderingMetrics
+            {
+                BeginningMetrics = TakeSnapshot()
+            };
+            _instrumentedSpans[spanRef] = metrics;
+        }
+
+        public void OnSpanEnd(Span span)
+        {
+            SpanRenderingMetrics spanMetrics = GetSpanMetrics(span);
+            if (spanMetrics == null)
+            {
+                return;
+            }
+            spanMetrics.EndingMetrics = TakeSnapshot();
+            span.CalculateFrameRateMetrics(spanMetrics);
+        }
+
+        private SpanRenderingMetrics GetSpanMetrics(Span span)
+        {
+            SpanRenderingMetrics spanMetrics = null;
+            List<WeakReference<Span>> toRemove = new List<WeakReference<Span>>();
+            foreach (var pair in _instrumentedSpans)
+            {
+                //if a span is no longer alive, remove it from the list
+                if (!pair.Key.TryGetTarget(out var spanRef))
+                {
+                    toRemove.Add(pair.Key);
+                }
+                else if (spanRef == span)
+                {
+                    spanMetrics = pair.Value;
+                    toRemove.Add(pair.Key);
+                    break;
+                }
+            }
+            foreach (var key in toRemove)
+            {
+                _instrumentedSpans.Remove(key);
+            }
+            return spanMetrics;
         }
 
         private void BeginCollectingMetrics()
@@ -125,9 +201,24 @@ namespace BugsnagUnityPerformance
                 _lastFrameEndTime = now;
                 return;
             }
-
-            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
             TotalFrames++;
+            float frameTime = (float)(now - _lastFrameEndTime).TotalSeconds;
+            if (frameTime < 0)
+            {
+                // Time went backwards, ignore this frame
+                _lastFrameEndTime = now;
+                return;
+            }
+            _frameTimeSum += frameTime;
+
+            DetectSlowOrFrozenFrames(frameTime, now);
+            UpdateInstrumentedSpans(frameTime);
+
+            _lastFrameEndTime = now;
+        }
+
+        private void DetectSlowOrFrozenFrames(float frameTime, DateTimeOffset now)
+        {
             if (frameTime >= FROZEN_FRAME_THRESHOLD)
             {
                 var frozenFrame = new FrozenFrame(_lastFrameEndTime, now);
@@ -144,19 +235,25 @@ namespace BugsnagUnityPerformance
                 float slowFrameThreshold = 1.0f / (Application.targetFrameRate > 0
                     ? Application.targetFrameRate
                     : 60.0f);
-                slowFrameThreshold *= (1.0f + DEFAULT_SLOW_FRAME_TOLERANCE);
+                slowFrameThreshold *= 1.0f + DEFAULT_SLOW_FRAME_TOLERANCE;
 
                 if (frameTime > slowFrameThreshold)
                 {
                     SlowFrames++;
                 }
             }
-
-            _lastFrameEndTime = now;
         }
 
+        private void UpdateInstrumentedSpans(float frameTime)
+        {
+            int frameRate = (int)(1.0f / frameTime);
+            foreach (var pair in _instrumentedSpans)
+            {
+                pair.Value.UpdateFrameRate(frameRate);
+            }
+        }
 
-        public FrameMetricsSnapshot TakeSnapshot()
+        private FrameMetricsSnapshot TakeSnapshot()
         {
             if (!_isEnabled || !_callbackActive)
             {
@@ -168,17 +265,10 @@ namespace BugsnagUnityPerformance
                 FrozenFrameBuffer = _frozenFrameBuffer,
                 TotalFrames = TotalFrames,
                 SlowFrames = SlowFrames,
-                FrozenFrames = FrozenFrames
+                FrozenFrames = FrozenFrames,
+                FrameTimeSum = _frameTimeSum,
+                TargetFrameRate = Application.targetFrameRate
             };
-        }
-
-        public void Configure(PerformanceConfiguration config)
-        {
-            _isEnabled = config.AutoInstrumentRendering;
-            if (!_isEnabled)
-            {
-                RemoveUpdateCallback();
-            }
         }
 
         private void RemoveUpdateCallback()
@@ -203,6 +293,8 @@ namespace BugsnagUnityPerformance
         public int TotalFrames { get; set; }
         public int SlowFrames { get; set; }
         public int FrozenFrames { get; set; }
+        public double FrameTimeSum;
+        public float TargetFrameRate;
 
     }
 }

@@ -67,7 +67,7 @@ namespace BugsnagUnityPerformance
         public void Deliver(List<Span> batch)
         {
             var payload = new TracePayload(_resourceModel, batch, _config.IsFixedSamplingProbability, _config.AttributeArrayLengthLimit, _config.AttributeStringValueLimit);
-            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
+            MainThreadDispatchBehaviour.Enqueue(PushToServer(payload, OnTraceDeliveryCompleted));
         }
 
         private void OnTraceDeliveryCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
@@ -97,7 +97,7 @@ namespace BugsnagUnityPerformance
                 onResponse = OnPValueRequestCompleted;
             }
             var payload = TracePayload.GetTracePayloadForPValueRequest(_resourceModel);
-            MainThreadDispatchBehaviour.Instance().Enqueue(PushToServer(payload, onResponse));
+            MainThreadDispatchBehaviour.Enqueue(PushToServer(payload, onResponse));
         }
 
         private void OnPValueRequestCompleted(TracePayload payload, UnityWebRequest req, double newProbability)
@@ -187,7 +187,7 @@ namespace BugsnagUnityPerformance
                 return;
             }
             _flushingCache = true;
-            MainThreadDispatchBehaviour.Instance().Enqueue(DoFlushCache());
+            MainThreadDispatchBehaviour.Enqueue(DoFlushCache());
         }
 
         private IEnumerator DoFlushCache()

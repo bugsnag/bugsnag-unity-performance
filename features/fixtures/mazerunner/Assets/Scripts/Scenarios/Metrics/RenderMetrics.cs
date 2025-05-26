@@ -11,6 +11,8 @@ public class RenderMetrics : Scenario
 
     const int NUM_SLOW_FRAMES_TO_DO = 10;
     const int NUM_FROZEN_FRAMES_TO_DO = 1;
+    const int TOTAL_FRAMES_TO_DO = 100;
+
 
     int _frameCount;
 
@@ -18,7 +20,7 @@ public class RenderMetrics : Scenario
     {
         base.PreparePerformanceConfig(apiKey, host);
         SetMaxBatchSize(4);
-        Configuration.AutoInstrumentRendering = true;
+        Configuration.EnabledMetrics.Rendering = true;
     }
 
     public override void Run()
@@ -47,7 +49,7 @@ public class RenderMetrics : Scenario
             _testInitialised = true;
              _slowFrameSpan = BugsnagPerformance.StartSpan("SlowFrames");
             _noFramesSpan = BugsnagPerformance.StartSpan("NoFrames", new SpanOptions { IsFirstClass = false });
-            _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { InstrumentRendering = false });
+            _disableInSpanOptionsSpan = BugsnagPerformance.StartSpan("DisableInSpanOptions", new SpanOptions { SpanMetrics = new SpanMetrics { Rendering = false } });
         }
         if (_slowFramesDone < NUM_SLOW_FRAMES_TO_DO)
         {
@@ -64,7 +66,7 @@ public class RenderMetrics : Scenario
             _frozenFramesDone++;
             return;
         }
-        if (_frameCount < (100 - NUM_SLOW_FRAMES_TO_DO - NUM_FROZEN_FRAMES_TO_DO))
+        if (_frameCount < (TOTAL_FRAMES_TO_DO - NUM_SLOW_FRAMES_TO_DO - NUM_FROZEN_FRAMES_TO_DO))
         {
             _frameCount++;
             return;

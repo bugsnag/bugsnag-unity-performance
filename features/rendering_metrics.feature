@@ -15,10 +15,13 @@ Feature: Rendering Metrics
     * the span named "FrozenFrame" starts and ends before the span named "SlowFrames" ends and lasts at least 1 second
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "SlowFrames"
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.attributes" is an array with 7 elements
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.attributes" is an array with 11 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.frozen_frames" equals 1
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.slow_frames" is greater than 9
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.total_frames" equals 100
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.fps_average" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.fps_maximum" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1" integer attribute "bugsnag.rendering.fps_minimum" is greater than -1
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.name" equals "NoFrames"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.2.attributes" is an array with 4 elements
@@ -29,8 +32,6 @@ Feature: Rendering Metrics
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.attributes" is an array with 4 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3" boolean attribute "bugsnag.span.first_class" is true
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3" string attribute "bugsnag.span.category" equals "custom"
-
-
 
   Scenario: Disable Frame Rate Metrics
     When I run the game in the "ConfigureRenderMetrics" state

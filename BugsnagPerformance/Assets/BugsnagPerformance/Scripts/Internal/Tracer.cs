@@ -10,6 +10,7 @@ namespace BugsnagUnityPerformance
     {
         private PerformanceConfiguration _config;
         private FrameMetricsCollector _frameMetricsCollector;
+        private SystemMetricsCollector _systemMetricsCollector;
         private List<Span> _finishedSpanQueue = new List<Span>();
         private List<WeakReference<Span>> _preStartSpans = new List<WeakReference<Span>>();
         private object _queueLock = new object();
@@ -20,11 +21,12 @@ namespace BugsnagUnityPerformance
         private Delivery _delivery;
         private bool _started;
 
-        public Tracer(Sampler sampler, Delivery delivery, FrameMetricsCollector frameMetricsCollector)
+        public Tracer(Sampler sampler, Delivery delivery, FrameMetricsCollector frameMetricsCollector, SystemMetricsCollector systemMetricsCollector)
         {
             _sampler = sampler;
             _delivery = delivery;
             _frameMetricsCollector = frameMetricsCollector;
+            _systemMetricsCollector = systemMetricsCollector;
         }
 
         public void Configure(PerformanceConfiguration config)
@@ -44,7 +46,7 @@ namespace BugsnagUnityPerformance
         {
             try
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(Worker());
+                MainThreadDispatchBehaviour.Enqueue(Worker());
             }
             catch
             {
@@ -58,23 +60,32 @@ namespace BugsnagUnityPerformance
             {
                 if (weakRef.TryGetTarget(out var span))
                 {
-                    if (span.IsAppStartSpan && _config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
-                    {
-                        continue;
-                    }
-                    if (!_config.AutoInstrumentRendering)
-                    {
-                        if (span.IsFrozenFrameSpan)
-                        {
-                            span.Discard();
-                        }
-                        else
-                        {
-                            span.RemoveFrameRateMetrics();
-                        }
-                    }
+                    RemoveDisabledMetricsFromPreStartSpan(span);
                     Sample(span);
                 }
+            }
+        }
+
+        private void RemoveDisabledMetricsFromPreStartSpan(Span span)
+        {
+            if (!_config.EnabledMetrics.Rendering)
+            {
+                if (span.IsFrozenFrameSpan)
+                {
+                    span.Discard();
+                }
+                else
+                {
+                    span.RemoveFrameRateMetrics();
+                }
+            }
+            if (!_config.EnabledMetrics.CPU)
+            {
+                span.RemoveSystemCPUMetrics();
+            }
+            if (!_config.EnabledMetrics.Memory)
+            {
+                span.RemoveSystemMemoryMetrics();
             }
         }
 
@@ -99,7 +110,6 @@ namespace BugsnagUnityPerformance
                 {
                     _preStartSpans.Add(new WeakReference<Span>(span));
                 }
-                return;
             }
             else
             {
@@ -109,7 +119,12 @@ namespace BugsnagUnityPerformance
 
         private void ApplyFrameRateMetrics(Span span)
         {
-            span.CalculateFrameRateMetrics(_frameMetricsCollector.TakeSnapshot());
+            _frameMetricsCollector.OnSpanEnd(span);
+        }
+
+        private void ApplySystemMetrics(Span span)
+        {
+            _systemMetricsCollector.OnSpanEnd(span);
         }
 
         public void RunOnEndCallbacks(Span span)
@@ -130,7 +145,7 @@ namespace BugsnagUnityPerformance
                     }
                     catch (Exception e)
                     {
-                        MainThreadDispatchBehaviour.Instance().LogWarning("Error running OnSpanEndCallback: " + e.Message);
+                        MainThreadDispatchBehaviour.LogWarning("Error running OnSpanEndCallback: " + e.Message);
                     }
                 }
                 var duration = DateTimeOffset.UtcNow - startTime;
@@ -141,6 +156,10 @@ namespace BugsnagUnityPerformance
 
         private void Sample(Span span)
         {
+            if (span.IsAppStartSpan && _config.AutoInstrumentAppStart == AutoInstrumentAppStartSetting.OFF)
+            {
+                return;
+            }
             if (_sampler.Sampled(span))
             {
                 RunOnEndCallbacks(span);
@@ -150,9 +169,16 @@ namespace BugsnagUnityPerformance
                 }
             }
         }
-
         private void AddSpanToQueue(Span span)
         {
+            // Delay adding to the queue to ensure that both pre start spans and later spans have enough system metric snapshots attached.
+            MainThreadDispatchBehaviour.Enqueue(AddToQueueDelayed(span));
+        }
+
+        private IEnumerator AddToQueueDelayed(Span span)
+        {
+            yield return new WaitForSeconds(2);
+            ApplySystemMetrics(span);
             var deliverBatch = false;
             lock (_queueLock)
             {

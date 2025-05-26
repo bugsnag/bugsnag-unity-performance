@@ -4,7 +4,12 @@
 
 ### Additions
 
+- Add FPS, CPU and Memory metrics to custom spans. [#183](https://github.com/bugsnag/bugsnag-unity-performance/pull/183)
 - Set default endpoints based on API key [#184](https://github.com/bugsnag/bugsnag-unity-performance/pull/184)
+
+### Deprecations
+
+- SpanOptions.InstrumentRendering has been deprecated in favor of the new SpanOptions.SpanMetrics option and will be removed in a future release. [#172](https://github.com/bugsnag/bugsnag-unity-performance/pull/172)
 
 ## v1.8.1 (2025-03-27)
 

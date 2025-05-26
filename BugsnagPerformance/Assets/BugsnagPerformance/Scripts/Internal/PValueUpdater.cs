@@ -28,7 +28,7 @@ namespace BugsnagUnityPerformance
 
         public void Start()
         {
-            MainThreadDispatchBehaviour.Instance().Enqueue(CheckPValue());
+            MainThreadDispatchBehaviour.Enqueue(CheckPValue());
         }
 
         private IEnumerator CheckPValue()

@@ -17,14 +17,15 @@ Feature: App Start
     * the span named "[AppStart/UnityRuntime]" exists
 
     * the span named "[AppStart/UnityRuntime]" has no parent
-
     * the span named "[AppStart/UnityRuntime]" is the parent of the span named "[AppStartPhase/LoadAssemblies]"
-
     * the span named "[AppStart/UnityRuntime]" is the parent of the span named "[AppStartPhase/SplashScreen]"
-
     * the span named "[AppStartPhase/SplashScreen]" is the parent of the span named "[AppStartPhase/LoadFirstScene]"
-
     * the span named "[AppStart/UnityRuntime]" has a maximum duration of 3000000000
+
+    * the span named "[AppStart/UnityRuntime]" is first class
+    * the span named "[AppStartPhase/LoadFirstScene]" is not first class
+    * the span named "[AppStartPhase/SplashScreen]" is not first class
+    * the span named "[AppStartPhase/LoadAssemblies]" is not first class
 
 Scenario: App Start Start Only
     When I run the game in the "AppStartStartOnly" state
