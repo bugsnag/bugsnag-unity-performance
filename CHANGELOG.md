@@ -1,6 +1,6 @@
 # Changelog
 
-## TBD
+## v1.9.0 (2025-05-26)
 
 ### Additions
 
