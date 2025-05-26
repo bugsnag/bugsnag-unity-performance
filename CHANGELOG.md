@@ -4,6 +4,8 @@
 
 ### Additions
 
+- Add os.type and os.name resource attributes [#185](https://github.com/bugsnag/bugsnag-unity-performance/pull/185)
+
 - Set default endpoints based on API key [#184](https://github.com/bugsnag/bugsnag-unity-performance/pull/184)
 
 ## v1.8.1 (2025-03-27)
