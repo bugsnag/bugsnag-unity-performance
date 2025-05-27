@@ -8,11 +8,22 @@ using UnityEngine;
 
 namespace BugsnagUnityPerformance
 {
+    [Serializable]
+    public class EnabledMetrics
+    {
+        public bool Rendering = false;
+        public bool CPU = false;
+        public bool Memory = false;
+    }
+
     public class PerformanceConfiguration
     {
 
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
         private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
+        private const string HUB_ENDPOINT = "https://{0}.insighthub.smartbear.com/v1/traces";
+        private const string HUB_API_PREFIX = "00000";
+
         internal const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
         private const int MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT = 10000;
         internal const int DEFAULT_ATTRIBUTE_ARRAY_LENGTH_LIMIT = 1000;
@@ -29,7 +40,22 @@ namespace BugsnagUnityPerformance
         //Internal config
 
         internal int MaxBatchSize = 100;
-        internal float MaxBatchAgeSeconds = 30f;
+        private float _maxBatchAgeSeconds = 30f;
+        internal float MaxBatchAgeSeconds
+        {
+            get
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                return 5;
+#else
+                return _maxBatchAgeSeconds;
+#endif
+            }
+            set
+            {
+                _maxBatchAgeSeconds = value;
+            }
+        }
         internal int MaxPersistedBatchAgeSeconds = 86400; //24 hours
         internal float PValueTimeoutSeconds = 86400f;
         internal float PValueCheckIntervalSeconds = 30f;
@@ -47,7 +73,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeStringValueLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_STRING_VALUE_LIMIT);
                 }
             }
         }
@@ -64,7 +90,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeArrayLengthLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeArrayLengthLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_ARRAY_LENGTH_LIMIT);
 
                 }
             }
@@ -82,7 +108,7 @@ namespace BugsnagUnityPerformance
                 }
                 else
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning("AttributeCountLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_COUNT_LIMIT);
+                    MainThreadDispatchBehaviour.LogWarning("AttributeCountLimit must be greater than 0 and no larger than " + MAXIMUM_ATTRIBUTE_COUNT_LIMIT);
                 }
             }
         }
@@ -90,7 +116,6 @@ namespace BugsnagUnityPerformance
         public string ApiKey;
 
         public AutoInstrumentAppStartSetting AutoInstrumentAppStart = AutoInstrumentAppStartSetting.FULL;
-        public bool AutoInstrumentRendering = false;
         public string AppVersion = Application.version;
         public int VersionCode = -1;
         public string BundleVersion;
@@ -98,6 +123,9 @@ namespace BugsnagUnityPerformance
         public bool GenerateAnonymousId = true;
 
         public string[] EnabledReleaseStages;
+        [Obsolete("AutoInstrumentRendering is deprecated and will be removed in a future version. Please use EnabledMetrics.Rendering instead.")]
+        public bool AutoInstrumentRendering { get => EnabledMetrics.Rendering; set => EnabledMetrics.Rendering = value; }
+        public EnabledMetrics EnabledMetrics = new EnabledMetrics();
 
         public string Endpoint = string.Empty;
 
@@ -129,12 +157,15 @@ namespace BugsnagUnityPerformance
         internal bool IsFixedSamplingProbability => SamplingProbability >= 0;
 
         public string ServiceName = string.Empty;
-
+        private bool IsHubApiKey(string apiKey)
+        {
+            return !string.IsNullOrEmpty(apiKey) && apiKey.StartsWith(HUB_API_PREFIX);
+        }
         public string GetEndpoint()
         {
             if (string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
             {
-                return string.Format(DEFAULT_ENDPOINT, ApiKey);
+                return string.Format(IsHubApiKey(ApiKey) ? HUB_ENDPOINT : DEFAULT_ENDPOINT, ApiKey);
             }
             return Endpoint;
         }

@@ -5,6 +5,7 @@ using System;
 using BugsnagUnityPerformance;
 using System.Reflection;
 using BugsnagUnity;
+using System.Collections;
 
 public class Scenario : MonoBehaviour
 {
@@ -56,6 +57,18 @@ public class Scenario : MonoBehaviour
 
     }
 
+    public void DoSpan(string name,float duration)
+    {
+        StartCoroutine(DoSpanWithDuration(name, duration));
+    }
+
+    private IEnumerator DoSpanWithDuration(string name, float duration)
+    {
+        var span = BugsnagPerformance.StartSpan(name);
+        yield return new WaitForSeconds(duration);
+        span.End();
+    }
+
     public void DoMultipleSpans(int num)
     {
         for (int i = 0; i < num; i++)
@@ -79,8 +92,8 @@ public class Scenario : MonoBehaviour
 
     public void SetMaxBatchAgeSeconds(float seconds)
     {
-        var fieldInfo = typeof(PerformanceConfiguration).GetField("MaxBatchAgeSeconds", BindingFlags.Instance | BindingFlags.NonPublic);
-        fieldInfo.SetValue(Configuration, seconds);
+        var propertyInfo = typeof(PerformanceConfiguration).GetProperty("MaxBatchAgeSeconds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        propertyInfo.SetValue(Configuration, seconds);
     }
 
     public void SetPValueTimeoutSeconds(float seconds)

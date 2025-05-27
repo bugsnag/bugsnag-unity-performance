@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using BugsnagNetworking;
 
@@ -13,6 +14,23 @@ namespace BugsnagUnityPerformance
         private const string FROZEN_FRAMES_KEY = "bugsnag.rendering.frozen_frames";
         private const string SLOW_FRAMES_KEY = "bugsnag.rendering.slow_frames";
         private const string TOTAL_FRAMES_KEY = "bugsnag.rendering.total_frames";
+        private const string FPS_MAX_KEY = "bugsnag.rendering.fps_maximum";
+        private const string FPS_MIN_KEY = "bugsnag.rendering.fps_minimum";
+        private const string FPS_AVERAGE_KEY = "bugsnag.rendering.fps_average";
+        private const string FPS_TARGET_KEY = "bugsnag.rendering.fps_target";
+        private const string CPU_MEASURES_TIMESTAMPS_KEY = "bugsnag.system.cpu_measures_timestamps";
+        private const string MEMORY_TIMESTAMPS_KEY = "bugsnag.system.memory.timestamps";
+        private const string CPU_MEASURES_TOTAL_KEY = "bugsnag.system.cpu_measures_total";
+        private const string CPU_MEASURES_MAIN_THREAD_KEY = "bugsnag.system.cpu_measures_main_thread";
+        private const string CPU_MEAN_TOTAL_KEY = "bugsnag.system.cpu_mean_total";
+        private const string CPU_MEAN_MAIN_THREAD_KEY = "bugsnag.system.cpu_mean_main_thread";
+        private const string PHYSICAL_DEVICE_MEMORY_KEY = "bugsnag.device.physical_device_memory";
+        private const string MEMORY_SPACES_DEVICE_SIZE_KEY = "bugsnag.system.memory.spaces.device.size";
+        private const string MEMORY_SPACES_DEVICE_USED_KEY = "bugsnag.system.memory.spaces.device.used";
+        private const string MEMORY_SPACES_DEVICE_MEAN_KEY = "bugsnag.system.memory.spaces.device.mean";
+        private const string MEMORY_SPACES_ART_SIZE_KEY = "bugsnag.system.memory.spaces.art.size";
+        private const string MEMORY_SPACES_ART_USED_KEY = "bugsnag.system.memory.spaces.art.used";
+        private const string MEMORY_SPACES_ART_MEAN_KEY = "bugsnag.system.memory.spaces.art.mean";
 
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
@@ -32,13 +50,11 @@ namespace BugsnagUnityPerformance
         internal int DroppedAttributesCount;
         private int _customAttributeCount;
         private int _maxCustomAttributes;
-        private FrameMetricsSnapshot _startFrameRateMetricsSnapshot;
         internal bool IsFrozenFrameSpan;
 
         public Span(string name, SpanKind kind, string id,
         string traceId, string parentSpanId, DateTimeOffset startTime,
-        bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes,
-        FrameMetricsSnapshot startFrameRateMetricsSnapshot)
+        bool? isFirstClass, OnSpanEnd onSpanEnd, int maxCustomAttributes)
         {
             Name = name ?? string.Empty;
             Kind = kind;
@@ -52,13 +68,12 @@ namespace BugsnagUnityPerformance
             {
                 SetAttributeInternal("bugsnag.span.first_class", isFirstClass.Value);
             }
-            _startFrameRateMetricsSnapshot = startFrameRateMetricsSnapshot;
             _onSpanEnd = onSpanEnd;
         }
 
         void LogSpanEndingWarning()
         {
-            MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
+            MainThreadDispatchBehaviour.LogWarning($"Attempting to call End on span: {Name} after the span has already ended.");
         }
 
         public void End(DateTimeOffset? endTime = null)
@@ -164,7 +179,10 @@ namespace BugsnagUnityPerformance
             }
         }
 
-
+        internal void SetAttributeInternal(string key, long[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, double[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, bool[] value) => SetAttributeWithoutChecks(key, value);
+        internal void SetAttributeInternal(string key, string[] value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, long value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, string value) => SetAttributeWithoutChecks(key, value);
         internal void SetAttributeInternal(string key, double value) => SetAttributeWithoutChecks(key, value);
@@ -193,7 +211,7 @@ namespace BugsnagUnityPerformance
         {
             if (_callbackComplete)
             {
-                MainThreadDispatchBehaviour.Instance().LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
+                MainThreadDispatchBehaviour.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
 
@@ -227,15 +245,17 @@ namespace BugsnagUnityPerformance
             _callbackComplete = true;
         }
 
-        internal void CalculateFrameRateMetrics(FrameMetricsSnapshot endFrameRateMetricsSnapshot)
+        internal void CalculateFrameRateMetrics(SpanRenderingMetrics metrics)
         {
-            if (_startFrameRateMetricsSnapshot == null || endFrameRateMetricsSnapshot == null)
+            var beginningMetrics = metrics.BeginningMetrics;
+            var endMetrics = metrics.EndingMetrics;
+            if (beginningMetrics == null || endMetrics == null)
             {
                 return;
             }
-            var numFrozenFrames = endFrameRateMetricsSnapshot.FrozenFrames - _startFrameRateMetricsSnapshot.FrozenFrames;
-            var frozenFrameDurations = endFrameRateMetricsSnapshot.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
-            for (int i = 0; i < endFrameRateMetricsSnapshot.FrozenFrames; i++)
+            var numFrozenFrames = endMetrics.FrozenFrames - beginningMetrics.FrozenFrames;
+            var frozenFrameDurations = endMetrics.FrozenFrameBuffer.GetLastFrames(numFrozenFrames);
+            for (int i = 0; i < endMetrics.FrozenFrames; i++)
             {
                 if (i >= frozenFrameDurations.Count)
                 {
@@ -254,9 +274,23 @@ namespace BugsnagUnityPerformance
                 span.SetAttributeInternal("bugsnag.span.category", "frozen_frame");
                 span.End(frameTimes.EndTime);
             }
+
+            var totalFrames = endMetrics.TotalFrames - beginningMetrics.TotalFrames;
+            SetAttributeInternal(TOTAL_FRAMES_KEY, totalFrames);
+
+            if (totalFrames == 0)
+            {
+                return;
+            }
+            var sumFrametime = endMetrics.FrameTimeSum - beginningMetrics.FrameTimeSum;
+            var averageFps = (int)(1.0f / (sumFrametime / totalFrames));
+
+            SetAttributeInternal(FPS_AVERAGE_KEY, averageFps);
             SetAttributeInternal(FROZEN_FRAMES_KEY, numFrozenFrames);
-            SetAttributeInternal(SLOW_FRAMES_KEY, endFrameRateMetricsSnapshot.SlowFrames - _startFrameRateMetricsSnapshot.SlowFrames);
-            SetAttributeInternal(TOTAL_FRAMES_KEY, endFrameRateMetricsSnapshot.TotalFrames - _startFrameRateMetricsSnapshot.TotalFrames);
+            SetAttributeInternal(SLOW_FRAMES_KEY, endMetrics.SlowFrames - beginningMetrics.SlowFrames);
+            SetAttributeInternal(FPS_MAX_KEY, metrics.MaxFrameRate);
+            SetAttributeInternal(FPS_MIN_KEY, metrics.MinFrameRate);
+            SetAttributeInternal(FPS_TARGET_KEY, beginningMetrics.TargetFrameRate);
         }
 
         internal void RemoveFrameRateMetrics()
@@ -264,6 +298,116 @@ namespace BugsnagUnityPerformance
             _attributes.Remove(FROZEN_FRAMES_KEY);
             _attributes.Remove(SLOW_FRAMES_KEY);
             _attributes.Remove(TOTAL_FRAMES_KEY);
+            _attributes.Remove(FPS_MAX_KEY);
+            _attributes.Remove(FPS_MIN_KEY);
+            _attributes.Remove(FPS_AVERAGE_KEY);
+            _attributes.Remove(FPS_TARGET_KEY);
+        }
+
+        internal void ApplyCPUMetrics(List<SystemMetricsSnapshot> snapshots)
+        {
+            // Timestamps
+            var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
+            SetAttributeInternal(CPU_MEASURES_TIMESTAMPS_KEY, timestamps);
+            // CPU
+            var processCpu = snapshots.Select(s => Math.Round(s.ProcessCPUPercent, 2)).ToArray();
+            var mainThreadCpu = snapshots.Select(s => Math.Round(s.MainThreadCPUPercent, 2)).ToArray();
+
+            SetAttributeInternal(CPU_MEASURES_TOTAL_KEY, processCpu);
+            SetAttributeInternal(CPU_MEASURES_MAIN_THREAD_KEY, mainThreadCpu);
+            SetAttributeInternal(CPU_MEAN_TOTAL_KEY, Math.Round(processCpu.Average(), 2));
+            SetAttributeInternal(CPU_MEAN_MAIN_THREAD_KEY, Math.Round(mainThreadCpu.Average(), 2));
+        }
+        internal void ApplyMemoryMetrics(List<SystemMetricsSnapshot> snapshots)
+        {
+            var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
+            SetAttributeInternal(MEMORY_TIMESTAMPS_KEY, timestamps);
+
+            // Android
+            var androidSnapshots = snapshots
+                .Where(s => s.AndroidMetrics.HasValue)
+                .Select(s => s.AndroidMetrics.Value)
+                .ToList();
+
+            if (androidSnapshots.Count > 0)
+            {
+                // Device Memory 
+                long devicePhysical = androidSnapshots.First().DeviceTotalMemory.GetValueOrDefault(0);
+                SetAttributeInternal(PHYSICAL_DEVICE_MEMORY_KEY, devicePhysical);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_SIZE_KEY, devicePhysical);
+
+                var pssValues = androidSnapshots
+                    .Select(a => a.PSS.GetValueOrDefault(0L))
+                    .ToArray();
+                long sumPss = pssValues.Sum();
+                long meanPss = pssValues.Length > 0 ? sumPss / pssValues.Length : 0;
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_USED_KEY, pssValues);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_MEAN_KEY, meanPss);
+
+                // ART 
+                long artMax = androidSnapshots.Max(a => a.ArtMaxMemory.GetValueOrDefault(0L));
+                SetAttributeInternal(MEMORY_SPACES_ART_SIZE_KEY, artMax);
+
+                var artUsedValues = androidSnapshots
+                    .Select(a =>
+                    {
+                        long t = a.ArtTotalMemory.GetValueOrDefault(0L);
+                        long f = a.ArtFreeMemory.GetValueOrDefault(0L);
+                        return (t - f); // current usage
+                    })
+                    .ToArray();
+                long sumArtUsed = artUsedValues.Sum();
+                long meanArtUsed = artUsedValues.Length > 0 ? sumArtUsed / artUsedValues.Length : 0;
+
+                SetAttributeInternal(MEMORY_SPACES_ART_USED_KEY, artUsedValues);
+                SetAttributeInternal(MEMORY_SPACES_ART_MEAN_KEY, meanArtUsed);
+            }
+
+            //ios
+            var iosSnapshots = snapshots
+                .Where(s => s.iOSMetrics.HasValue)
+                .Select(s => s.iOSMetrics.Value)
+                .ToList();
+
+            if (iosSnapshots.Count > 0)
+            {
+                var physicalUsed = iosSnapshots
+                    .Select(m => m.PhysicalMemoryInUse ?? 0)
+                    .ToArray();
+                long sumPhysicalUsed = physicalUsed.Sum();
+                long meanPhysicalUsed = physicalUsed.Length > 0
+                    ? sumPhysicalUsed / physicalUsed.Length
+                    : 0;
+
+                long totalDeviceMemory = iosSnapshots.FirstOrDefault()
+                    .TotalDeviceMemory ?? 0;
+
+                SetAttributeInternal(PHYSICAL_DEVICE_MEMORY_KEY, totalDeviceMemory);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_SIZE_KEY, totalDeviceMemory);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_USED_KEY, physicalUsed);
+                SetAttributeInternal(MEMORY_SPACES_DEVICE_MEAN_KEY, meanPhysicalUsed);
+            }
+        }
+
+        internal void RemoveSystemCPUMetrics()
+        {
+            _attributes.Remove(CPU_MEASURES_TIMESTAMPS_KEY);
+            _attributes.Remove(CPU_MEASURES_TOTAL_KEY);
+            _attributes.Remove(CPU_MEASURES_MAIN_THREAD_KEY);
+            _attributes.Remove(CPU_MEAN_TOTAL_KEY);
+            _attributes.Remove(CPU_MEAN_MAIN_THREAD_KEY);
+        }
+
+        internal void RemoveSystemMemoryMetrics()
+        {
+            _attributes.Remove(PHYSICAL_DEVICE_MEMORY_KEY);
+            _attributes.Remove(MEMORY_TIMESTAMPS_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_SIZE_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_USED_KEY);
+            _attributes.Remove(MEMORY_SPACES_DEVICE_MEAN_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_SIZE_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_USED_KEY);
+            _attributes.Remove(MEMORY_SPACES_ART_MEAN_KEY);
         }
     }
 }

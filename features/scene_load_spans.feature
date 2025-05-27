@@ -13,6 +13,8 @@ Feature: Scene Load Spans
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/UnityScene]Scene1"
 
+    * the span named "[ViewLoad/UnityScene]Scene1" is first class
+
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "view_load"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.type" equals "UnityScene"
@@ -71,6 +73,7 @@ Feature: Scene Load Spans
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/UnityScene]ManualSceneSpan"
+    * the span named "[ViewLoad/UnityScene]ManualSceneSpan" is first class
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "view_load"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.type" equals "UnityScene"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "ManualSceneSpan"

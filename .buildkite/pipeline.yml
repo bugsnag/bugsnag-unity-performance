@@ -3,9 +3,16 @@ aliases:
   - &2020 "2020.3.48f1"
 
 agents:
-  queue: macos-14
+  queue: macos-14-isolated
 
 steps:
+  - label: Verify code formatting
+    timeout_in_minutes: 5
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    commands:
+      - rake code:verify
+
   - label: Build released library artifact
     timeout_in_minutes: 10
     key: build-artifacts
@@ -20,6 +27,11 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
+    agents:
+      queue: macos-14-isolated
+    concurrency: 1
+    concurrency_group: "unity-license-server"
+    concurrency_method: eager
 
   - label: Build size impact reporting
     depends_on: build-artifacts
@@ -27,13 +39,13 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     plugins:
-      'artifacts#v1.9.0':
+      artifacts#v1.9.0:
         download:
           - upm-package.zip
     commands:
-      features/scripts/do_size_test.sh
+      - features/scripts/do_size_test.sh
 
-  - label: 'Append Unity 2021 Basic Pipeline'
+  - label: Append Unity 2021 Basic Pipeline
     agents:
       queue: macos
     timeout_in_minutes: 2
@@ -44,4 +56,5 @@ steps:
     agents:
       queue: macos
     timeout_in_minutes: 2
-    command: sh -c .buildkite/pipeline_trigger.sh
+    commands:
+      - sh -c .buildkite/pipeline_trigger.sh

@@ -29,6 +29,7 @@ namespace BugsnagUnityPerformance
         private PersistentState _persistentState;
         private PValueUpdater _pValueUpdater;
         private FrameMetricsCollector _frameMetricsCollector;
+        private SystemMetricsCollector _systemMetricsCollector;
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
 
@@ -53,7 +54,7 @@ namespace BugsnagUnityPerformance
             {
                 if (IsStarted)
                 {
-                    MainThreadDispatchBehaviour.Instance().LogWarning(ALREADY_STARTED_WARNING);
+                    MainThreadDispatchBehaviour.LogWarning(ALREADY_STARTED_WARNING);
                     return;
                 }
                 IsStarted = true;
@@ -67,7 +68,7 @@ namespace BugsnagUnityPerformance
 
             if (ReleaseStageEnabled(configuration))
             {
-                MainThreadDispatchBehaviour.Instance().Enqueue(() =>
+                MainThreadDispatchBehaviour.Enqueue(() =>
                 {
                     CreateAppLifecycleListener();
                 });
@@ -133,10 +134,11 @@ namespace BugsnagUnityPerformance
             _cacheManager = new CacheManager(Application.persistentDataPath);
             _persistentState = new PersistentState(_cacheManager);
             _frameMetricsCollector = new FrameMetricsCollector();
+            _systemMetricsCollector = new SystemMetricsCollector();
             _sampler = new Sampler(_persistentState);
             _resourceModel = new ResourceModel(_cacheManager);
             _delivery = new Delivery(_resourceModel, _cacheManager, OnProbabilityChanged);
-            _tracer = new Tracer(_sampler, _delivery, _frameMetricsCollector);
+            _tracer = new Tracer(_sampler, _delivery, _frameMetricsCollector, _systemMetricsCollector);
             _spanFactory = new SpanFactory(_tracer.OnSpanEnd, _frameMetricsCollector);
             _appStartHandler = new AppStartHandler(_spanFactory);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
@@ -145,6 +147,7 @@ namespace BugsnagUnityPerformance
         private void Configure(PerformanceConfiguration config)
         {
             _frameMetricsCollector.Configure(config);
+            _systemMetricsCollector.Configure(config);
             _spanFactory.Configure(config);
             _networkRequestCallback = config.NetworkRequestCallback;
             _cacheManager.Configure(config);
@@ -152,7 +155,7 @@ namespace BugsnagUnityPerformance
             _delivery.Configure(config);
             _resourceModel.Configure(config);
             _sampler.Configure(config);
-            if(!config.IsFixedSamplingProbability)
+            if (!config.IsFixedSamplingProbability)
             {
                 _pValueUpdater.Configure(config);
             }
@@ -169,9 +172,9 @@ namespace BugsnagUnityPerformance
             _delivery.Start();
             _resourceModel.Start();
             _sampler.Start();
-            if(_pValueUpdater.IsConfigured)
+            if (_pValueUpdater.IsConfigured)
             {
-               _pValueUpdater.Start();
+                _pValueUpdater.Start();
             }
             _tracer.Start();
             _appStartHandler.Start();

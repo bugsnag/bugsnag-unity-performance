@@ -92,7 +92,7 @@ namespace Tests
         {
             var cacheManager = new CacheManager(Application.temporaryCachePath);
             var resourceModel = new ResourceModel(cacheManager);
-            return new TracePayload(resourceModel, SpansWithProbabilities(pValues),false,1,1);
+            return new TracePayload(resourceModel, SpansWithProbabilities(pValues), false, 1, 1);
         }
 
         private void AssertSpanSamplingHistogram(List<double> pValues, string expectedHistogram)
@@ -101,7 +101,8 @@ namespace Tests
             if (expectedHistogram.Length > 0)
             {
                 Assert.AreEqual(expectedHistogram, payload.Headers["Bugsnag-Span-Sampling"]);
-            } else
+            }
+            else
             {
                 Assert.IsFalse(payload.Headers.ContainsKey("Bugsnag-Span-Sampling"));
             }
@@ -126,8 +127,7 @@ namespace Tests
                             DateTimeOffset.Now,
                             true,
                             OnSpanEnd,
-                            128,
-                null);
+                            128);
             span.UpdateSamplingProbability(probability);
             return span;
         }
