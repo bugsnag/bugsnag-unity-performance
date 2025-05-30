@@ -7,10 +7,10 @@ steps:
     commands:
       - buildkite-agent pipeline upload .buildkite/unity.2020.full.yml
 
-  - label: 'Append Unity 2021 Full Pipeline'
-    timeout_in_minutes: 2
-    commands:
-      - buildkite-agent pipeline upload .buildkite/unity.2021.full.yml
+  # - label: 'Append Unity 2021 Full Pipeline'
+  #   timeout_in_minutes: 2
+  #   commands:
+  #     - buildkite-agent pipeline upload .buildkite/unity.2021.full.yml
 
   - label: 'Append Unity 2022 Full Pipeline'
     timeout_in_minutes: 2
