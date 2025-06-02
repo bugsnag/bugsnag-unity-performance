@@ -1,6 +1,12 @@
 # Changelog
 
+## TBD
+
 ## v1.9.0 (2025-05-27)
+
+### Bug Fixes
+
+- Fix issue where hub endpoint was missing .otlp. [#187](https://github.com/bugsnag/bugsnag-unity-performance/pull/187)
 
 ### Additions
 
