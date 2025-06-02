@@ -60,8 +60,10 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "os.name" equals "android"
+    * the trace payload field "resourceSpans.0.resource" string attribute "os.type" equals "linux"
 
- @cocoa_only
+ @ios_only
   Scenario: iOS Specific Resource Attributes
     When I run the game in the "ManualSpan" state
     And I wait for 1 span
@@ -71,6 +73,8 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "os.name" equals "iOS"
+    * the trace payload field "resourceSpans.0.resource" string attribute "os.type" equals "darwin"
 
   Scenario: null span name becomes empty string
     When I run the game in the "NullSpanName" state
