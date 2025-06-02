@@ -28,7 +28,7 @@ steps:
         - exit_status: '*'
           limit: 1
     agents:
-      queue: macos-14-unity-isolated
+      queue: macos-14-isolated
     concurrency: 1
     concurrency_group: "unity-license-server"
     concurrency_method: eager
