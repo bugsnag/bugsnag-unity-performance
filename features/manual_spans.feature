@@ -63,7 +63,7 @@ Feature: Manual creation of spans
     * the trace payload field "resourceSpans.0.resource" string attribute "os.name" equals "android"
     * the trace payload field "resourceSpans.0.resource" string attribute "os.type" equals "linux"
 
- @cocoa_only
+ @ios_only
   Scenario: iOS Specific Resource Attributes
     When I run the game in the "ManualSpan" state
     And I wait for 1 span
