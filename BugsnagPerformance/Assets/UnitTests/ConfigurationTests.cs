@@ -16,7 +16,7 @@ namespace Tests
         private const string HUB_API_KEY = "00000abcdef1234567890abcdef12345";
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
         private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
-        private const string HUB_ENDPOINT = "https://{0}.insighthub.smartbear.com/v1/traces";
+        private const string HUB_ENDPOINT = "https://{0}.otlp.insighthub.smartbear.com/v1/traces";
         private DateTimeOffset CustomStartTime = new DateTimeOffset(1985, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
         private DateTimeOffset CustomEndTime = new DateTimeOffset(1986, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
 
