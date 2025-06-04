@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.10.0 (2025-06-03)
+
+### Additions
+
+- Add os.type and os.name resource attributes [#185](https://github.com/bugsnag/bugsnag-unity-performance/pull/185)
+
+### Bug Fixes
+
+- Fix issue where hub endpoint was missing .otlp. [#187](https://github.com/bugsnag/bugsnag-unity-performance/pull/187)
+
 ## v1.9.0 (2025-05-27)
 
 ### Additions
