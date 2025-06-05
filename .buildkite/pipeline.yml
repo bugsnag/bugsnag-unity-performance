@@ -3,7 +3,7 @@ aliases:
   - &2020 "2020.3.48f1"
 
 agents:
-  queue: macos-15-isolated
+  queue: macos-15
 
 steps:
   - label: Verify code formatting

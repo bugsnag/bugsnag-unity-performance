@@ -102,7 +102,7 @@ steps:
         agents:
           queue: macos-14-isolated
         env:
-          XCODE_VERSION: 16.3.0
+          XCODE_VERSION: 15.3.0
           UNITY_PERFORMANCE_VERSION: *2020
         plugins:
           'artifacts#v1.9.0':
