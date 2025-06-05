@@ -99,8 +99,10 @@ steps:
         timeout_in_minutes: 10
         key: build-ios-fixture-2020
         depends_on: generate-fixture-project-2020
+        agents:
+          queue: macos-14-isolated
         env:
-          XCODE_VERSION: 16.2.0
+          XCODE_VERSION: 16.3.0
           UNITY_PERFORMANCE_VERSION: *2020
         plugins:
           'artifacts#v1.9.0':

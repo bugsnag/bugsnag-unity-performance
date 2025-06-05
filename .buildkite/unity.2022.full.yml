@@ -100,7 +100,7 @@ steps:
         key: build-ios-fixture-2022
         depends_on: generate-fixture-project-2022
         env:
-          XCODE_VERSION: 16.2.0
+          XCODE_VERSION: 16.3.0
           UNITY_PERFORMANCE_VERSION: *2022
         plugins:
           'artifacts#v1.9.0':
