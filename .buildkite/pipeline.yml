@@ -11,6 +11,14 @@ steps:
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     commands:
+      - rake test:run_editor_unit_tests
+      - cat testResults.xml
+
+  - label: Run Unit Tests
+    timeout_in_minutes: 5
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    commands:
       - rake code:verify
 
   - label: Build released library artifact
