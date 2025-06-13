@@ -82,7 +82,6 @@ namespace :plugin do
 
     desc "Build UPM package"
     task :export do
-      run_unit_tests
       build_upm_package
     end
 
@@ -90,6 +89,11 @@ namespace :plugin do
 end
 
 namespace :test do
+
+  desc "Run In Editor Unit Tests"
+  task :run_editor_unit_tests do
+    run_unit_tests
+  end
 
   namespace :android do
     task :build do
