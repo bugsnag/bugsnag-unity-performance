@@ -62,7 +62,7 @@ namespace Tests
         public void End_CalledTwice_SecondCallNoEffect()
         {
             _span = CreateSpan();
-            var firstEnd  = _span.StartTime.AddSeconds(1);
+            var firstEnd = _span.StartTime.AddSeconds(1);
             var secondEnd = _span.StartTime.AddSeconds(10);
 
             _span.End(firstEnd);   // accepted
@@ -84,8 +84,8 @@ namespace Tests
 
             var attrs = _span.GetAttributes();
             Assert.AreEqual(status, attrs["http.status_code"]);
-            Assert.AreEqual(reqLen,  attrs["http.request_content_length"]);
-            Assert.AreEqual(resLen,  attrs["http.response_content_length"]);
+            Assert.AreEqual(reqLen, attrs["http.request_content_length"]);
+            Assert.AreEqual(resLen, attrs["http.response_content_length"]);
         }
 
         [Test]
@@ -152,9 +152,9 @@ namespace Tests
         {
             return new BugsnagUnityPerformance.SystemMetricsSnapshot
             {
-                ProcessCPUPercent     = procCpu,
-                MainThreadCPUPercent  = mainCpu,
-                Timestamp             = ts.Millisecond * 1_000_000,  // convert to ns
+                ProcessCPUPercent = procCpu,
+                MainThreadCPUPercent = mainCpu,
+                Timestamp = ts.Millisecond * 1_000_000,  // convert to ns
             };
         }
 
@@ -179,9 +179,9 @@ namespace Tests
         public void ApplyCPUMetrics_PopulatesExpectedKeys()
         {
             _span = CreateSpan();
-            var ts     = DateTimeOffset.UtcNow;
-            var snap1  = MakeCpuSnapshot(10, 5, ts);
-            var snap2  = MakeCpuSnapshot(20, 6, ts.AddSeconds(1));
+            var ts = DateTimeOffset.UtcNow;
+            var snap1 = MakeCpuSnapshot(10, 5, ts);
+            var snap2 = MakeCpuSnapshot(20, 6, ts.AddSeconds(1));
 
             _span.ApplyCPUMetrics(new List<BugsnagUnityPerformance.SystemMetricsSnapshot> { snap1, snap2 });
 
