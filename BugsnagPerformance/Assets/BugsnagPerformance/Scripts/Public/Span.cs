@@ -310,14 +310,14 @@ namespace BugsnagUnityPerformance
             if (processCpuRaw.Length == 0)
             {
                 // no samples at all
-                return; 
-            } 
+                return;
+            }
             double cpuMeanTotal = processCpuRaw.Average();
             if (cpuMeanTotal < 0.0001)
-            { 
+            {
                 // effectively no CPU metrics
-                return;         
-            }    
+                return;
+            }
 
             var timestamps = snapshots.Select(s => s.Timestamp).ToArray();
             var processCpu = processCpuRaw.Select(v => Math.Round(v, 2)).ToArray();
