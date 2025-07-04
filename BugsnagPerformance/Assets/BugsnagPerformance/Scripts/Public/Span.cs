@@ -31,6 +31,7 @@ namespace BugsnagUnityPerformance
         private const string MEMORY_SPACES_ART_SIZE_KEY = "bugsnag.system.memory.spaces.art.size";
         private const string MEMORY_SPACES_ART_USED_KEY = "bugsnag.system.memory.spaces.art.used";
         private const string MEMORY_SPACES_ART_MEAN_KEY = "bugsnag.system.memory.spaces.art.mean";
+        private const double CPU_METRICS_MIN_THRESHOLD = 0.0001;
 
         public string Name { get; internal set; }
         internal SpanKind Kind { get; }
@@ -313,7 +314,7 @@ namespace BugsnagUnityPerformance
                 return;
             }
             double cpuMeanTotal = processCpuRaw.Average();
-            if (cpuMeanTotal < 0.0001)
+            if (cpuMeanTotal < CPU_METRICS_MIN_THRESHOLD)
             {
                 // effectively no CPU metrics
                 return;
