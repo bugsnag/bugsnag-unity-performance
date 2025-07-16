@@ -98,6 +98,8 @@ namespace BugsnagUnityPerformance
             return _spanFactory.CreateAutoAppStartSpan(name, category, category.Equals(APP_START_CATEGORY));
         }
 
+        internal Span GetAppStartSpan() => _rootSpan;
+
         internal void SubsystemRegistration()
         {
             _rootSpan = CreateAppStartSpan(UNITY_RUNTIME_SPAN_NAME, APP_START_CATEGORY);

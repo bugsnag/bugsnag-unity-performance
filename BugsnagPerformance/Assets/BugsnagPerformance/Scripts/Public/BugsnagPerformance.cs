@@ -32,6 +32,7 @@ namespace BugsnagUnityPerformance
         private SystemMetricsCollector _systemMetricsCollector;
         private static List<WeakReference<Span>> _potentiallyOpenSpans = new List<WeakReference<Span>>();
         private Func<BugsnagNetworkRequestInfo, BugsnagNetworkRequestInfo> _networkRequestCallback;
+        private static SpanControlRegistry _spanControlRegistry;
 
         private static Dictionary<WeakReference<BugsnagUnityWebRequest>, Span> _networkSpans = new Dictionary<WeakReference<BugsnagUnityWebRequest>, Span>();
 
@@ -44,7 +45,6 @@ namespace BugsnagUnityPerformance
         {
             public List<Span> Spans = new List<Span>();
         }
-
         public static void Start(PerformanceConfiguration configuration)
         {
 #if BUGSNAG_DEBUG
@@ -122,6 +122,11 @@ namespace BugsnagUnityPerformance
             return _sharedInstance._spanFactory.CreateManualNetworkSpan(url, httpVerb, spanOptions);
         }
 
+        public static T GetSpanControl<T>(ISpanQuery<T> query) where T : class
+        {
+            return _spanControlRegistry?.GetSpanControl(query);
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void SubsystemRegistration()
         {
@@ -141,6 +146,7 @@ namespace BugsnagUnityPerformance
             _tracer = new Tracer(_sampler, _delivery, _frameMetricsCollector, _systemMetricsCollector);
             _spanFactory = new SpanFactory(_tracer.OnSpanEnd, _frameMetricsCollector);
             _appStartHandler = new AppStartHandler(_spanFactory);
+            _spanControlRegistry = new SpanControlRegistry(_appStartHandler);
             _pValueUpdater = new PValueUpdater(_delivery, _sampler);
         }
 
