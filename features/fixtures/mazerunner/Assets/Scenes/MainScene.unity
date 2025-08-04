@@ -1108,6 +1108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef6b6638c32824cd09e5bc90ba6c791c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
 --- !u!114 &1124192959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1120,6 +1121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31195cb4a65c4458eb5d46cb119e51bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
 --- !u!1 &1294582013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1550,6 +1552,8 @@ GameObject:
   - component: {fileID: 2053587487}
   - component: {fileID: 2053587489}
   - component: {fileID: 2053587488}
+  - component: {fileID: 2053587490}
+  - component: {fileID: 2053587491}
   m_Layer: 0
   m_Name: AppStart
   m_TagString: Untagged
@@ -1611,6 +1615,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShouldStartNotifier: 0
+--- !u!114 &2053587490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2053587485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe103c8e2fc0e4d429f29e72dddcbaae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldStartNotifier: 0
+--- !u!114 &2053587491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2053587485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c87ca81bf59a4b64969be3ff3117a53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2126837005
 GameObject:
   m_ObjectHideFlags: 0

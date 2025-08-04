@@ -1,12 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace BugsnagUnityPerformance
 {
     internal class AppStartSpanControl : IAppStartSpanControl
     {
+        private const string APP_START_SPAN_PREFIX = "[AppStart/UnityRuntime]";
+        private const string APP_START_NAME_ATTRIBUTE = "bugsnag.app_start.name";
         private readonly Span _span;
 
         public AppStartSpanControl(Span span)
@@ -18,8 +15,8 @@ namespace BugsnagUnityPerformance
         {
             if (_span != null && !_span.Ended)
             {
-                _span.Name = "[AppStart/UnityRuntime]" + type;
-                _span.SetAttributeInternal("bugsnag.app_start.name", type);
+                _span.Name = APP_START_SPAN_PREFIX + type;
+                _span.SetAttributeInternal(APP_START_NAME_ATTRIBUTE, type);
             }
         }
 
@@ -27,8 +24,8 @@ namespace BugsnagUnityPerformance
         {
             if (_span != null && !_span.Ended)
             {
-                _span.Name = "[AppStart/UnityRuntime]";
-                _span.SetAttributeInternal("bugsnag.app_start.name", (string)null);
+                _span.Name = APP_START_SPAN_PREFIX;
+                _span.SetAttributeInternal(APP_START_NAME_ATTRIBUTE, (string)null);
             }
         }
     }
