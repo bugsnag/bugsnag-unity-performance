@@ -2,6 +2,10 @@
 
 ## TBD
 
+### Additions
+
+- Allow app start span customisation. [#196](https://github.com/bugsnag/bugsnag-unity-performance/pull/196)
+
 ### Bug Fixes
 
 - Fix issue where CPU metrics where reported when no valid CPU data was avaliable. [#193](https://github.com/bugsnag/bugsnag-unity-performance/pull/193)
