@@ -8,7 +8,7 @@
 
 ### Bug Fixes
 
-- Fix issue where CPU metrics where reported when no valid CPU data was avaliable. [#193](https://github.com/bugsnag/bugsnag-unity-performance/pull/193)
+- Fix issue where CPU metrics were reported when no valid CPU data was available. [#193](https://github.com/bugsnag/bugsnag-unity-performance/pull/193)
 
 ## v1.10.0 (2025-06-03)
 
