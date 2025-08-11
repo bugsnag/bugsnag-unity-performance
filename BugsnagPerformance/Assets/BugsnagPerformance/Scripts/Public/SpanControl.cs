@@ -5,13 +5,12 @@ namespace BugsnagUnityPerformance
         void SetType(string type);
         void ClearType();
     }
-    public static class SpanType
-    {
-        public static readonly AppStartQuery AppStart = new AppStartQuery();
-
-        public class AppStartQuery : ISpanQuery<IAppStartSpanControl> { }
-    }
 
     public interface ISpanQuery<T> { }
 
+    public static class SpanType
+    {
+        public static readonly ISpanQuery<IAppStartSpanControl> AppStart = new AppStartQuery();
+        internal sealed class AppStartQuery : ISpanQuery<IAppStartSpanControl> { }
+    }
 }
