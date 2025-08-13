@@ -31,6 +31,7 @@ namespace BugsnagUnityPerformance
         private const string MEMORY_SPACES_ART_SIZE_KEY = "bugsnag.system.memory.spaces.art.size";
         private const string MEMORY_SPACES_ART_USED_KEY = "bugsnag.system.memory.spaces.art.used";
         private const string MEMORY_SPACES_ART_MEAN_KEY = "bugsnag.system.memory.spaces.art.mean";
+        private const string APP_START_NAME_KEY = "bugsnag.app_start.name";
         private const double CPU_METRICS_MIN_THRESHOLD = 0.0001;
 
         public string Name { get; internal set; }
@@ -42,7 +43,7 @@ namespace BugsnagUnityPerformance
         public DateTimeOffset EndTime { get; internal set; }
         internal double samplingProbability { get; private set; }
         internal bool Ended;
-        private object _endLock = new object();
+        private readonly object _endLock = new object();
         private OnSpanEnd _onSpanEnd;
         internal bool IsAppStartSpan;
         internal bool WasDiscarded;
@@ -52,6 +53,8 @@ namespace BugsnagUnityPerformance
         private int _customAttributeCount;
         private int _maxCustomAttributes;
         internal bool IsFrozenFrameSpan;
+        private readonly object _attributesLock = new object();
+
 
         public Span(string name, SpanKind kind, string id,
         string traceId, string parentSpanId, DateTimeOffset startTime,
@@ -190,12 +193,15 @@ namespace BugsnagUnityPerformance
         internal void SetAttributeInternal(string key, bool value) => SetAttributeWithoutChecks(key, value);
         private void SetAttributeWithoutChecks(string key, object value)
         {
-            if (value == null)
+            lock (_attributesLock)
             {
-                _attributes.Remove(key);
-                return;
+                if (value == null)
+                {
+                    _attributes.Remove(key);
+                    return;
+                }
+                _attributes[key] = value;
             }
-            _attributes[key] = value;
         }
 
 
@@ -215,31 +221,57 @@ namespace BugsnagUnityPerformance
                 MainThreadDispatchBehaviour.LogWarning($"Attempting to set attribute: {key} on span: {Name} after the span has ended.");
                 return;
             }
-
-            if (_attributes.ContainsKey(key))
+            lock (_attributesLock)
             {
-                if (value == null)
+                if (_attributes.ContainsKey(key))
                 {
-                    _attributes.Remove(key);
-                    _customAttributeCount--;
+                    if (value == null)
+                    {
+                        _attributes.Remove(key);
+                        _customAttributeCount--;
+                    }
+                    else
+                    {
+                        _attributes[key] = value;
+                    }
+                    return;
                 }
-                else
-                {
-                    _attributes[key] = value;
-                }
-                return;
-            }
 
-            if (_customAttributeCount >= _maxCustomAttributes)
-            {
-                DroppedAttributesCount++;
-                return;
+                if (_customAttributeCount >= _maxCustomAttributes)
+                {
+                    DroppedAttributesCount++;
+                    return;
+                }
+                _attributes[key] = value;
+                _customAttributeCount++;
             }
-            _attributes[key] = value;
-            _customAttributeCount++;
         }
 
-        internal Dictionary<string, object> GetAttributes() => new Dictionary<string, object>(_attributes);
+        internal bool TryUpdateAppStartSpan(string? type, string namePrefix = "[AppStart/UnityRuntime]")
+        {
+            lock (_endLock)
+            {
+                if (Ended)
+                {
+                    return false;
+                }
+                Name = type == null ? namePrefix : namePrefix + type;
+                lock (_attributesLock)
+                {
+                    if (type == null) _attributes.Remove(APP_START_NAME_KEY);
+                    else _attributes[APP_START_NAME_KEY] = type;
+                }
+                return true;
+            }
+        }
+
+        internal Dictionary<string, object> GetAttributes()
+        {
+            lock (_attributesLock)
+            {
+                return new Dictionary<string, object>(_attributes);
+            }
+        }
 
         internal void SetCallbackComplete()
         {

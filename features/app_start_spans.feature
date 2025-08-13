@@ -57,3 +57,19 @@ Scenario: App Start Off
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "AppStartOff"
 
+Scenario: App Start Customisation
+    When I run the game in the "AppStartCustomisation" state
+    And I wait for 4 spans
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:4"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.name" equals "[AppStart/UnityRuntime]ColdStart"
+
+Scenario: App Start Clear Customisation
+    When I run the game in the "AppStartClearCustomisation" state
+    And I wait for 4 spans
+    Then the trace Bugsnag-Integrity header is valid
+    And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:4"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.name" equals "[AppStart/UnityRuntime]"
+
