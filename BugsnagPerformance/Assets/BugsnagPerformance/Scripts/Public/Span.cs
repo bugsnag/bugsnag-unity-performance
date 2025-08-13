@@ -247,11 +247,14 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        internal bool TrySetAppStartType(string? type, string namePrefix = "[AppStart/UnityRuntime]")
+        internal bool TryUpdateAppStartSpan(string? type, string namePrefix = "[AppStart/UnityRuntime]")
         {
             lock (_endLock)
             {
-                if (Ended) return false;
+                if (Ended)
+                {
+                    return false;
+                }
                 Name = type == null ? namePrefix : namePrefix + type;
                 lock (_attributesLock)
                 {
@@ -262,7 +265,13 @@ namespace BugsnagUnityPerformance
             }
         }
 
-        internal Dictionary<string, object> GetAttributes() => new Dictionary<string, object>(_attributes);
+        internal Dictionary<string, object> GetAttributes()
+        {
+            lock (_attributesLock)
+            {
+                return new Dictionary<string, object>(_attributes);
+            }
+        }
 
         internal void SetCallbackComplete()
         {
