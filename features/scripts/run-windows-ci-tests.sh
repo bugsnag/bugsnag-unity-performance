@@ -29,5 +29,5 @@ bundle install
 if [ "$BUILD_TYPE" == "dev" ]; then
   bundle exec maze-runner --app=features/fixtures/mazerunner/build/Windows/$EXE_FILE --os=windows --fail-fast features/dev.feature
 else
-  bundle exec maze-runner --app=features/fixtures/mazerunner/build/Windows/$EXE_FILE --os=windows --fail-fast features
+  bundle exec maze-runner --app=features/fixtures/mazerunner/build/Windows/$EXE_FILE --os=windows --fail-fast --exclude=features/dev.feature features
 fi

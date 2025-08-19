@@ -36,5 +36,5 @@ bundle install
 if [ "$BUILD_TYPE" == "dev" ]; then
   bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast features/dev.feature
 else
-  bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast features
+  bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast --exclude=features/dev.feature features
 fi
