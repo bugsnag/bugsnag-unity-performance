@@ -7,14 +7,14 @@ if [ $# -ne 1 ]; then
 fi
 
 # Set the mode based on the argument
-RUN_MODE=$1
+BUILD_TYPE=$1
 
-if [ "$RUN_MODE" == "dev" ]; then
+if [ "$BUILD_TYPE" == "dev" ]; then
   ZIP_FILE="mazerunner_webgl_dev_${UNITY_PERFORMANCE_VERSION:0:4}.zip"
-elif [ "$RUN_MODE" == "release" ]; then
+elif [ "$BUILD_TYPE" == "release" ]; then
   ZIP_FILE="mazerunner_webgl_${UNITY_PERFORMANCE_VERSION:0:4}.zip"
 else
-  echo "Invalid argument: $RUN_MODE. Use 'release' or 'dev'."
+  echo "Invalid argument: $BUILD_TYPE. Use 'release' or 'dev'."
   exit 1
 fi
 
@@ -24,4 +24,8 @@ popd
 
 bundle install
 
-bundle exec maze-runner --farm=local --browser=firefox --fail-fast features
+if [ "$BUILD_TYPE" == "dev" ]; then
+  bundle exec maze-runner --farm=local --browser=firefox --fail-fast features/dev.feature
+else
+  bundle exec maze-runner --farm=local --browser=firefox --fail-fast features
+fi

@@ -32,4 +32,9 @@ popd
 
 rm -rf Gemfile.lock
 bundle install
-bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast features
+
+if [ "$BUILD_TYPE" == "dev" ]; then
+  bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast features/dev.feature
+else
+  bundle exec maze-runner --app=features/fixtures/mazerunner/$APP_NAME --os=macos --fail-fast features
+fi
