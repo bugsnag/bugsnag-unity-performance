@@ -59,7 +59,7 @@ echo "Package path: $PACKAGE_DOWNLOAD_PATH"
 "$UNITY_PATH" $DEFAULT_CLI_ARGS \
             -projectPath $FIXTURE_PATH \
             -ignoreCompilerErrors \
-            -importPackage "$PACKAGE_DOWNLOAD_PATH"
+            -importPackage "Bugsnag.unitypackage"
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "Unity package import failed with exit code $RESULT"
@@ -67,11 +67,6 @@ if [ $RESULT -ne 0 ]; then
     echo "Last 50 lines of import log:"
     tail -50 "${FIXTURE_PATH}/import_package.log"
   fi
-  exit $RESULT
-fi
-
-echo "Package import completed successfully!"
-  echo "Failed to import Bugsnag.unitypackage"
   exit $RESULT
 fi
 

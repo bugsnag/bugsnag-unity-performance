@@ -52,7 +52,7 @@ steps:
               limit: 1
 
       - label: ':macos: Build macos DEV test fixture for Unity 2021'
-        timeout_in_minutes: 20
+        timeout_in_minutes: 10
         key: build-macos-dev-fixture-2021
         depends_on: build-artifacts
         env:
@@ -73,7 +73,7 @@ steps:
               limit: 1
 
       - label: ':ios: Generate Xcode DEV project - Unity 2021'
-        timeout_in_minutes: 20
+        timeout_in_minutes: 10
         key: generate-dev-fixture-project-2021
         depends_on: build-artifacts
         env:
@@ -97,7 +97,7 @@ steps:
       - label: ':ios: Build iOS DEV test fixture for Unity 2021'
         agents:
           queue: macos-15-isolated
-        timeout_in_minutes: 20
+        timeout_in_minutes: 10
         key: build-ios-dev-fixture-2021
         depends_on: generate-dev-fixture-project-2021
         env:
@@ -163,7 +163,7 @@ steps:
           - features/scripts/run-windows-ci-tests.sh dev
 
       - label: ':android: Build Android Dev test fixture for Unity 2021'
-        timeout_in_minutes: 20
+        timeout_in_minutes: 10
         key: build-android-dev-fixture-2021
         depends_on: build-artifacts
         env:
