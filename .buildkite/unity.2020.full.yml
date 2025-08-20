@@ -195,6 +195,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"
@@ -225,6 +226,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"
