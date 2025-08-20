@@ -33,12 +33,43 @@ rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
 
 UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
 
+# Check if Unity path exists
+if [ ! -f "$UNITY_PATH" ]; then
+  echo "Unity executable not found at $UNITY_PATH"
+  exit 1
+fi
+
+# Clean up old zip files
+if [ -f "features/fixtures/mazerunner/build/Windows-dev-${UNITY_PERFORMANCE_VERSION:0:4}.zip" ]; then
+  echo "Removing old dev zip file"
+  rm -f "features/fixtures/mazerunner/build/Windows-dev-${UNITY_PERFORMANCE_VERSION:0:4}.zip"
+fi
+
+if [ -f "features/fixtures/mazerunner/build/Windows-${UNITY_PERFORMANCE_VERSION:0:4}.zip" ]; then
+  echo "Removing old release zip file"
+  rm -f "features/fixtures/mazerunner/build/Windows-${UNITY_PERFORMANCE_VERSION:0:4}.zip"
+fi
+
+# Clean up old Windows build directory
+if [ -d "features/fixtures/mazerunner/build/Windows" ]; then
+  echo "Removing old Windows build directory"
+  rm -rf "features/fixtures/mazerunner/build/Windows"
+fi
+
+echo "Building Windows executable with Unity..."
+echo "Unity path: $UNITY_PATH"
+echo "Project path (WSL): $project_path"
+echo "Project path (Windows): $win_project_path"
+echo "Run mode: $RUN_MODE"
+
 if [ "$RUN_MODE" == "dev" ]; then
+  echo "Executing Unity build for dev..."
   "$UNITY_PATH" $DEFAULT_CLI_ARGS \
     -projectPath "$win_project_path" \
     -executeMethod "Builder.WindowsDev"
   ZIP_FILE="Windows-dev-${UNITY_PERFORMANCE_VERSION:0:4}.zip"
 elif [ "$RUN_MODE" == "release" ]; then
+  echo "Executing Unity build for release..."
   "$UNITY_PATH" $DEFAULT_CLI_ARGS \
     -projectPath "$win_project_path" \
     -executeMethod "Builder.WindowsRelease"
@@ -49,8 +80,28 @@ else
 fi
 
 RESULT=$?
-if [ $RESULT -ne 0 ]; then exit $RESULT; fi
+if [ $RESULT -ne 0 ]; then 
+  echo "Unity build failed with exit code $RESULT"
+  if [ -f "$project_path/build_windows.log" ]; then
+    echo "Last 50 lines of build log:"
+    tail -50 "$project_path/build_windows.log"
+  fi
+  exit $RESULT
+fi
+
+# Verify Windows build directory exists
+if [ ! -d "features/fixtures/mazerunner/build/Windows" ]; then
+  echo "Error: Expected Windows build directory not found"
+  exit 1
+fi
 
 # Zip up the built artifacts
+echo "Creating zip archive: $ZIP_FILE"
 cd features/fixtures/mazerunner/build
-zip -r $ZIP_FILE Windows
+if ! zip -r $ZIP_FILE Windows; then
+  echo "Error: Failed to create zip archive"
+  exit 1
+fi
+
+echo "Build completed successfully!"
+echo "Output: features/fixtures/mazerunner/build/$ZIP_FILE"

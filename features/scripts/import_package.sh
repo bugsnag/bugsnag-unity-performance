@@ -32,12 +32,18 @@ BUGSNAG_RELEASE_URL="https://github.com/bugsnag/bugsnag-unity/releases/latest/do
 
 # Download the latest Bugsnag Unity package if it doesn't exist or override it
 echo "Downloading Bugsnag.unitypackage from $BUGSNAG_RELEASE_URL"
-curl -L "$BUGSNAG_RELEASE_URL" -o "$PACKAGE_DOWNLOAD_PATH"
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "Failed to download Bugsnag.unitypackage"
-  exit $RESULT
+if ! curl -L --fail --silent --show-error "$BUGSNAG_RELEASE_URL" -o "$PACKAGE_DOWNLOAD_PATH"; then
+  echo "Failed to download Bugsnag.unitypackage from $BUGSNAG_RELEASE_URL"
+  exit 1
 fi
+
+# Verify the downloaded file
+if [ ! -f "$PACKAGE_DOWNLOAD_PATH" ] || [ ! -s "$PACKAGE_DOWNLOAD_PATH" ]; then
+  echo "Downloaded package is empty or missing: $PACKAGE_DOWNLOAD_PATH"
+  exit 1
+fi
+
+echo "Successfully downloaded Bugsnag.unitypackage ($(stat -f%z "$PACKAGE_DOWNLOAD_PATH" 2>/dev/null || stat -c%s "$PACKAGE_DOWNLOAD_PATH") bytes)"
 
 # Check if Unity path exists
 if [ ! -f "$UNITY_PATH" ]; then
@@ -47,12 +53,24 @@ fi
 
 # Importing the Bugsnag package into Unity project
 echo "Importing Bugsnag.unitypackage into $FIXTURE_PATH"
+echo "Unity path: $UNITY_PATH"
+echo "Package path: $PACKAGE_DOWNLOAD_PATH"
+
 "$UNITY_PATH" $DEFAULT_CLI_ARGS \
             -projectPath $FIXTURE_PATH \
             -ignoreCompilerErrors \
-            -importPackage "Bugsnag.unitypackage"
+            -importPackage "$PACKAGE_DOWNLOAD_PATH"
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
+  echo "Unity package import failed with exit code $RESULT"
+  if [ -f "${FIXTURE_PATH}/import_package.log" ]; then
+    echo "Last 50 lines of import log:"
+    tail -50 "${FIXTURE_PATH}/import_package.log"
+  fi
+  exit $RESULT
+fi
+
+echo "Package import completed successfully!"
   echo "Failed to import Bugsnag.unitypackage"
   exit $RESULT
 fi

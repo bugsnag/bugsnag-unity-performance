@@ -119,12 +119,19 @@ Maze.hooks.before do
     $logger.info "Clearing #{support_dir}"
     FileUtils.rm_rf(support_dir)
     $logger.info 'Clearing User defaults'
-    Maze::Runner.run_command('defaults delete com.bugsnag.Mazerunner');
-    Maze::Runner.run_command('defaults write com.bugsnag.Mazerunner ApplePersistenceIgnoreState YES');
+    begin
+      Maze::Runner.run_command('defaults delete com.bugsnag.Mazerunner 2>/dev/null || exit 0', timeout: 10);
+      Maze::Runner.run_command('defaults write com.bugsnag.Mazerunner ApplePersistenceIgnoreState YES', timeout: 10);
 
-    # This is to get around a strange macos bug where clearing prefs does not work 
-    $logger.info 'Killing defaults service'
-    Maze::Runner.run_command("killall -u #{ENV['USER']} cfprefsd")
+      # This is to get around a strange macOS bug where clearing prefs does not work 
+      $logger.info 'Killing defaults service'
+      Maze::Runner.run_command("killall -u #{ENV['USER']} cfprefsd 2>/dev/null || exit 0", timeout: 10)
+      
+      # Give the defaults service time to restart
+      sleep 2
+    rescue => e
+      $logger.warn "Failed to clear macOS defaults: #{e.message}"
+    end
   end
 end
 
@@ -133,15 +140,29 @@ After do |scenario|
 
   case Maze::Helper.get_current_platform
   when 'macos'
-    `killall Mazerunner`
+    # Kill processes with better error handling
+    system('killall Mazerunner 2>/dev/null')
+    # Give processes time to terminate gracefully
+    sleep 1
   when 'windows'
-    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows.exe || exit 0")  
-    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows_dev.exe || exit 0")  
+    # Kill processes with better error handling and timeout
+    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /F /IM mazerunner_windows.exe 2>/dev/null || exit 0", timeout: 10)  
+    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /F /IM mazerunner_windows_dev.exe 2>/dev/null || exit 0", timeout: 10)  
+    # Give processes time to terminate
+    sleep 1
   when 'webgl'
-    execute_command('close_application')
+    begin
+      execute_command('close_application')
+    rescue => e
+      $logger.warn "Failed to close WebGL application: #{e.message}"
+    end
   when 'switch'
-    # Terminate the app
-    Maze::Runner.run_command('ControlTarget.exe terminate')
+    begin
+      # Terminate the app with timeout
+      Maze::Runner.run_command('ControlTarget.exe terminate', timeout: 10)
+    rescue => e
+      $logger.warn "Failed to terminate Switch app: #{e.message}"
+    end
   end
 end
 

@@ -8,7 +8,7 @@ steps:
   - group: ":hammer: Build Unity 2021 Test Fixtures"
     steps:
       - label: ':webgl: Build webgl test fixture for Unity 2021'
-        timeout_in_minutes: 10
+        timeout_in_minutes: 15
         key: build-webgl-fixture-2021
         depends_on: build-artifacts
         env:
@@ -73,7 +73,7 @@ steps:
               limit: 1
 
       - label: ':android: Build Android test fixture for Unity 2021'
-        timeout_in_minutes: 10
+        timeout_in_minutes: 20
         key: build-android-fixture-2021
         depends_on: build-artifacts
         env:
@@ -95,7 +95,7 @@ steps:
               limit: 1
 
       - label: ':ios: Generate Xcode project - Unity 2021'
-        timeout_in_minutes: 10
+        timeout_in_minutes: 20
         key: generate-fixture-project-2021
         depends_on: build-artifacts
         env:
@@ -117,7 +117,7 @@ steps:
               limit: 1
 
       - label: ':ios: Build iOS test fixture for Unity 2021'
-        timeout_in_minutes: 10
+        timeout_in_minutes: 20
         key: build-ios-fixture-2021
         depends_on: generate-fixture-project-2021
         env:

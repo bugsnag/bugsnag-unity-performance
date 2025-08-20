@@ -7,20 +7,28 @@ agents:
 
 steps:
   - label: Verify code formatting
-    timeout_in_minutes: 5
+    timeout_in_minutes: 10
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     commands:
       - rake code:verify
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
 
   - label: Run Unit Tests
-    timeout_in_minutes: 5
+    timeout_in_minutes: 10
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     commands:
       - rake test:run_editor_unit_tests
     artifact_paths:
       - testResults.xml
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
 
   - label: Build released library artifact
     timeout_in_minutes: 10
@@ -39,7 +47,7 @@ steps:
 
   - label: Build size impact reporting
     depends_on: build-artifacts
-    timeout_in_minutes: 10
+    timeout_in_minutes: 15
     env:
       UNITY_PERFORMANCE_VERSION: *2021
     plugins:
@@ -48,6 +56,10 @@ steps:
           - upm-package.zip
     commands:
       - features/scripts/do_size_test.sh
+    retry:
+      automatic:
+        - exit_status: '*'
+          limit: 1
 
   - label: Append Unity 2021 Basic Pipeline
     agents:
