@@ -189,8 +189,13 @@ public class Main : MonoBehaviour
 
     public static void Log(string msg)
     {
-        _instance.DebugText.text += Environment.NewLine + msg;
-        Debug.Log(msg);
+        try
+        {
+            _instance.DebugText.text += Environment.NewLine + msg;
+            Debug.Log(msg);
+        }
+        catch { }
+
     }
 
 }
