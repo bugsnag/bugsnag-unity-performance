@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -7,7 +8,7 @@ using UnityEditor.Callbacks;
 
 public class Builder : MonoBehaviour
 {
-
+    // ---------- Shared ----------
     static void BuildStandalone(string folder, BuildTarget target, bool dev)
     {
         BuildPlayerOptions opts = new BuildPlayerOptions();
@@ -19,59 +20,100 @@ public class Builder : MonoBehaviour
         BuildPipeline.BuildPlayer(opts);
     }
 
-    public static void MacOSRelease()
+    // Attempts to switch Standalone (Windows) to IL2CPP if available, returning a restore action.
+    // If IL2CPP is not available, returns null and leaves settings unchanged.
+    static Action PrepareWindowsIl2CppIfAvailable()
     {
-        BuildMacOS(false);
+        var group = BuildTargetGroup.Standalone;
+
+        // Keep original backend to restore later
+        ScriptingImplementation originalBackend = PlayerSettings.GetScriptingBackend(group);
+
+        try
+        {
+            // Unity 2020+ has this API; guard just in case.
+#if UNITY_2019_3_OR_NEWER
+            var available = PlayerSettings.GetAvailableScriptingImplementations(group);
+            bool hasIl2Cpp = available != null && available.Contains(ScriptingImplementation.IL2CPP);
+#else
+            bool hasIl2Cpp = true; // very old fallback; we'll attempt and catch if it fails
+#endif
+
+            if (hasIl2Cpp)
+            {
+                if (originalBackend != ScriptingImplementation.IL2CPP)
+                {
+                    PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
+                    Debug.Log("[Builder] Windows: Using IL2CPP scripting backend.");
+                    return () =>
+                    {
+                        PlayerSettings.SetScriptingBackend(group, originalBackend);
+                        Debug.Log($"[Builder] Restored Standalone scripting backend to {originalBackend}.");
+                    };
+                }
+                else
+                {
+                    Debug.Log("[Builder] Windows: IL2CPP already selected.");
+                    return null;
+                }
+            }
+            else
+            {
+                Debug.Log("[Builder] IL2CPP not available for Standalone; keeping current backend: " + originalBackend);
+                return null;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("[Builder] Could not switch to IL2CPP automatically (will keep current backend). " + e.Message);
+            return null;
+        }
     }
 
-    public static void MacOSDev()
-    {
-        BuildMacOS(true);
-    }
+    // ---------- macOS ----------
+    public static void MacOSRelease() => BuildMacOS(false);
+    public static void MacOSDev() => BuildMacOS(true);
+
     static void BuildMacOS(bool dev)
     {
         BuildStandalone(dev ? "mazerunner_macos_dev" : "mazerunner_macos", BuildTarget.StandaloneOSX, dev);
     }
 
-    public static void WindowsRelease()
-    {
-        BuildWindows(false);
-    }
+    // ---------- Windows ----------
+    public static void WindowsRelease() => BuildWindows(false);
+    public static void WindowsDev() => BuildWindows(true);
 
-    public static void WindowsDev()
-    {
-        BuildWindows(true);
-    }
     static void BuildWindows(bool dev)
     {
-        BuildStandalone(dev ? "build/Windows/mazerunner_windows_dev.exe" : "build/Windows/mazerunner_windows.exe", BuildTarget.StandaloneWindows64, dev);
+        // Ensure IL2CPP if available, but always restore original backend afterwards.
+        var restore = PrepareWindowsIl2CppIfAvailable();
+        try
+        {
+            BuildStandalone(
+                dev ? "build/Windows/mazerunner_windows_dev.exe" : "build/Windows/mazerunner_windows.exe",
+                BuildTarget.StandaloneWindows64,
+                dev
+            );
+        }
+        finally
+        {
+            restore?.Invoke();
+        }
     }
 
-    public static void WebGLRelease()
-    {
-        BuildWebGL(false);
-    }
-
-    public static void WebGLDev()
-    {
-        BuildWebGL(true);
-    }
+    // ---------- WebGL ----------
+    public static void WebGLRelease() => BuildWebGL(false);
+    public static void WebGLDev() => BuildWebGL(true);
 
     static void BuildWebGL(bool dev)
     {
-        BuildStandalone(dev ? "mazerunner_webgl_dev" : "mazerunner_webgl", BuildTarget.WebGL,dev);
+        BuildStandalone(dev ? "mazerunner_webgl_dev" : "mazerunner_webgl", BuildTarget.WebGL, dev);
     }
 
-    // Generates the Mazerunner APK
-    public static void AndroidRelease()
-    {
-        BuildAndroid(false);
-    }
+    // ---------- Android ----------
+    public static void AndroidRelease() => BuildAndroid(false);
+    public static void AndroidDev() => BuildAndroid(true);
 
-    public static void AndroidDev()
-    {
-        BuildAndroid(true);
-    }
     static void BuildAndroid(bool dev)
     {
         Debug.Log("Building Android app...");
@@ -85,16 +127,10 @@ public class Builder : MonoBehaviour
         Debug.Log("Result: " + result);
     }
 
+    // ---------- iOS ----------
+    public static void IosRelease() => BuildIos(false);
+    public static void IosDev() => BuildIos(true);
 
-
-    // Generates the Mazerunner IPA
-    
-    public static void IosRelease(){
-        BuildIos(false);
-    }
-    public static void IosDev(){
-        BuildIos(true);
-    }
     static void BuildIos(bool dev)
     {
         Debug.Log("Building iOS app...");
@@ -110,6 +146,7 @@ public class Builder : MonoBehaviour
         Debug.Log("Result: " + result);
     }
 
+    // ---------- Switch ----------
     public static void SwitchBuild()
     {
         Debug.Log("Building Switch app...");
@@ -122,15 +159,18 @@ public class Builder : MonoBehaviour
         Debug.Log("Result: " + result);
     }
 
+    // ---------- Mobile opts ----------
     private static BuildPlayerOptions CommonMobileBuildOptions(string outputFile, bool dev)
     {
         var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
 
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
-        BuildPlayerOptions opts = new BuildPlayerOptions();
-        opts.scenes = scenes;
-        opts.locationPathName = Application.dataPath + "/../" + outputFile;
-        opts.options = dev ? BuildOptions.Development : BuildOptions.None;
+        BuildPlayerOptions opts = new BuildPlayerOptions
+        {
+            scenes = scenes,
+            locationPathName = Application.dataPath + "/../" + outputFile,
+            options = dev ? BuildOptions.Development : BuildOptions.None
+        };
 
         return opts;
     }
