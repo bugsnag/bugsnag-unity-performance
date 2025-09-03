@@ -203,6 +203,10 @@ steps:
         concurrency: 25
         concurrency_group: bitbar
         concurrency_method: eager
+        retry:
+          automatic:
+            - exit_status: 103  # Appium session failed
+              limit: 2
 
       - label: ':bitbar: Run iOS e2e tests for Unity 2020'
         timeout_in_minutes: 60
@@ -234,6 +238,10 @@ steps:
         concurrency: 25
         concurrency_group: bitbar
         concurrency_method: eager
+        retry:
+          automatic:
+            - exit_status: 103  # Appium session failed
+              limit: 2
 
 
 
