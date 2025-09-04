@@ -1,8 +1,8 @@
 aliases:
-  - &2022 "2022.3.61f1"
+  - &2022 "2022.3.62f1"
 
 agents:
-  queue: macos-14-isolated
+  queue: macos-15
 
 steps:
   - group: ":hammer: Build Unity 2022 Test Fixtures"
@@ -100,7 +100,7 @@ steps:
         key: build-ios-fixture-2022
         depends_on: generate-fixture-project-2022
         env:
-          XCODE_VERSION: 15.3.0
+          XCODE_VERSION: 16.3.0
           UNITY_PERFORMANCE_VERSION: *2022
         plugins:
           'artifacts#v1.9.0':
@@ -122,7 +122,7 @@ steps:
     steps:
       - label: Run MacOS e2e tests for Unity 2022
         agents:
-          queue: macos-14-isolated
+          queue: macos-15-isolated
         timeout_in_minutes: 30
         depends_on: build-macos-fixture-2022
         env:
@@ -189,6 +189,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"
@@ -219,6 +220,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"

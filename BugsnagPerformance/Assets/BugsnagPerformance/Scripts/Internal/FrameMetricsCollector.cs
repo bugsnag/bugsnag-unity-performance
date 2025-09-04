@@ -246,6 +246,12 @@ namespace BugsnagUnityPerformance
 
         private void UpdateInstrumentedSpans(float frameTime)
         {
+            // If frameTime is zero or infinity, we cannot calculate a frame rate
+            // This is common on WebGL
+            if (frameTime <= 0f || float.IsInfinity(frameTime))
+            {
+                return;
+            }
             int frameRate = (int)(1.0f / frameTime);
             foreach (var pair in _instrumentedSpans)
             {

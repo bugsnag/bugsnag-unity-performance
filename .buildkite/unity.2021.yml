@@ -2,7 +2,7 @@ aliases:
   - &2021 "2021.3.45f1"
 
 agents:
-  queue: macos-14-isolated
+  queue: macos-15
 
 steps:
   - group: ":hammer: Build Unity 2021 Test Fixtures"
@@ -71,11 +71,6 @@ steps:
           automatic:
             - exit_status: '*'
               limit: 1
-        agents:
-          queue: macos-14-isolated
-        concurrency: 1
-        concurrency_group: "unity-license-server"
-        concurrency_method: eager
 
       - label: ':android: Build Android test fixture for Unity 2021'
         timeout_in_minutes: 10
@@ -98,11 +93,6 @@ steps:
           automatic:
             - exit_status: '*'
               limit: 1
-        agents:
-          queue: macos-14-isolated
-        concurrency: 1
-        concurrency_group: "unity-license-server"
-        concurrency_method: eager
 
       - label: ':ios: Generate Xcode project - Unity 2021'
         timeout_in_minutes: 10
@@ -152,7 +142,7 @@ steps:
     steps:
       - label: Run WebGL e2e tests for Unity 2021
         agents:
-          queue: macos-14-isolated
+          queue: macos-15-isolated
         timeout_in_minutes: 20
         depends_on: build-webgl-fixture-2021
         env:
@@ -198,7 +188,7 @@ steps:
 
       - label: Run MacOS e2e tests for Unity 2021
         agents:
-          queue: macos-14-isolated
+          queue: macos-15-isolated
         timeout_in_minutes: 30
         depends_on: build-macos-fixture-2021
         env:
@@ -242,6 +232,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"
@@ -272,6 +263,7 @@ steps:
               - '--no-tunnel'
               - '--aws-public-ip'
               - '--fail-fast'
+              - '--exclude=features/dev.feature'
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"

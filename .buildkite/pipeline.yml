@@ -3,7 +3,7 @@ aliases:
   - &2020 "2020.3.48f1"
 
 agents:
-  queue: macos-14-isolated
+  queue: macos-15
 
 steps:
   - label: Verify code formatting
@@ -12,6 +12,19 @@ steps:
       UNITY_PERFORMANCE_VERSION: *2021
     commands:
       - rake code:verify
+    retry:
+      automatic:
+        - exit_status: "*"
+          limit: 3
+
+  - label: Run Unit Tests
+    timeout_in_minutes: 5
+    env:
+      UNITY_PERFORMANCE_VERSION: *2021
+    commands:
+      - rake test:run_editor_unit_tests
+    artifact_paths:
+      - testResults.xml
 
   - label: Build released library artifact
     timeout_in_minutes: 10
@@ -27,11 +40,6 @@ steps:
       automatic:
         - exit_status: '*'
           limit: 1
-    agents:
-      queue: macos-14-isolated
-    concurrency: 1
-    concurrency_group: "unity-license-server"
-    concurrency_method: eager
 
   - label: Build size impact reporting
     depends_on: build-artifacts

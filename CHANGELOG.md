@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.11.0 (2025-09-03)
+
+### Additions
+
+- Allow app start span customisation. [#196](https://github.com/bugsnag/bugsnag-unity-performance/pull/196)
+
+### Bug Fixes
+
+- Fix issue where CPU metrics were reported when no valid CPU data was available. [#193](https://github.com/bugsnag/bugsnag-unity-performance/pull/193)
+
 ## v1.10.0 (2025-06-03)
 
 ### Additions
