@@ -147,7 +147,7 @@ steps:
         timeout_in_minutes: 60
         depends_on: build-windows-fixture-6000
         agents:
-          queue: windows-general-isolated
+          queue: windows-unity-wsl
         env:
           UNITY_PERFORMANCE_VERSION: *6000
         plugins:
