@@ -167,7 +167,7 @@ steps:
         timeout_in_minutes: 60
         depends_on: build-windows-fixture-2021
         agents:
-          queue: windows-unity-wsl
+          queue: windows-general-isolated
         env:
           UNITY_PERFORMANCE_VERSION: *2021
         plugins:
