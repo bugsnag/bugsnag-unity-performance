@@ -11,7 +11,10 @@ steps:
         timeout_in_minutes: 30
         key: build-macos-fixture-2020
         depends_on: build-artifacts
+        agents:
+          queue: macos-14
         env:
+          XCODE_VERSION: 15.3.0
           UNITY_PERFORMANCE_VERSION: *2020
         plugins:
           'artifacts#v1.9.0':
