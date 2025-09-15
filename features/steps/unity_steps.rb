@@ -275,3 +275,26 @@ When('the {request_type} payload field {string} double array attribute {string} 
     check_valid_percentage(float_value, field_name, attribute_name, request_type)
   end
 end
+
+When('the {request_type} payload field {string} is an array with at least {int} elements') do |request_type, field_name, min_count|
+  list = Maze::Server.list_for(request_type)
+  array_value = Maze::Helper.read_key_path(list.current[:body], field_name)
+  
+  Maze.check.not_nil(
+    array_value, 
+    "Field '#{field_name}' not found in request type '#{request_type}'"
+  )
+  
+  Maze.check.true(
+    array_value.is_a?(Array), 
+    "Field '#{field_name}' is not an array in request type '#{request_type}', got: #{array_value.class}"
+  )
+  
+  actual_count = array_value.length
+  Maze.check.operator(
+    actual_count,
+    :>=,
+    min_count,
+    "Expected '#{field_name}' to have at least #{min_count} elements in request type '#{request_type}', but got #{actual_count}"
+  )
+end
