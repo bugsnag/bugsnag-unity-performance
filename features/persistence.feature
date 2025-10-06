@@ -7,7 +7,7 @@ Feature: Trace and state persistence
   Scenario: Receive a persisted trace
     When I set the HTTP status code to 408
     And I run the game in the "PersistTrace" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
     And I wait for requests to persist
     And I discard the oldest trace
@@ -15,7 +15,7 @@ Feature: Trace and state persistence
     Then I set the HTTP status code to 200
     And I relaunch the app
     And I run the game in the "StartSDK" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
     And the trace payload field "resourceSpans.0.scopeSpans.0.spans" is an array with 3 elements
 
@@ -23,7 +23,7 @@ Feature: Trace and state persistence
   Scenario: Max Batch Age
     When I set the HTTP status code to 408
     And I run the game in the "PersistTrace" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
     And I wait for requests to persist
     And I discard the oldest trace
@@ -58,7 +58,7 @@ Feature: Trace and state persistence
     And I set the sampling probability for the next traces to "1"
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
 
   @skip_webgl #Pending PLAT-8151
@@ -66,7 +66,7 @@ Feature: Trace and state persistence
     Given I set the sampling probability for the next traces to "1"
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
     And I wait for requests to persist
     And I discard the oldest trace
@@ -75,7 +75,7 @@ Feature: Trace and state persistence
     And I set the HTTP status code for the next request to 404
     And I relaunch the app
     And I run the game in the "PValueUpdate" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
 
   @skip_webgl #Pending PLAT-8151
@@ -83,7 +83,7 @@ Feature: Trace and state persistence
     Given I set the sampling probability for the next traces to "1"
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
     And I wait for requests to persist
     And I discard the oldest trace
@@ -134,5 +134,5 @@ Feature: Trace and state persistence
     Given I set the sampling probability for the next traces to "0.9999999"
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes.3.value.doubleValue" equals 0.9999999

@@ -5,7 +5,7 @@ Feature: App Start
 
   Scenario: Full App Start
     When I run the game in the "AppStartFull" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -29,7 +29,7 @@ Feature: App Start
 
 Scenario: App Start Start Only
     When I run the game in the "AppStartStartOnly" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -51,7 +51,7 @@ Scenario: App Start Start Only
 
 Scenario: App Start Off
     When I run the game in the "AppStartOff" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -59,7 +59,7 @@ Scenario: App Start Off
 
 Scenario: App Start Customisation
     When I run the game in the "AppStartCustomisation" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
@@ -67,7 +67,7 @@ Scenario: App Start Customisation
 
 Scenario: App Start Clear Customisation
     When I run the game in the "AppStartClearCustomisation" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
