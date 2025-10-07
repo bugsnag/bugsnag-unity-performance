@@ -12,7 +12,7 @@ steps:
         key: build-macos-fixture-2020
         depends_on: build-artifacts
         agents:
-          queue: macos-15
+          queue: macos-14-2
         env:
           UNITY_PERFORMANCE_VERSION: *2020
         plugins:
