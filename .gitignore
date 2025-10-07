@@ -32,3 +32,6 @@ features/fixtures/mazerunner/Assets/Bugsnag
 features/fixtures/mazerunner/.vscode
 .DS_Store
 maze_output.zip
+maze_output/
+bugsnag-unity-performance.iml
+.idea/
