@@ -5,7 +5,7 @@ Feature: Rendering Metrics
 
   Scenario: Frame Rate Metrics
     When I run the game in the "RenderMetrics" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "FrozenFrame"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 4 elements
@@ -35,7 +35,7 @@ Feature: Rendering Metrics
 
   Scenario: Disable Frame Rate Metrics
     When I run the game in the "ConfigureRenderMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BeforeStart"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 4 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true

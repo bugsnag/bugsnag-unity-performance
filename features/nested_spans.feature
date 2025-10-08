@@ -5,7 +5,7 @@ Feature: Nested Spans
 
   Scenario: Simple nested span
     When I run the game in the "BasicNestedSpan" state
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -23,7 +23,7 @@ Feature: Nested Spans
   @skip_webgl # threaded code not supported in webgl
   Scenario: Pass Span Context
     When I run the game in the "PassSpanContext" state
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -41,7 +41,7 @@ Feature: Nested Spans
   @skip_webgl # threaded code not supported in webgl
   Scenario: New Thread New Context
     When I run the game in the "NewThreadNewContext" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -59,7 +59,7 @@ Feature: Nested Spans
 
   Scenario: Make Current Context
     When I run the game in the "MakeCurrentContext" state
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -69,7 +69,7 @@ Feature: Nested Spans
 
   Scenario: IsFirstClass
     When I run the game in the "IsFirstClass" state
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -87,7 +87,7 @@ Feature: Nested Spans
 
   Scenario: Pass Context With Make Context False
     When I run the game in the "PassContextWithMakeContextFalse" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"

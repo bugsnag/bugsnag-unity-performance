@@ -28,8 +28,8 @@ pushd $SCRIPT_DIR
 popd
 
 # remove post build job for iOS bitcode as namespace is not available and it doesn't seem possible to conditionally remove using preprocessor directives
-rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs"
-rm "$project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
+rm -f "$project_path/Assets/Editor/DisablingBitcodeiOS.cs"
+rm -f "$project_path/Assets/Editor/DisablingBitcodeiOS.cs.meta"
 
 UNITY_PATH="/mnt/c/Program Files/Unity/Hub/Editor/$UNITY_PERFORMANCE_VERSION/Editor/Unity.exe"
 

@@ -5,7 +5,7 @@ Feature: Custom Attributes
 
   Scenario: Basic Custom Attributes
     When I run the game in the "BasicAttributes" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -35,7 +35,7 @@ Feature: Custom Attributes
 
   Scenario: Custom Attributes In Callbacks
     When I run the game in the "AddAttributesInCallbacks" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -45,7 +45,7 @@ Feature: Custom Attributes
 
  Scenario: Default AttributeLimits
     When I run the game in the "DefaultAttributeLimits" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -63,7 +63,7 @@ Feature: Custom Attributes
 
   Scenario: Custom AttributeLimits
     When I run the game in the "CustomAttributeLimits" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"

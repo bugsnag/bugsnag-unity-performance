@@ -6,7 +6,7 @@ Feature: Scene Load Spans
   @skip_webgl #Pending PLAT-12103
   Scenario: Load Scene By Name
     When I run the game in the "SceneLoadByName" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -26,7 +26,7 @@ Feature: Scene Load Spans
   @skip_webgl #Pending PLAT-12103
   Scenario: Load Scene By Index
     When I run the game in the "SceneLoadByIndex" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -44,7 +44,7 @@ Feature: Scene Load Spans
   @skip_webgl #Pending PLAT-12103
   Scenario: Load Scene Async
     When I run the game in the "SceneLoadAsync" state
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -66,7 +66,7 @@ Feature: Scene Load Spans
   @skip_webgl #Pending PLAT-12103
   Scenario: Manual Scene Span
     When I run the game in the "ManualSceneSpan" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"

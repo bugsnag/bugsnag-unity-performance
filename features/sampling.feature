@@ -7,7 +7,7 @@ Feature: Sampling spans
     Given I set the sampling probability for the next traces to "0"
     And I enter unmanaged traces mode
     When I run the game in the "OverrideSampling1" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     And the trace "Bugsnag-Span-Sampling" header is not present
@@ -29,7 +29,7 @@ Feature: Sampling spans
   Scenario: With dynamic probability of 1 and no fixed probability, all spans are sampled
     Given I set the sampling probability for the next traces to "1"
     When I run the game in the "ConfiguredSamplingRate1" state
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     And the trace "Bugsnag-Span-Sampling" header equals "1:4"

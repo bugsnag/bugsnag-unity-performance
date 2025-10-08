@@ -5,7 +5,7 @@ Feature: Configuration tests
 
   Scenario: Custom Release Stage
     When I run the game in the "CustomReleaseStage" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
@@ -14,7 +14,7 @@ Feature: Configuration tests
 
   Scenario: Enabled Release Stage
     When I run the game in the "EnabledReleaseStages" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
@@ -37,7 +37,7 @@ Feature: Configuration tests
 
   Scenario: App Version
     When I run the game in the "AppVersion" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "AppVersion"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.2.3_AppVersion"
@@ -45,7 +45,7 @@ Feature: Configuration tests
   @cocoa_only
   Scenario: Bundle Version
     When I run the game in the "BundleVersion" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BundleVersion"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" equals "1.2.3_BundleVersion"
@@ -53,7 +53,7 @@ Feature: Configuration tests
   @android_only
   Scenario: Android Specifics
     When I run the game in the "VersionCode" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "VersionCode"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" equals "123"
@@ -61,7 +61,7 @@ Feature: Configuration tests
 
   Scenario: Custom Service Name
     When I run the game in the "CustomServiceName" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "CustomServiceName"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.name" equals "custom.service.name"

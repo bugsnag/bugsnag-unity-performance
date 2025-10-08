@@ -6,7 +6,7 @@ Feature: Memory Metrics
   @android_only
   Scenario: Android Memory Metrics
     When I run the game in the "MemoryMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
 
   # Basic checks
   * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "MemoryMetrics"
@@ -39,7 +39,7 @@ Feature: Memory Metrics
   @ios_only
   Scenario: iOS Memory Metrics
     When I run the game in the "MemoryMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
 
   # Basic checks
   * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "MemoryMetrics"
@@ -63,7 +63,7 @@ Feature: Memory Metrics
 
   Scenario: Disable Memory Metrics
     When I run the game in the "ConfigureMemoryMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BeforeStart"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 4 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true

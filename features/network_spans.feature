@@ -5,7 +5,7 @@ Feature: Network Spans
 
   Scenario: Get Success
     When I run the game in the "NetworkGetSuccess" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -29,7 +29,7 @@ Feature: Network Spans
   # This test sends 2 requests, 1 fails and one succeeds, so we should only get 1
   Scenario: Get Fail
     When I run the game in the "NetworkGetFail" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -50,7 +50,7 @@ Feature: Network Spans
 
   Scenario: Post Success
     When I run the game in the "NetworkPostSuccess" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -74,7 +74,7 @@ Feature: Network Spans
   # This test sends 2 requests, 1 fails and one succeeds, so we should only get 1
   Scenario: Post Fail
     When I run the game in the "NetworkPostFail" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -97,7 +97,7 @@ Feature: Network Spans
 
   Scenario: Edit url in callback
     When I run the game in the "NetworkCallbackUrlEdit" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -121,7 +121,7 @@ Feature: Network Spans
 #this test sends 2 requests, we should only get 1 as the first will have a null url in the callback
   Scenario: Set url null in callback
     When I run the game in the "NetworkCallbackReturnNull" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -144,7 +144,7 @@ Feature: Network Spans
 
   Scenario: Manual Network Span
     When I run the game in the "ManualNetworkSpan" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -170,7 +170,7 @@ Feature: Network Spans
   Scenario: Trace parent header smoke test
     When I run the game in the "TraceParentHeaderSmokeTest" state
     
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     And I wait to receive a reflection
 
     Then the reflection request method equals "GET"

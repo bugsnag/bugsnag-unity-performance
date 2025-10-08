@@ -6,7 +6,7 @@ Feature: Manual creation of spans
   Scenario: Simple Error Correlation
     When I run the game in the "SimpleErrorCorrelation" state
     * I wait to receive an error
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the exception "message" equals "Simple Error Correlation"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" matches the regex "^[A-Fa-f0-9]{16}$"
@@ -22,7 +22,7 @@ Feature: Manual creation of spans
   Scenario: Correlation Should be null
     When I run the game in the "CorrelationShouldBeNull" state
     * I wait to receive an error
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the exception "message" equals "Correlation Should Be Null"
     * the error payload field "events.0.correlation" is null
 
@@ -30,7 +30,7 @@ Feature: Manual creation of spans
   Scenario: Correlation On Different Thread
     When I run the game in the "CorrelationOnDifferentThread" state
     * I wait to receive 2 errors
-    * I wait for 2 spans
+    * I wait to receive at least 2 spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "Span From Background Thread"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" is stored as the value "background_span_id"

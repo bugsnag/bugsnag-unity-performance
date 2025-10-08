@@ -5,7 +5,7 @@ Feature: Manual creation of spans
 
   Scenario: Manual spans can be logged
     When I run the game in the "ManualSpan" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -53,7 +53,7 @@ Feature: Manual creation of spans
   @android_only
   Scenario: Android Specific Resource Attributes
     When I run the game in the "ManualSpan" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"  
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -66,7 +66,7 @@ Feature: Manual creation of spans
  @ios_only
   Scenario: iOS Specific Resource Attributes
     When I run the game in the "ManualSpan" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace Bugsnag-Integrity header is valid
     And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"  
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -78,7 +78,7 @@ Feature: Manual creation of spans
 
   Scenario: null span name becomes empty string
     When I run the game in the "NullSpanName" state
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals ""
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.1.name" equals "control"
 

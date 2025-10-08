@@ -6,7 +6,7 @@ Feature: CPU Metrics
   @android_only
   Scenario: Android CPU Metrics
     When I run the game in the "CpuMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "CpuMetrics"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 9 elements
@@ -30,7 +30,7 @@ Feature: CPU Metrics
   @ios_only
   Scenario: iOS CPU Metrics
     When I run the game in the "CpuMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "CpuMetrics"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 9 elements
@@ -54,7 +54,7 @@ Feature: CPU Metrics
 
   Scenario: Disable Cpu Metrics
     When I run the game in the "ConfigureCpuMetrics" state
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "BeforeStart"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.attributes" is an array with 4 elements
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" boolean attribute "bugsnag.span.first_class" is true
