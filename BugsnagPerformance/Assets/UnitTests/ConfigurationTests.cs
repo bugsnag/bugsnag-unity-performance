@@ -16,7 +16,7 @@ namespace Tests
         private const string HUB_API_KEY = "00000abcdef1234567890abcdef12345";
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
         private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
-        private const string HUB_ENDPOINT = "https://{0}.otlp.insighthub.smartbear.com/v1/traces";
+        private const string SMARTBEAR_ENDPOINT = "https://{0}.otlp.bugsnag.smartbear.com/v1/traces";
         private DateTimeOffset CustomStartTime = new DateTimeOffset(1985, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
         private DateTimeOffset CustomEndTime = new DateTimeOffset(1986, 1, 1, 1, 1, 1, System.TimeSpan.Zero);
 
@@ -45,7 +45,7 @@ namespace Tests
         public void GetEndpoint_UsesHubDomain_WhenApiKeyStartsWith00000()
         {
             var cfg = new PerformanceConfiguration(HUB_API_KEY);
-            var expected = string.Format(HUB_ENDPOINT, HUB_API_KEY);
+            var expected = string.Format(SMARTBEAR_ENDPOINT, HUB_API_KEY);
             Assert.That(cfg.GetEndpoint(), Is.EqualTo(expected));
         }
 

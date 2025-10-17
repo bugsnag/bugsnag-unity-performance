@@ -21,7 +21,7 @@ namespace BugsnagUnityPerformance
 
         private const string LEGACY_DEFAULT_ENDPOINT = "https://otlp.bugsnag.com/v1/traces";
         private const string DEFAULT_ENDPOINT = "https://{0}.otlp.bugsnag.com/v1/traces";
-        private const string HUB_ENDPOINT = "https://{0}.otlp.insighthub.smartbear.com/v1/traces";
+        private const string SMARTBEAR_ENDPOINT = "https://{0}.otlp.bugsnag.smartbear.com/v1/traces";
         private const string HUB_API_PREFIX = "00000";
 
         internal const int DEFAULT_ATTRIBUTE_STRING_VALUE_LIMIT = 1024;
@@ -165,7 +165,7 @@ namespace BugsnagUnityPerformance
         {
             if (string.IsNullOrEmpty(Endpoint) || Endpoint == LEGACY_DEFAULT_ENDPOINT)
             {
-                return string.Format(IsHubApiKey(ApiKey) ? HUB_ENDPOINT : DEFAULT_ENDPOINT, ApiKey);
+                return string.Format(IsHubApiKey(ApiKey) ? SMARTBEAR_ENDPOINT : DEFAULT_ENDPOINT, ApiKey);
             }
             return Endpoint;
         }
