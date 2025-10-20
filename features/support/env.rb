@@ -1,15 +1,5 @@
 require 'fileutils'
 
-Before('@skip_unity_2018') do |_scenario|
-  if ENV['UNITY_VERSION']
-    unity_version = ENV['UNITY_VERSION'][0..3].to_i
-    if unity_version == 2018
-      skip_this_scenario('Skipping scenario on Unity 2018')
-    end
-  end
-end
-
-
 Before('@skip_webgl') do |_scenario|
   skip_this_scenario('Skipping scenario') unless Maze.config.browser.nil?
 end
@@ -126,23 +116,15 @@ Maze.hooks.before do
     $logger.info 'Killing defaults service'
     Maze::Runner.run_command("killall -u #{ENV['USER']} cfprefsd")
   end
+
+  platform = Maze::Helper.get_current_platform
+  start_app unless platform in ['android', 'ios'] # Maze Runner will handle mobile platforms
 end
 
 After do |scenario|
   next if scenario.status == :skipped
 
-  case Maze::Helper.get_current_platform
-  when 'macos'
-    `killall Mazerunner`
-  when 'windows'
-    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows.exe || exit 0")  
-    Maze::Runner.run_command("/mnt/c/Windows/system32/taskkill.exe /IM mazerunner_windows_dev.exe || exit 0")  
-  when 'webgl'
-    execute_command('close_application')
-  when 'switch'
-    # Terminate the app
-    Maze::Runner.run_command('ControlTarget.exe terminate')
-  end
+  stop_app
 end
 
 AfterAll do

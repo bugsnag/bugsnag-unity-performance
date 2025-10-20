@@ -11,9 +11,9 @@ Feature: Trace and state persistence
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
     And I wait for requests to persist
     And I discard the oldest trace
-    And I close the Unity app
+    And I stop the Unity app
     Then I set the HTTP status code to 200
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "StartSDK" state
     And I wait to receive at least 3 spans
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
@@ -27,9 +27,9 @@ Feature: Trace and state persistence
     And the trace "Bugsnag-Span-Sampling" header equals "1:3"
     And I wait for requests to persist
     And I discard the oldest trace
-    And I close the Unity app
+    And I stop the Unity app
     Then I set the HTTP status code to 200
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "MaxBatchAge" state
     And I should receive no trace
 
@@ -40,10 +40,10 @@ Feature: Trace and state persistence
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
     Then I should receive no traces
-    Then I close the Unity app
+    Then I stop the Unity app
     # Block the next initial P value request so that it keeps its 0.0 P value
     And I set the HTTP status code for the next request to 404
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "PValueUpdate" state
     Then I should receive no traces
 
@@ -54,9 +54,9 @@ Feature: Trace and state persistence
     And I run the game in the "PValueUpdate" state
     And I wait to receive a sampling request
     Then I should receive no traces
-    Then I close the Unity app
+    Then I stop the Unity app
     And I set the sampling probability for the next traces to "1"
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "PValueUpdate" state
     And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -70,10 +70,10 @@ Feature: Trace and state persistence
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
     And I wait for requests to persist
     And I discard the oldest trace
-    Then I close the Unity app
+    Then I stop the Unity app
     # Block the next initial P value request so that it keeps its 1.0 P value
     And I set the HTTP status code for the next request to 404
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "PValueUpdate" state
     And I wait to receive at least 1 span
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -87,9 +87,9 @@ Feature: Trace and state persistence
     And the trace "Bugsnag-Span-Sampling" header equals "1:1"
     And I wait for requests to persist
     And I discard the oldest trace
-    Then I close the Unity app
+    Then I stop the Unity app
     And I set the sampling probability for the next traces to "0"
-    And I relaunch the app
+    And I start the Unity app
     And I run the game in the "PValueUpdate" state
     Then I should receive no traces
 

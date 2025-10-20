@@ -90,16 +90,6 @@ When('I wait for requests to persist') do
   sleep 2
 end
 
-When('I relaunch the app') do
-  next unless Maze.config.device
-  Maze::Api::Appium::AppManager.new.launch
-  sleep 3
-end
-
-When('I close the Unity app') do
-  execute_command('close_application')
-end
-
 Then("the span named {string} has a minimum duration of {int}") do |span_name,duration|
 
   spans = spans_from_request_list(Maze::Server.list_for("traces"))
@@ -297,4 +287,56 @@ When('the {request_type} payload field {string} is an array with at least {int} 
     min_count,
     "Expected '#{field_name}' to have at least #{min_count} elements in request type '#{request_type}', but got #{actual_count}"
   )
+end
+
+When('I stop the Unity app') do
+  stop_app
+end
+
+When('I start the Unity app') do
+  start_app
+end
+
+def start_app
+  platform = Maze::Helper.get_current_platform
+  case platform
+  when 'macos'
+    # Open the fixture - call executable directly rather than use open, which flakes on CI
+    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args > /dev/null"
+    Maze::Runner.run_command(command, blocking: false)
+  when 'windows'
+    command = "#{Maze.config.app}"
+    Maze::Runner.run_command(command, blocking: false)
+  when 'android', 'ios'
+    manager = Maze::Api::Appium::AppManager.new
+    manager.activate
+  when 'switch'
+    switch_run_on_target
+  when 'browser'
+    # WebGL - do nothing
+  else
+    raise "Platform #{platform} has not been considered"
+  end
+end
+
+def stop_app
+  platform = Maze::Helper.get_current_platform
+  case platform
+  when 'macos'
+    `killall Mazerunner`
+  when 'windows'
+    # This assumes Maze Runner is being run under WSL
+    process_name = File.basename(Maze.config.app)
+    `/mnt/c/Windows/system32/taskkill.exe /F /IM #{process_name}`
+  when 'android', 'ios'
+    manager = Maze::Api::Appium::AppManager.new
+    manager.terminate
+  when 'switch'
+    # Terminate the app
+    Maze::Runner.run_command('ControlTarget.exe terminate')
+  when 'browser'
+    # WebGL - do nothing
+  else
+    raise "Platform #{platform} has not been considered"
+  end
 end
