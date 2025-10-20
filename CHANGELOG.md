@@ -1,5 +1,11 @@
 # Changelog
 
+## TBD
+
+### Misc
+
+- Rename hub endpoint [#207](https://github.com/bugsnag/bugsnag-unity-performance/pull/207)
+
 ## v1.11.0 (2025-09-03)
 
 ### Additions
