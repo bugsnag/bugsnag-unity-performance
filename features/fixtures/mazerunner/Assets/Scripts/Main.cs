@@ -10,6 +10,7 @@ using TMPro;
 public class Command
 {
     public string action;
+    public string uuid;
     public string scenarioName;
 }
 
@@ -33,6 +34,8 @@ public class Main : MonoBehaviour
 
     private const string API_KEY = "a35a2a72bd230ac0aa0f52715bbdc6aa";
     private string _fixtureConfigFileName = "/fixture_config.json";
+    private string _commandUuidFileName = "/command_uuid.txt";
+    private static string LastCommandUuid;
     public static string MazeHost;
 
     public ScenarioRunner ScenarioRunner;
@@ -45,10 +48,34 @@ public class Main : MonoBehaviour
     public IEnumerator Start()
     {
         Log("Maze Runner app started");
+        GetLastCommandUuid();
 
         yield return GetFixtureConfig();
 
         InvokeRepeating("DoRunNextMazeCommand", 0, 1);
+    }
+
+    private void GetLastCommandUuid()
+    {
+        var uuidFilePath = Application.persistentDataPath + _commandUuidFileName;
+        if (File.Exists(uuidFilePath))
+        {
+            LastCommandUuid = File.ReadAllText(uuidFilePath);
+        }
+        else
+        {
+            LastCommandUuid = "";
+        }
+        Log("Last command UUID is: " + LastCommandUuid);
+    }
+
+    private void SetLastCommandUuid(String uuid) 
+    {
+        Log("Setting last command UUID: " + uuid);
+        var uuidFilePath = Application.persistentDataPath + _commandUuidFileName;
+        File.WriteAllText(uuidFilePath, uuid);
+        LastCommandUuid = uuid;
+        Log("Command UUID is now: " + LastCommandUuid);
     }
 
     private IEnumerator GetFixtureConfig()
@@ -73,7 +100,7 @@ public class Main : MonoBehaviour
                 {
                     Log("Mazerunner no fixture config found at path: " + configPath);
                     numTries++;
-                    if(numTries == timeOut)
+                    if (numTries == timeOut)
                     {
                         Log("Timedout looking for config file!");
                     }
@@ -105,58 +132,52 @@ public class Main : MonoBehaviour
 
     IEnumerator RunNextMazeCommand()
     {
-        var url = MazeHost + "/command";
-        Log("Trying to get next mazerunner command with url: " + url);
+        var url = MazeHost + "/idem-command?after=" + LastCommandUuid;
+        Log("Requesting Maze  Runner command from: " + url);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
-#if UNITY_2020_1_OR_NEWER
             var result = request != null && request.result == UnityWebRequest.Result.Success;
-#else
-            var result = request != null &&
-                !request.isHttpError &&
-                !request.isNetworkError;
-#endif
 
             if (result)
             {
                 var response = request.downloadHandler?.text;
-                if (response == null || response == "null" || response == "No commands to provide" || response.Contains("noop"))
+                if (response == null || response == "null")
                 {
-
+                    Log("No Maze Runner command to process at present");
                 }
                 else
                 {
                     var command = JsonUtility.FromJson<Command>(response);
                     if (command != null)
                     {
-                        Log("Got Action: " + command.action + " and scenario: " + command.scenarioName);
-                        if ("clear_cache".Equals(command.action))
+                        Log("Received Maze Runner command:\n" + response);
+
+                        switch(command.action)
                         {
-                            ClearUnityCache();
-                        }
-                        else if ("run_scenario".Equals(command.action))
-                        {
-                            ScenarioRunner.RunScenario(command.scenarioName, API_KEY, MazeHost);
-                        }
-                        else if ("close_application".Equals(command.action))
-                        {
-                            CloseFixture();
+                            case "noop":
+                                break;
+                            case "reset_uuid":
+                                SetLastCommandUuid("");
+                                break;
+                            case "clear_cache":
+                                ClearUnityCache();
+                                SetLastCommandUuid(command.uuid);
+                                break;
+                            case "run_scenario":
+                                SetLastCommandUuid(command.uuid);
+                                ScenarioRunner.RunScenario(command.scenarioName, API_KEY, MazeHost);
+                                break;
                         }
                     }
                 }
             }
             else
             {
-                Log("Getting next mazerunner command Failed: " + request.error);
+                Log("Getting next Maze Runner command failed: " + request.error);
 
             }
         }
-    }
-
-    private void CloseFixture()
-    {
-        Application.Quit();
     }
 
     private void ClearUnityCache()
@@ -172,11 +193,6 @@ public class Main : MonoBehaviour
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             ClearIOSData();
-        }
-        if (Application.platform != RuntimePlatform.Android &&
-            Application.platform != RuntimePlatform.IPhonePlayer)
-        {
-            Invoke("CloseFixture", 0.25f);
         }
     }
 
@@ -197,8 +213,4 @@ public class Main : MonoBehaviour
         catch { }
 
     }
-
 }
-
-
-
