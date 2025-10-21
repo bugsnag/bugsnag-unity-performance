@@ -7,7 +7,7 @@ agents:
 steps:
   - group: ":hammer: Build Unity 6000 Test Fixtures"
     steps:
-      - label: ':macos: Build macos test fixture for Unity 2022'
+      - label: ':macos: Build macos test fixture for Unity 6000'
         timeout_in_minutes: 30
         key: build-macos-fixture-6000
         depends_on: build-artifacts

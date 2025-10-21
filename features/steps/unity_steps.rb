@@ -15,37 +15,16 @@ end
 
 When('I clear the Bugsnag cache') do
   case Maze::Helper.get_current_platform
-  when 'macos', 'webgl'
-    # Call executable directly rather than use open, which flakes on CI
-    log = File.join(Dir.pwd, 'clear_cache.log')
-    command = "#{Maze.config.app}/Contents/MacOS/Mazerunner --args -logfile #{log} > /dev/null"
-    Maze::Runner.run_command(command, blocking: false)
-    execute_command('clear_cache')
-
-  when 'windows'
-    win_log = File.join(Dir.pwd, 'clear_cache.log')
-    command = "#{Maze.config.app} --args -logfile #{win_log}"
-    Maze::Runner.run_command(command, blocking: false)
-    execute_command('clear_cache')
-
-  when 'android', 'ios'
+  when 'macos', 'windows', 'android', 'ios', 'switch'
     execute_command('clear_cache')
   when 'browser'
     url = "http://localhost:#{Maze.config.port}/docs/index.html"
     $logger.debug "Navigating to URL: #{url}"
     step("I navigate to the URL \"#{url}\"")
     execute_command('clear_cache')
-
-  when 'switch'
-    switch_run_on_target
-    execute_command('clear_cache')
-
   else
     raise "Platform #{platform} has not been considered"
   end
-
-  sleep 2
-
 end
 
 When('I run the game in the {string} state') do |state|
