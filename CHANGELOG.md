@@ -4,7 +4,7 @@
 
 ### Misc
 
-- Rename hub endpoint [#207](https://github.com/bugsnag/bugsnag-unity-performance/pull/207)
+- Amend secondary instance URL to bugsnag.smartbear.com [#207](https://github.com/bugsnag/bugsnag-unity-performance/pull/207)
 
 ## v1.11.0 (2025-09-03)
 
