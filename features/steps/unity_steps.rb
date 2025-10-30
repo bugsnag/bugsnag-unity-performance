@@ -157,14 +157,14 @@ end
 
 def check_valid_percentage(value, field_name, attribute_name, request_type)
   Maze.check.operator(
-    value, 
-    :>=, 
+    value,
+    :>=,
     0.0,
     "Attribute '#{attribute_name}' in '#{field_name}' is less than 0% for request type '#{request_type}': #{value}"
   )
   Maze.check.operator(
-    value, 
-    :<=, 
+    value,
+    :<=,
     100.0,
     "Attribute '#{attribute_name}' in '#{field_name}' is greater than 100% for request type '#{request_type}': #{value}"
   )
@@ -221,17 +221,17 @@ end
 When('the {request_type} payload field {string} is an array with at least {int} elements') do |request_type, field_name, min_count|
   list = Maze::Server.list_for(request_type)
   array_value = Maze::Helper.read_key_path(list.current[:body], field_name)
-  
+
   Maze.check.not_nil(
-    array_value, 
+    array_value,
     "Field '#{field_name}' not found in request type '#{request_type}'"
   )
-  
+
   Maze.check.true(
-    array_value.is_a?(Array), 
+    array_value.is_a?(Array),
     "Field '#{field_name}' is not an array in request type '#{request_type}', got: #{array_value.class}"
   )
-  
+
   actual_count = array_value.length
   Maze.check.operator(
     actual_count,
@@ -291,4 +291,12 @@ def stop_app
   else
     raise "Platform #{platform} has not been considered"
   end
+end
+
+def spans_from_request_list(list)
+  list.remaining
+      .flat_map { |req| req[:body]['resourceSpans'] }
+      .flat_map { |r| r['scopeSpans'] }
+      .flat_map { |s| s['spans'] }
+      .select { |s| !s.nil? }
 end
