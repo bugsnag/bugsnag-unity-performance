@@ -79,3 +79,42 @@ Feature: Scene Load Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "ManualSceneSpan"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
+    Scenario: Scene load with metrics
+      When I run the game in the "SceneLoadWithMetrics" state
+      And I wait to receive at least 1 span
+      Then the trace Bugsnag-Integrity header is valid
+      And the trace "Bugsnag-Api-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+      * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+      * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+
+      # identity
+      * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "[ViewLoad/UnityScene]Scene1"
+      * the span named "[ViewLoad/UnityScene]Scene1" is first class
+      * the span named "[ViewLoad/UnityScene]Scene1" has string attribute "bugsnag.span.category" equal to "view_load"
+      * the span named "[ViewLoad/UnityScene]Scene1" has string attribute "bugsnag.view.type" equal to "UnityScene"
+      * the span named "[ViewLoad/UnityScene]Scene1" has string attribute "bugsnag.view.name" equal to "Scene1"
+      * the span named "[ViewLoad/UnityScene]Scene1" has boolean attribute "bugsnag.span.first_class" equal to true
+
+      # rendering metrics
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.total_frames" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.fps_average" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.slow_frames" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.fps_maximum" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.fps_minimum" greater than 0
+
+      # memory metrics
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.memory.timestamps" with at least 2 elements
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.device.physical_device_memory" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.system.memory.spaces.device.size" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.memory.spaces.device.used" with at least 2 elements
+      * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.system.memory.spaces.art.size" greater than 0
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.memory.spaces.art.used" with at least 2 elements
+
+      # CPU metrics
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.cpu_measures_timestamps" with at least 2 elements
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.cpu_measures_total" with at least 2 elements
+      * the span named "[ViewLoad/UnityScene]Scene1" has double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+      * the span named "[ViewLoad/UnityScene]Scene1" has array attribute "bugsnag.system.cpu_measures_main_thread" with at least 2 elements
+      * the span named "[ViewLoad/UnityScene]Scene1" has double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
+      * the span named "[ViewLoad/UnityScene]Scene1" has double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
+      * the span named "[ViewLoad/UnityScene]Scene1" has double attribute "bugsnag.system.cpu_mean_main_thread" that is a valid percentage
