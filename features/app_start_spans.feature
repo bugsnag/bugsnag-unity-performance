@@ -73,6 +73,7 @@ Scenario: App Start Clear Customisation
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.name" equals "[AppStart/UnityRuntime]"
 
+@mobile_only
 Scenario: App Start with metrics
   When I run the game in the "AppStartWithMetrics" state
   And I wait to receive at least 4 spans
