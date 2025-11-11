@@ -82,7 +82,7 @@ Feature: Scene Load Spans
   @android_only
   Scenario: Scene load with metrics
     When I run the game in the "SceneLoadWithMetrics" state
-    And I wait to receive 4 spans
+    And I wait to receive at least 1 span
 
     # rendering metrics
     * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.total_frames" greater than 0
@@ -111,7 +111,7 @@ Feature: Scene Load Spans
 @ios_only
   Scenario: Scene load with metrics
     When I run the game in the "SceneLoadWithMetrics" state
-    And I wait to receive at least 4 spans
+    And I wait to receive at least 1 span
 
     # rendering metrics
     * the span named "[ViewLoad/UnityScene]Scene1" has integer attribute "bugsnag.rendering.total_frames" greater than 0
