@@ -325,21 +325,21 @@ Then('the span named {string} has an attribute {string}') do |span_name, attr_ke
   find_span_attr(span, attr_key) # will raise if missing
 end
 
-Then('the span named {string} has string attribute {string} equal to {string}') do |span_name, attr_key, expected|
+Then('the span named {string} has a string attribute {string} equal to {string}') do |span_name, attr_key, expected|
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
   actual = attr.dig('value', 'stringValue')
   Maze.check.equal(expected, actual, "Expected #{span_name}.#{attr_key} to be '#{expected}' but was '#{actual}'")
 end
 
-Then('the span named {string} has integer attribute {string} greater than {int}') do |span_name, attr_key, min_value|
+Then('the span named {string} has an integer attribute {string} greater than {int}') do |span_name, attr_key, min_value|
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
   actual = attr.dig('value', 'intValue').to_i
   Maze.check.operator(actual, :>, min_value, "Expected #{span_name}.#{attr_key} to be > #{min_value} but was #{actual}")
 end
 
-Then('the span named {string} has boolean attribute {string} equal to {word}') do |span_name, attr_key, expected_str|
+Then('the span named {string} has a boolean attribute {string} equal to {word}') do |span_name, attr_key, expected_str|
   expected = expected_str == 'true'
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
@@ -347,7 +347,7 @@ Then('the span named {string} has boolean attribute {string} equal to {word}') d
   Maze.check.equal(expected, actual, "Expected #{span_name}.#{attr_key} to be #{expected} but was #{actual}")
 end
 
-Then('the span named {string} has array attribute {string} with at least {int} elements') do |span_name, attr_key, min_count|
+Then('the span named {string} has an array attribute {string} with at least {int} elements') do |span_name, attr_key, min_count|
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
   arr = attr.dig('value', 'arrayValue', 'values')
@@ -355,7 +355,7 @@ Then('the span named {string} has array attribute {string} with at least {int} e
   Maze.check.operator(arr.length, :>=, min_count, "Expected at least #{min_count} elements but got #{arr.length}")
 end
 
-Then('the span named {string} has double attribute {string} that is a valid percentage') do |span_name, attr_key|
+Then('the span named {string} has a double attribute {string} that is a valid percentage') do |span_name, attr_key|
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
   val = attr.dig('value', 'doubleValue')
@@ -365,7 +365,7 @@ Then('the span named {string} has double attribute {string} that is a valid perc
   Maze.check.operator(num, :<=, 100.0, "Expected #{attr_key} <= 100.0, got #{num}")
 end
 
-Then('the span named {string} has double array attribute {string} containing valid percentages') do |span_name, attr_key|
+Then('the span named {string} has a double array attribute {string} containing valid percentages') do |span_name, attr_key|
   span = find_span_by_name(span_name)
   attr = find_span_attr(span, attr_key)
   arr = attr.dig('value', 'arrayValue', 'values')
