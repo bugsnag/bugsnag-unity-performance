@@ -129,7 +129,7 @@ Feature: Scene Load Spans
     # CPU metrics
     * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_timestamps" with at least 2 elements
     * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_total" with at least 2 elements
-    * the span named "[ViewLoad/UnityScene]Scene1" has an double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
     * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_main_thread" with at least 2 elements
     * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
     * the span named "[ViewLoad/UnityScene]Scene1" has a double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
