@@ -79,3 +79,59 @@ Feature: Scene Load Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.view.name" equals "ManualSceneSpan"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" bool attribute "bugsnag.span.first_class" is true
 
+  @android_only
+  Scenario: Scene load with metrics
+    When I run the game in the "SceneLoadWithMetrics" state
+    And I wait to receive at least 1 span
+
+    # rendering metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.total_frames" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_average" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.slow_frames" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_maximum" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_minimum" greater than 0
+
+    # memory metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.memory.timestamps" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.system.memory.spaces.device.size" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.memory.spaces.device.used" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.system.memory.spaces.art.size" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.memory.spaces.art.used" with at least 2 elements
+
+    # CPU metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_timestamps" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_total" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_main_thread" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double attribute "bugsnag.system.cpu_mean_main_thread" that is a valid percentage
+
+@ios_only
+  Scenario: Scene load with metrics
+    When I run the game in the "SceneLoadWithMetrics" state
+    And I wait to receive at least 1 span
+
+    # rendering metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.total_frames" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_average" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.slow_frames" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_maximum" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.rendering.fps_minimum" greater than 0
+
+    # memory metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.memory.timestamps" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an integer attribute "bugsnag.system.memory.spaces.device.size" greater than 0
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.memory.spaces.device.used" with at least 2 elements
+
+    # CPU metrics
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_timestamps" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_total" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+    * the span named "[ViewLoad/UnityScene]Scene1" has an array attribute "bugsnag.system.cpu_measures_main_thread" with at least 2 elements
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
+    * the span named "[ViewLoad/UnityScene]Scene1" has a double attribute "bugsnag.system.cpu_mean_main_thread" that is a valid percentage
+

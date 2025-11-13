@@ -73,3 +73,74 @@ Scenario: App Start Clear Customisation
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.3.name" equals "[AppStart/UnityRuntime]"
 
+@android_only
+Scenario: App Start with metrics
+  When I run the game in the "AppStartWithMetrics" state
+
+  And I wait to receive a span named "[AppStart/UnityRuntime]"
+  And I wait to receive a span named "[AppStartPhase/LoadAssemblies]"
+  And I wait to receive a span named "[AppStartPhase/SplashScreen]"
+  And I wait to receive a span named "[AppStartPhase/LoadFirstScene]"
+
+  # rendering metrics on the app-start span
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.total_frames" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_average" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_maximum" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_minimum" greater than 0
+
+  # memory metrics on the app-start span (arrayed samples)
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.memory.timestamps" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.system.memory.spaces.device.size" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.memory.spaces.device.used" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.system.memory.spaces.art.size" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.memory.spaces.art.used" with at least 5 elements
+
+  # CPU metrics on the app-start span
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_timestamps" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_total" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has a double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_main_thread" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has a double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
+  * the span named "[AppStart/UnityRuntime]" has a double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
+  * the span named "[AppStart/UnityRuntime]" has a double attribute "bugsnag.system.cpu_mean_main_thread" that is a valid percentage
+
+  # phase spans should also carry the memory metrics
+  * the span named "[AppStartPhase/LoadAssemblies]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStartPhase/SplashScreen]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStartPhase/LoadFirstScene]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+
+@ios_only
+Scenario: App Start with metrics
+  When I run the game in the "AppStartWithMetrics" state
+
+  And I wait to receive a span named "[AppStart/UnityRuntime]"
+  And I wait to receive a span named "[AppStartPhase/LoadAssemblies]"
+  And I wait to receive a span named "[AppStartPhase/SplashScreen]"
+  And I wait to receive a span named "[AppStartPhase/LoadFirstScene]"
+
+  # rendering metrics on the app-start span
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.total_frames" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_average" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_maximum" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.rendering.fps_minimum" greater than 0
+
+  # memory metrics on the app-start span (arrayed samples)
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.memory.timestamps" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an integer attribute "bugsnag.system.memory.spaces.device.size" greater than 0
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.memory.spaces.device.used" with at least 5 elements
+
+  # CPU metrics on the app-start span
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_timestamps" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_total" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has a double array attribute "bugsnag.system.cpu_measures_total" containing valid percentages
+  * the span named "[AppStart/UnityRuntime]" has an array attribute "bugsnag.system.cpu_measures_main_thread" with at least 5 elements
+  * the span named "[AppStart/UnityRuntime]" has a double array attribute "bugsnag.system.cpu_measures_main_thread" containing valid percentages
+  * the span named "[AppStart/UnityRuntime]" has a double attribute "bugsnag.system.cpu_mean_total" that is a valid percentage
+  * the span named "[AppStart/UnityRuntime]" has a double attribute "bugsnag.system.cpu_mean_main_thread" that is a valid percentage
+
+  # phase spans should also carry the memory metrics
+  * the span named "[AppStartPhase/LoadAssemblies]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStartPhase/SplashScreen]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0
+  * the span named "[AppStartPhase/LoadFirstScene]" has an integer attribute "bugsnag.device.physical_device_memory" greater than 0

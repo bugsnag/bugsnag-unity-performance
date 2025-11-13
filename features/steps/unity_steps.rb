@@ -300,3 +300,81 @@ def spans_from_request_list(list)
       .flat_map { |s| s['spans'] }
       .select { |s| !s.nil? }
 end
+
+#
+# Find a span by name and return it
+#
+def find_span_by_name(span_name)
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+  span = spans.find { |s| s['name'] == span_name }
+  raise Test::Unit::AssertionFailedError, "No span found with the name #{span_name}" if span.nil?
+  span
+end
+
+#
+# Find an attribute on a span by key
+#
+def find_span_attr(span, key)
+  attr = span['attributes']&.find { |a| a['key'] == key }
+  raise Test::Unit::AssertionFailedError, "No attribute '#{key}' found on span '#{span['name']}'" if attr.nil?
+  attr
+end
+
+Then('the span named {string} has an attribute {string}') do |span_name, attr_key|
+  span = find_span_by_name(span_name)
+  find_span_attr(span, attr_key) # will raise if missing
+end
+
+Then('the span named {string} has a string attribute {string} equal to {string}') do |span_name, attr_key, expected|
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  actual = attr.dig('value', 'stringValue')
+  Maze.check.equal(expected, actual, "Expected #{span_name}.#{attr_key} to be '#{expected}' but was '#{actual}'")
+end
+
+Then('the span named {string} has an integer attribute {string} greater than {int}') do |span_name, attr_key, min_value|
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  actual = attr.dig('value', 'intValue').to_i
+  Maze.check.operator(actual, :>, min_value, "Expected #{span_name}.#{attr_key} to be > #{min_value} but was #{actual}")
+end
+
+Then('the span named {string} has a boolean attribute {string} equal to {word}') do |span_name, attr_key, expected_str|
+  expected = expected_str == 'true'
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  actual = attr.dig('value', 'boolValue')
+  Maze.check.equal(expected, actual, "Expected #{span_name}.#{attr_key} to be #{expected} but was #{actual}")
+end
+
+Then('the span named {string} has an array attribute {string} with at least {int} elements') do |span_name, attr_key, min_count|
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  arr = attr.dig('value', 'arrayValue', 'values')
+  raise Test::Unit::AssertionFailedError, "Attribute '#{attr_key}' on '#{span_name}' is not an array" if arr.nil?
+  Maze.check.operator(arr.length, :>=, min_count, "Expected at least #{min_count} elements but got #{arr.length}")
+end
+
+Then('the span named {string} has a double attribute {string} that is a valid percentage') do |span_name, attr_key|
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  val = attr.dig('value', 'doubleValue')
+  raise Test::Unit::AssertionFailedError, "Attribute '#{attr_key}' on '#{span_name}' has no doubleValue" if val.nil?
+  num = val.to_f
+  Maze.check.operator(num, :>=, 0.0, "Expected #{attr_key} >= 0.0, got #{num}")
+  Maze.check.operator(num, :<=, 100.0, "Expected #{attr_key} <= 100.0, got #{num}")
+end
+
+Then('the span named {string} has a double array attribute {string} containing valid percentages') do |span_name, attr_key|
+  span = find_span_by_name(span_name)
+  attr = find_span_attr(span, attr_key)
+  arr = attr.dig('value', 'arrayValue', 'values')
+  raise Test::Unit::AssertionFailedError, "Attribute '#{attr_key}' on '#{span_name}' is not an array" if arr.nil?
+  arr.each do |el|
+    val = el['doubleValue']
+    raise Test::Unit::AssertionFailedError, "Expected doubleValue in #{attr_key} array but got #{el}" if val.nil?
+    num = val.to_f
+    Maze.check.operator(num, :>=, 0.0, "Expected value in #{attr_key} >= 0.0, got #{num}")
+    Maze.check.operator(num, :<=, 100.0, "Expected value in #{attr_key} <= 100.0, got #{num}")
+  end
+end
