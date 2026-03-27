@@ -1,5 +1,6 @@
 require "open3"
 require "rbconfig"
+require "date"
 
 HOST_OS = RbConfig::CONFIG['host_os']
 
@@ -9,6 +10,58 @@ def unity_directory
   else
     raise 'No unity version set - use $UNITY_PERFORMANCE_VERSION'
   end
+end
+
+desc 'Bump project version files. Usage: rake bump VERSION="1.2.3"'
+task :bump do
+  version = ENV['VERSION']
+  unless version && version.match(/\A\d+\.\d+\.\d+\z/)
+    raise 'Usage: rake bump VERSION="1.2.3" (version must be in X.Y.Z format)'
+  end
+
+  puts "Bumping version to #{version}"
+
+  # Update Version.cs
+  version_file_path = File.join("BugsnagPerformance", "Assets", "BugsnagPerformance", "Scripts", "Internal", "Version.cs")
+  if File.exist?(version_file_path)
+    version_content = File.read(version_file_path)
+    pattern = /public const string VersionString = "\d+\.\d+\.\d+";/
+    target = "public const string VersionString = \"#{version}\";"
+
+    if version_content =~ pattern
+      if version_content.include?(target)
+        puts "VersionString already set to #{version} in #{version_file_path}; skipping"
+      else
+        new_version = version_content.sub(pattern, target)
+        File.write(version_file_path, new_version)
+        puts "Updated #{version_file_path}"
+      end
+    else
+      raise "VersionString declaration not found or not in expected format in #{version_file_path}; version #{version} was not applied"
+    end
+  else
+    puts "Warning: #{version_file_path} not found"
+  end
+
+  # Update CHANGELOG.md: replace the leading '## TBD' with a release header
+  changelog_path = File.join("CHANGELOG.md")
+  if File.exist?(changelog_path)
+    changelog = File.read(changelog_path)
+    date_str = Date.today.strftime('%Y-%m-%d')
+    version_header = "## #{version} (#{date_str})"
+
+    if changelog =~ /^##\s+TBD/
+      updated = changelog.sub(/^##\s+TBD/, version_header)
+      File.write(changelog_path, updated)
+      puts "Updated #{changelog_path} with release #{version}"
+    else
+      puts "No '## TBD' section found in #{changelog_path}; please update version manually"
+    end
+  else
+    puts "Warning: #{changelog_path} not found"
+  end
+
+  puts "Done."
 end
 
 ##
