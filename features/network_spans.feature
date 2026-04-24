@@ -24,7 +24,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   # This test sends 2 requests, 1 fails and one succeeds, so we should only get 1
   Scenario: Get Fail
@@ -46,7 +46,7 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: Post Success
     When I run the game in the "NetworkPostSuccess" state
@@ -67,9 +67,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   # This test sends 2 requests, 1 fails and one succeeds, so we should only get 1
   Scenario: Post Fail
@@ -91,9 +91,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: Edit url in callback
     When I run the game in the "NetworkCallbackUrlEdit" state
@@ -114,9 +114,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
 #this test sends 2 requests, we should only get 1 as the first will have a null url in the callback
   Scenario: Set url null in callback
@@ -138,9 +138,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: Manual Network Span
     When I run the game in the "ManualNetworkSpan" state
@@ -163,9 +163,9 @@ Feature: Network Spans
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request.header.content-length" is greater than 0
 
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: Trace parent header smoke test
     When I run the game in the "TraceParentHeaderSmokeTest" state
