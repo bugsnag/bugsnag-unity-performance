@@ -7,24 +7,21 @@
 
 1. Make sure any changes made since last release in `main` are merged into `next`.
 
-2. Checkout the `next` branch. Set the version number in the change log AND the `BugsnagPerformance/Assets/BugsnagPerformance/Scripts/Internal/Version.cs` file.
+2. Checkout the `next` branch. Set the version number and releae date in CHANGELOG.md
+3. Set the version number in the `BugsnagPerformance/Assets/BugsnagPerformance/Scripts/Internal/Version.cs` file.
 
-3. Commit the changelog and version updates:
+4. Commit the changelog and version updates with the commit message `Release v1.x.x`
 
-    ```
-    git add CHANGELOG.md BugsnagPerformance/Assets/BugsnagPerformance/Scripts/Internal/Version.cs
-    git commit -m "Release v1.x.x"
-    ```
-4. Make a pull request to merge the changes into `main`
+5. Make a pull request to merge the changes into `main`
 
-5. Once merged, tag the new release version, pushing the tag to GitHub:
+6. Once merged, tag the merge commit with new release version, pushing the tag to GitHub:
 
    ```
    git tag v1.x.x
    git push origin v1.x.x
    ```
 
-6. Create a release from the tag in github, copy the changelog entry into the release notes and publish the release.
+7. Create a release from the tag in github, copy the changelog entry into the release notes and publish the release.
 
 
 #### 2: Making the UPM release
@@ -33,13 +30,13 @@ Once the github release is confirmed a UPM release should be deployed
 
 1. Checkout the release commit on `main`
 
-2. Build the upm package by running the `build-upm-package.sh` script in the `upm` directory. You should pass the version number of the release like so `./build-upm-package.sh 1.x.x`. You must run the script from within the `upm` directory. This will build the upm package in the `upm/package` directory.
+2. Go to the release merge commit build in build kite and download the upm package from the `Build Released Library Artifact` task.
 
 3. Test that the built package installs by using the install local package option in unity package manager.
 
 4. Clone the `bugsnag-unity-performance-upm` repo and make sure you are in the `main` branch and it is up to date with origin.
 
-5. Replace the entire contents of the repo with the contents of the `upm/package` directory in the `bugsnag-unity-performance` repo
+5. Replace the entire contents of the repo with the contents of the new package
 
 6. Commit these changes to main with the message `Release v1.x.x`
 
