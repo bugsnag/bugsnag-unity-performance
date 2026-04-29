@@ -84,8 +84,8 @@ namespace Tests
 
             var attrs = _span.GetAttributes();
             Assert.AreEqual(status, attrs["http.status_code"]);
-            Assert.AreEqual(reqLen, attrs["http.request_content_length"]);
-            Assert.AreEqual(resLen, attrs["http.response_content_length"]);
+            Assert.AreEqual(reqLen, attrs["http.request.header.content-length"]);
+            Assert.AreEqual(resLen, attrs["http.response.header.content-length"]);
         }
 
         [Test]

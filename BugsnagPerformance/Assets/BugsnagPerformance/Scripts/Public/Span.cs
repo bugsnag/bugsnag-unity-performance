@@ -122,12 +122,12 @@ namespace BugsnagUnityPerformance
 
             if (request.uploadHandler != null && request.uploadHandler.data != null)
             {
-                SetAttributeInternal("http.request_content_length", request.uploadHandler.data.Length);
+                SetAttributeInternal("http.request.header.content-length", request.uploadHandler.data.Length);
             }
 
             if (request.downloadHandler != null && request.downloadHandler.data != null)
             {
-                SetAttributeInternal("http.response_content_length", request.downloadHandler.data.Length);
+                SetAttributeInternal("http.response.header.content-length", request.downloadHandler.data.Length);
             }
             _onSpanEnd(this);
         }
@@ -153,12 +153,12 @@ namespace BugsnagUnityPerformance
 
             if (requestContentLength > -1)
             {
-                SetAttributeInternal("http.request_content_length", requestContentLength);
+                SetAttributeInternal("http.request.header.content-length", requestContentLength);
             }
 
             if (responseContentLength > -1)
             {
-                SetAttributeInternal("http.response_content_length", responseContentLength);
+                SetAttributeInternal("http.response.header.content-length", responseContentLength);
             }
             _onSpanEnd(this);
         }

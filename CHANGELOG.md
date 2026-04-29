@@ -5,6 +5,7 @@
 ### Misc
 
 - Amend secondary instance URL to bugsnag.smartbear.com [#207](https://github.com/bugsnag/bugsnag-unity-performance/pull/207)
+- Align HTTP content-length attrs with OTel semantic conventions [#217](https://github.com/bugsnag/bugsnag-unity-performance/pull/217)
 
 ## v1.11.0 (2025-09-03)
 
