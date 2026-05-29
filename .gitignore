@@ -3,6 +3,8 @@ TestResult.xml
 Gemfile.lock
 *.apk
 *.ipa
+*.sln
+*.csproj
 example/Assets/BugsnagPerformance
 testResults.xml
 BugsnagPerformance.unitypackage
