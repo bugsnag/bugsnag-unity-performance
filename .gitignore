@@ -1,6 +1,9 @@
 *.log
 TestResult.xml
 Gemfile.lock
+.gitleaks.toml
+.pre-commit-config.yaml
+.gitleaks-baseline.json
 *.apk
 *.ipa
 *.sln
